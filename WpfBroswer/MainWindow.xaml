@@ -1,0 +1,18 @@
+﻿<Window x:Class="WpfBroswer.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:WpfBroswer"
+        mc:Ignorable="d"
+        xmlns:form="clr-namespace:System.Windows.Forms;assembly=System.Windows.Forms"
+        Title="MainWindow" Height="450" Width="800">
+    <Grid>
+        <WindowsFormsHost Margin="0,0,0,45" >
+            <WindowsFormsHost.Child>
+                <form:WebBrowser x:Name="B"></form:WebBrowser>
+            </WindowsFormsHost.Child>
+        </WindowsFormsHost>
+        <Button Width="100" Height="30" Content="zoom" Margin="10" VerticalAlignment="Bottom" Click="Button_Click" ></Button>
+    </Grid>
+</Window>
