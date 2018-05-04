@@ -10,19 +10,6 @@
     <Grid>
         <StackPanel>
             <DockPanel>
-                <Label>COM口连接</Label>
-                <UniformGrid Columns="2">
-                    <ComboBox></ComboBox>
-                    <Button>连接</Button>
-                </UniformGrid>
-            </DockPanel>
-            <DockPanel>
-                <Label>飞机编号</Label>
-                <Grid>
-                    <ComboBox></ComboBox>
-                </Grid>
-            </DockPanel>
-            <DockPanel>
                 <Label>气体数据</Label>
                 <Grid>
                     <ComboBox></ComboBox>
@@ -33,11 +20,11 @@
                     <Label>无人机状态</Label>
                     <UniformGrid Columns="4">
                         <Label>电量</Label>
-                        <TextBlock></TextBlock>
+                        <TextBlock Text="90%"></TextBlock>
                         <Label>回传进度</Label>
-                        <TextBlock></TextBlock>
+                        <TextBlock Text="0%"></TextBlock>
                         <Label>水平速度</Label>
-                        <TextBlock></TextBlock>
+                        <TextBlock Text="100km/h"></TextBlock>
                         <Label>海拔</Label>
                         <TextBlock Text="{Binding NewestData.ghight}"></TextBlock>
                     </UniformGrid>
@@ -72,7 +59,7 @@
                         </DockPanel>
                     </DockPanel>
                     <DockPanel>
-                        <Label>SO2（）</Label>
+                        <Label>SO2</Label>
                         <DockPanel>
                             <TextBlock DockPanel.Dock="Right" Text="{Binding NewestData.so2}"></TextBlock>
                             <oxy:PlotView />

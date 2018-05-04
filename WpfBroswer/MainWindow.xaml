@@ -7,12 +7,10 @@
         mc:Ignorable="d"
         xmlns:form="clr-namespace:System.Windows.Forms;assembly=System.Windows.Forms"
         Title="MainWindow" Height="450" Width="800">
-    <Grid>
-        <WindowsFormsHost Margin="0,0,0,45" >
-            <WindowsFormsHost.Child>
-                <form:WebBrowser x:Name="B"></form:WebBrowser>
-            </WindowsFormsHost.Child>
-        </WindowsFormsHost>
-        <Button Width="100" Height="30" Content="zoom" Margin="10" VerticalAlignment="Bottom" Click="Button_Click" ></Button>
-    </Grid>
+    <DockPanel>
+        <StackPanel Width="200">
+            <Button Name="Load" Click="Load_Click">加载地图</Button>
+        </StackPanel>
+        <WebBrowser Name="Map" />
+    </DockPanel>
 </Window>

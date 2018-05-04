@@ -34,27 +34,21 @@ namespace WpfBroswer
         public MainWindow()
         {
             InitializeComponent();
-
-            var uri = new Uri($"file:///{AppDomain.CurrentDomain.BaseDirectory.Replace("\\", "/")}map.html");
-            B.ObjectForScripting = new BroswerEventHanlder();
-            B.Url = uri;
         }
 
 
-        private void Button_Click(object sender, RoutedEventArgs e)
+        private void Load_Click(object sender, RoutedEventArgs e)
         {
-            try
-            {
-                var i = B.Document.InvokeScript("zoom");
-                if (i != null)
-                {
-                    MessageBox.Show(i.ToString());
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message);
-            }
+            var uri = new Uri($"file:///{AppDomain.CurrentDomain.BaseDirectory.Replace("\\", "/")}map.html");
+            Map.ObjectForScripting = new BroswerEventHanlder();
+            Map.Source = uri;
+            Map.LoadCompleted -= Map_LoadCompleted;
+            Map.LoadCompleted += Map_LoadCompleted;
+        }
+
+        private void Map_LoadCompleted(object sender, NavigationEventArgs e)
+        {
+            Console.WriteLine(e.Uri);
         }
     }
 }
