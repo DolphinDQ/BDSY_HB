@@ -24,7 +24,7 @@ namespace AirMonitor.Views
         {
             InitializeComponent();
 
-            Map.Source = new Uri($"file:///{AppDomain.CurrentDomain.BaseDirectory.Replace("\\", "/")}Map/map.html"); ;
+            Map.Tag = Map;
         }
     }
 }

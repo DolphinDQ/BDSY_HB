@@ -7,7 +7,10 @@ using System.Threading.Tasks;
 
 namespace AirMonitor.Interfaces
 {
-    public interface IChartProvider
+    /// <summary>
+    /// 报表管理器。
+    /// </summary>
+    public interface IChartManager
     {
         /// <summary>
         /// 创建线性报表。

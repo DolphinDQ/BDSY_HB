@@ -13,7 +13,7 @@ using OxyPlot.Axes;
 
 namespace AirMonitor.Core
 {
-    class ChartProvider : IChartProvider
+    class ChartManager : IChartManager
     {
         public ConcurrentDictionary<int, PlotModel> LinnerPlot { get; set; } = new ConcurrentDictionary<int, PlotModel>();
 

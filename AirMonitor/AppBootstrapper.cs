@@ -6,6 +6,7 @@ namespace AirMonitor
     using AirMonitor.Core;
     using AirMonitor.Data;
     using AirMonitor.Interfaces;
+    using AirMonitor.Map;
     using AirMonitor.ViewModels;
     using Caliburn.Micro;
 
@@ -27,8 +28,9 @@ namespace AirMonitor
             container.Singleton<ILog, Logger>();
             container.Singleton<IDataManager, MqttDataManager>();
             container.Singleton<IConfigManager, ConfigManager>();
-            container.Singleton<IChartProvider, ChartProvider>();
+            container.Singleton<IChartManager, ChartManager>();
             container.PerRequest<IShell, ShellViewModel>();
+            container.PerRequest<IMapProvider, MapProvider>();
             container.RegisterInstance(typeof(IFactory), null, this);
             container.PerRequest<DataDisplayViewModel>();
             container.PerRequest<MapViewModel>();

@@ -94,14 +94,16 @@
     </ApplicationDefinition>
     <Compile Include="AppBootstrapper.cs" />
     <Compile Include="Config\MqttSetting.cs" />
-    <Compile Include="Core\ChartProvider.cs" />
+    <Compile Include="Core\ChartManager.cs" />
     <Compile Include="Core\Logger.cs" />
     <Compile Include="Data\EnvironmentCallback.cs" />
     <Compile Include="Data\MqttDataManager.cs" />
-    <Compile Include="Interfaces\IChartProvider.cs" />
+    <Compile Include="Interfaces\IChartManager.cs" />
     <Compile Include="Interfaces\IDataManager.cs" />
     <Compile Include="Interfaces\IFactory.cs" />
+    <Compile Include="Interfaces\IMapProvider.cs" />
     <Compile Include="IShell.cs" />
+    <Compile Include="Map\MapProvider.cs" />
     <Compile Include="ShellViewModel.cs" />
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
