@@ -14,6 +14,7 @@ namespace Mqtt
     {
         static void Main(string[] args)
         {
+         
             var client = new MqttFactory().CreateMqttClient();
             var conn = client.ConnectAsync(BuildMqttClientOptions("v.vvlogic.com", 9001)).Result;
             Console.WriteLine(conn.IsSessionPresent);
@@ -32,7 +33,7 @@ namespace Mqtt
         {
             return new MqttClientOptions()
             {
-                ClientId = "123456",
+                ClientId ="123454",
                 ProtocolVersion = MQTTnet.Serializer.MqttProtocolVersion.V311,
                 Credentials = new MqttClientCredentials()
                 {
@@ -52,7 +53,6 @@ namespace Mqtt
                 {
                     Server = server,
                     Port = port,
-
                     BufferSize = 4096,
                     TlsOptions = new MqttClientTlsOptions()
                     {

@@ -11,7 +11,7 @@ namespace UseIEVersion
     {
         static void Main(string[] args)
         {
-            using (var i = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\WOW6432Node\Microsoft\Internet Explorer\Main\FeatureControl\FEATURE_BROWSER_EMULATION", RegistryKeyPermissionCheck.ReadSubTree))
+            using (var i = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\WOW6432Node\Microsoft\Internet Explorer\Main\FeatureControl\FEATURE_BROWSER_EMULATION",true))
             {
                 Console.WriteLine(i.GetValue("prevhost.exe"));
             }

@@ -11,6 +11,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WpfBroswer", "WpfBroswer\Wp
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UseIEVersion", "UseIEVersion\UseIEVersion.csproj", "{14B7F15B-7AD7-4A99-91D0-B75023A31992}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "chart", "chart\chart.csproj", "{1C63FC60-C7C0-4C2E-A000-A91E8A5C780E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,6 +35,10 @@ Global
 		{14B7F15B-7AD7-4A99-91D0-B75023A31992}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{14B7F15B-7AD7-4A99-91D0-B75023A31992}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{14B7F15B-7AD7-4A99-91D0-B75023A31992}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1C63FC60-C7C0-4C2E-A000-A91E8A5C780E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1C63FC60-C7C0-4C2E-A000-A91E8A5C780E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1C63FC60-C7C0-4C2E-A000-A91E8A5C780E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1C63FC60-C7C0-4C2E-A000-A91E8A5C780E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

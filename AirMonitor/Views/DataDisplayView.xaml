@@ -1,0 +1,120 @@
+﻿<UserControl x:Class="AirMonitor.Views.DataDisplayView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:AirMonitor.Views"
+             xmlns:oxy="clr-namespace:OxyPlot.Wpf;assembly=OxyPlot.Wpf" 
+             mc:Ignorable="d" 
+             d:DesignHeight="800" d:DesignWidth="350">
+    <Grid>
+        <StackPanel>
+            <DockPanel>
+                <Label>COM口连接</Label>
+                <UniformGrid Columns="2">
+                    <ComboBox></ComboBox>
+                    <Button>连接</Button>
+                </UniformGrid>
+            </DockPanel>
+            <DockPanel>
+                <Label>飞机编号</Label>
+                <Grid>
+                    <ComboBox></ComboBox>
+                </Grid>
+            </DockPanel>
+            <DockPanel>
+                <Label>气体数据</Label>
+                <Grid>
+                    <ComboBox></ComboBox>
+                </Grid>
+            </DockPanel>
+            <Border>
+                <StackPanel>
+                    <Label>无人机状态</Label>
+                    <UniformGrid Columns="4">
+                        <Label>电量</Label>
+                        <TextBlock></TextBlock>
+                        <Label>回传进度</Label>
+                        <TextBlock></TextBlock>
+                        <Label>水平速度</Label>
+                        <TextBlock></TextBlock>
+                        <Label>海拔</Label>
+                        <TextBlock Text="{Binding NewestData.ghight}"></TextBlock>
+                    </UniformGrid>
+                </StackPanel>
+            </Border>
+            <Border>
+                <StackPanel>
+                    <Label>实时气体数据</Label>
+                    <DockPanel>
+                        <Label>传感器状态</Label>
+                        <TextBlock></TextBlock>
+                    </DockPanel>
+                    <DockPanel>
+                        <Label>温度（℃）</Label>
+                        <DockPanel>
+                            <TextBlock DockPanel.Dock="Right"  Text="{Binding NewestData.temp}"></TextBlock>
+                            <oxy:PlotView />
+                        </DockPanel>
+                    </DockPanel>
+                    <DockPanel>
+                        <Label>湿度（%）</Label>
+                        <DockPanel>
+                            <TextBlock DockPanel.Dock="Right" Text="{Binding NewestData.humi}"></TextBlock>
+                            <oxy:PlotView />
+                        </DockPanel>
+                    </DockPanel>
+                    <DockPanel>
+                        <Label>VOCs（ppm）</Label>
+                        <DockPanel>
+                            <TextBlock DockPanel.Dock="Right" Text="{Binding NewestData.voc}"></TextBlock>
+                            <oxy:PlotView />
+                        </DockPanel>
+                    </DockPanel>
+                    <DockPanel>
+                        <Label>SO2（）</Label>
+                        <DockPanel>
+                            <TextBlock DockPanel.Dock="Right" Text="{Binding NewestData.so2}"></TextBlock>
+                            <oxy:PlotView />
+                        </DockPanel>
+                    </DockPanel>
+                    <DockPanel>
+                        <Label>CO</Label>
+                        <DockPanel>
+                            <TextBlock DockPanel.Dock="Right" Text="{Binding NewestData.co}"></TextBlock>
+                            <oxy:PlotView />
+                        </DockPanel>
+                    </DockPanel>
+                    <DockPanel>
+                        <Label>NO2</Label>
+                        <DockPanel>
+                            <TextBlock DockPanel.Dock="Right" Text="{Binding NewestData.no2}"></TextBlock>
+                            <oxy:PlotView />
+                        </DockPanel>
+                    </DockPanel>
+                    <DockPanel>
+                        <Label>O3</Label>
+                        <DockPanel>
+                            <TextBlock DockPanel.Dock="Right" Text="{Binding NewestData.o3}"></TextBlock>
+                            <oxy:PlotView />
+                        </DockPanel>
+                    </DockPanel>
+                    <DockPanel>
+                        <Label>PM2.5</Label>
+                        <DockPanel>
+                            <TextBlock DockPanel.Dock="Right" Text="{Binding NewestData.pm25}"></TextBlock>
+                            <oxy:PlotView />
+                        </DockPanel>
+                    </DockPanel>
+                    <DockPanel>
+                        <Label>PM10</Label>
+                        <DockPanel>
+                            <TextBlock DockPanel.Dock="Right" Text="{Binding NewestData.pm10}"></TextBlock>
+                            <oxy:PlotView />
+                        </DockPanel>
+                    </DockPanel>
+                </StackPanel>
+            </Border>
+        </StackPanel>
+    </Grid>
+</UserControl>
