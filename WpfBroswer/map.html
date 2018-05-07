@@ -82,7 +82,7 @@
         }
         //uavList.forEach(uav => points = points.concat(uav.marker.pathPoint));
         var opt = blockGrid.options;
-        gridClear();
+        //gridClear();
         points.forEach(point => { //填充点数据到格子里
             if (!opt.firstPoint) opt.firstPoint = point;
             var block = blockGrid.blocks.find(block => isInBlock(block.center, opt.sideLength, point));
@@ -107,8 +107,10 @@
         if (blockGrid.blocks) {
             blockGrid.blocks.forEach(o => {
                 map.removeOverlay(o.polygon);
+                delete o.polygon;
             });
         }
+        delete blockGrid.blocks;
         blockGrid.blocks = [];
     }
 
@@ -180,44 +182,43 @@
         uav(name, o => {
             var point = new BMap.Point(lng, lag);
             point.data = data;
-
             o.pathPoint.push(point);
             o.marker.setPosition(point);
         });
     }
     function uavShowPath(name) {
         uav(name, o => {
-            uavHidePath(name);
-            var line = new BMap.Polyline(o.pathPoint,
-                {
-                    enableClicking: false,
-                    strokeWeight: 1,
-                    strokeColor: "red",
-                    strokeOpacity: 0.5
-                });
-            o.pathPoint.forEach(point => {
-                var marker = new BMap.Circle(point, 1, {
-                    strokeWeight: 1,
-                    strokeColor: "red",
-                    strokeOpacity: 1
-                })
-                point.marker = marker;
-                map.addOverlay(marker);
+            o.pathPoint.forEach((point, index) => {
+                if (!point.marker) {
+                    point.marker = new BMap.Circle(point, 1, {
+                        strokeWeight: 1,
+                        strokeColor: "red",
+                        strokeOpacity: 1
+                    });
+                    map.addOverlay(point.marker);
+                    if (index > 0) {
+                        var previousPoint = o.pathPoint[index - 1];
+                        point.line = new BMap.Polyline([previousPoint, point],
+                            {
+                                enableClicking: false,
+                                strokeWeight: 1,
+                                strokeColor: "red",
+                                strokeOpacity: 0.5
+                            });
+                        map.addOverlay(point.line);
+                    }
+                }
             });
-            o.pathLine = line;
-            map.addOverlay(line);
         });
     }
     function uavHidePath(name) {
         uav(name, o => {
-            if (o.pathLine) {
-                map.removeOverlay(o.pathLine);
-                o.pathLine = null;
-            }
             if (o.pathPoint) {
                 o.pathPoint.forEach(m => {
                     map.removeOverlay(m.marker);
-                    m.marker = null;
+                    map.removeOverlay(m.line);
+                    delete m.marker;
+                    delete m.line;
                 })
             }
         });
@@ -230,6 +231,7 @@
                 map.removeOverlay(o.marker);
                 uavHidePath(name);
                 i = index;
+                delete o.marker;
             }
         });
         if (i != -1) {
@@ -248,18 +250,14 @@
 
         var opt = blockGrid.options;
         uavAdd(name, point.lng, point.lat, { val: 0 });
-
+        var speed = 20;
         window.handle = setInterval(p => {
-            //console.log("lng:%f,lat:%f", p.lng, p.lat);
-            p.lng += 0.0001 * p.direct
-            if (p.lng > 113.145 || p.lng < 113.14) {
-                p.direct *= -1;
-                p.lat += 0.0003;
-            }
             gridRefresh();
+            p.lng += 0.00001 * speed * Math.random() * (Math.random() > 0.5 ? 1 : -1);
+            p.lat += 0.00001 * speed * Math.random() * (Math.random() > 0.9 ? 1 : -1) * 0.5;
             uavMove(name, p.lng, p.lat, { val: Math.random() * (opt.maxValue - opt.minValue) + opt.minValue });
             uavShowPath(name);
-        }, 500, point);
+        }, 50, point);
     }
 
     function stop() {
@@ -267,6 +265,7 @@
             clearInterval(window.handle);
             uavRemove("uav1");
             gridClear();
+            map.clearOverlays();
         }
     }
 </script>

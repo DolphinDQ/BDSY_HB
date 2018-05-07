@@ -96,8 +96,9 @@
     <Compile Include="Config\MqttSetting.cs" />
     <Compile Include="Core\ChartManager.cs" />
     <Compile Include="Core\Logger.cs" />
-    <Compile Include="Data\EnvironmentCallback.cs" />
+    <Compile Include="EventArgs\EvtAirSample.cs" />
     <Compile Include="Data\MqttDataManager.cs" />
+    <Compile Include="EventArgs\EvtMapLoad.cs" />
     <Compile Include="Interfaces\IChartManager.cs" />
     <Compile Include="Interfaces\IDataManager.cs" />
     <Compile Include="Interfaces\IFactory.cs" />

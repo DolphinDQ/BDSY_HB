@@ -15,6 +15,7 @@
 >Data:主要是项目数据采集管理，以及数据结构。
 >Interface:主要是定义项目接口。
 >Map:地图模块的实现。
+>EventArgs:IEventAggregator回调的事件类型，可以通过IHandler<T>处理事件。
 >ViewModels:视图模型。
 >Views:视图
 

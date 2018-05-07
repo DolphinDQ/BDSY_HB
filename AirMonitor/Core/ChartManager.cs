@@ -1,15 +1,12 @@
 ﻿using AirMonitor.Interfaces;
-using Caliburn.Micro;
 using System;
-using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Linq;
 using System.Collections.Concurrent;
-using System.Text;
-using System.Threading.Tasks;
 using OxyPlot.Series;
 using OxyPlot;
 using OxyPlot.Axes;
+using System.Collections.ObjectModel;
 
 namespace AirMonitor.Core
 {
@@ -17,7 +14,7 @@ namespace AirMonitor.Core
     {
         public ConcurrentDictionary<int, PlotModel> LinnerPlot { get; set; } = new ConcurrentDictionary<int, PlotModel>();
 
-        public object CreatLiner(IObservableCollection<Tuple<DateTime, double>> data)
+        public object CreatLiner(ObservableCollection<Tuple<DateTime, double>> data)
         {
             data.CollectionChanged -= Data_CollectionChanged;
             data.CollectionChanged += Data_CollectionChanged;

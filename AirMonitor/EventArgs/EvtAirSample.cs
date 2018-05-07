@@ -4,14 +4,14 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace AirMonitor.Data
+namespace AirMonitor.EventArgs
 {
     /// <summary>
-    /// 设备回调的环境信息。
+    /// 空气采样信息。
     /// {"co": 0.782, "pm10": 56, "temp": 28.96484, "voc": 7.582, "lon": 113.077235, "hight": 130.079, "ghight": 13.9,
     /// "humi": 70.95947, "pm25": 47, "time": "2018-05-03/13:11:38", "lat": 23.016665, "so2": 23.655, "o3": 83.944, "no2": 22.784}
     /// </summary>
-    public class EnvironmentCallback
+    public class EvtAirSample
     {
         public double co { get; set; }
         public double pm10 { get; set; }

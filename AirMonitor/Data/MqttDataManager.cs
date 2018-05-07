@@ -1,4 +1,5 @@
 ﻿using AirMonitor.Config;
+using AirMonitor.EventArgs;
 using AirMonitor.Interfaces;
 using Caliburn.Micro;
 using MQTTnet;
@@ -48,7 +49,7 @@ namespace AirMonitor.Data
             if (e.ApplicationMessage.Topic == m_setting.EnvironmentTopic)
             {
               await  m_eventAggregator.PublishOnUIThreadAsync(
-                    JsonConvert.DeserializeObject<EnvironmentCallback>(message));
+                    JsonConvert.DeserializeObject<EvtAirSample>(message));
             }
         }
 
