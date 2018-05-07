@@ -80,12 +80,11 @@
         for (var i = 0; i < uavList.length; i++) {
             points = points.concat(uavList[i].pathPoint);
         }
-        //uavList.forEach(uav => points = points.concat(uav.marker.pathPoint));
         var opt = blockGrid.options;
-        //gridClear();
-        points.forEach(point => { //填充点数据到格子里
+        //填充点数据到格子里
+        points.forEach(function (point) {
             if (!opt.firstPoint) opt.firstPoint = point;
-            var block = blockGrid.blocks.find(block => isInBlock(block.center, opt.sideLength, point));
+            var block = blockGrid.blocks.find(function (block) { return isInBlock(block.center, opt.sideLength, point) });
             if (!block) {
                 block = createBlock(point, opt);
                 blockGrid.blocks.push(block);
@@ -94,9 +93,9 @@
                 block.points.push(point);
             }
         });
-        blockGrid.blocks.forEach(block => {
+        blockGrid.blocks.forEach(function (block) {
             var sum = 0;
-            block.points.forEach(point => {
+            block.points.forEach(function (point) {
                 sum += point.data[opt.dataName]
             })
             block.polygon.setFillColor(getColor(sum / block.points.length, opt));
@@ -105,7 +104,7 @@
 
     function gridClear() {
         if (blockGrid.blocks) {
-            blockGrid.blocks.forEach(o => {
+            blockGrid.blocks.forEach(function (o) {
                 map.removeOverlay(o.polygon);
                 delete o.polygon;
             });
@@ -124,7 +123,7 @@
         var lat = center.lat + sideLength * Math.round((point.lat - center.lat) / sideLength)
         var center = new BMap.Point(lng, lat);
         return {
-            center,
+            center:center,
             polygon: new BMap.Polygon(
                 [
                     new BMap.Point(lng + offset, lat + offset),
@@ -153,7 +152,7 @@
     }
 
     function uavAdd(name, lng, lat, data) {
-        uav(name, null, () => {
+        uav(name, null, function () {
             var point = new BMap.Point(lng, lat);
             point.data = data;
             var icon = new BMap.Icon("marker.png", new BMap.Size(30, 20));
@@ -163,7 +162,7 @@
         });
     }
     function uav(name, exist, notExist) {
-        var uav = uavList.find(o => o.name == name);
+        var uav = uavList.find(function (o) { return o.name == name });
         if (uav) {
             if (exist) {
                 exist(uav);
@@ -179,7 +178,7 @@
         }
     }
     function uavMove(name, lng, lag, data) {
-        uav(name, o => {
+        uav(name, function (o) {
             var point = new BMap.Point(lng, lag);
             point.data = data;
             o.pathPoint.push(point);
@@ -187,8 +186,8 @@
         });
     }
     function uavShowPath(name) {
-        uav(name, o => {
-            o.pathPoint.forEach((point, index) => {
+        uav(name, function (o) {
+            o.pathPoint.forEach(function (point, index) {
                 if (!point.marker) {
                     point.marker = new BMap.Circle(point, 1, {
                         strokeWeight: 1,
@@ -212,9 +211,9 @@
         });
     }
     function uavHidePath(name) {
-        uav(name, o => {
+        uav(name,function(o) {
             if (o.pathPoint) {
-                o.pathPoint.forEach(m => {
+                o.pathPoint.forEach(function(m) {
                     map.removeOverlay(m.marker);
                     map.removeOverlay(m.line);
                     delete m.marker;
@@ -226,7 +225,7 @@
 
     function uavRemove(name) {
         var i = -1;
-        uavList.forEach((o, index) => {
+        uavList.forEach(function (o, index) {
             if (o.name == name) {
                 map.removeOverlay(o.marker);
                 uavHidePath(name);
@@ -244,14 +243,14 @@
         var point = {
             lng: 113.140074,
             lat: 23.033494,
-            direct: 1,
+            direct: 1
         }
         gridInit({ dataName: "val" })
 
         var opt = blockGrid.options;
         uavAdd(name, point.lng, point.lat, { val: 0 });
         var speed = 20;
-        window.handle = setInterval(p => {
+        window.handle = setInterval(function (p) {
             gridRefresh();
             p.lng += 0.00001 * speed * Math.random() * (Math.random() > 0.5 ? 1 : -1);
             p.lat += 0.00001 * speed * Math.random() * (Math.random() > 0.9 ? 1 : -1) * 0.5;

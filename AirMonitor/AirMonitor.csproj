@@ -96,6 +96,7 @@
     <Compile Include="Config\MqttSetting.cs" />
     <Compile Include="Core\ChartManager.cs" />
     <Compile Include="Core\Logger.cs" />
+    <Compile Include="Core\ResourcesProvider.cs" />
     <Compile Include="EventArgs\EvtAirSample.cs" />
     <Compile Include="Data\MqttDataManager.cs" />
     <Compile Include="EventArgs\EvtMapLoad.cs" />
@@ -103,6 +104,7 @@
     <Compile Include="Interfaces\IDataManager.cs" />
     <Compile Include="Interfaces\IFactory.cs" />
     <Compile Include="Interfaces\IMapProvider.cs" />
+    <Compile Include="Interfaces\IResourceProvider.cs" />
     <Compile Include="IShell.cs" />
     <Compile Include="Map\MapProvider.cs" />
     <Compile Include="ShellViewModel.cs" />
@@ -120,6 +122,10 @@
     <Compile Include="Views\MapView.xaml.cs">
       <DependentUpon>MapView.xaml</DependentUpon>
     </Compile>
+    <Page Include="Resources\strings.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="ShellView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -148,7 +154,7 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
     <EmbeddedResource Include="Properties\Resources.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
+      <Generator>PublicResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
     <None Include="packages.config" />

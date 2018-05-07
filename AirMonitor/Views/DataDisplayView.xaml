@@ -5,100 +5,117 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:AirMonitor.Views"
              xmlns:oxy="clr-namespace:OxyPlot.Wpf;assembly=OxyPlot.Wpf" 
+             xmlns:controls="http://metro.mahapps.com/winfx/xaml/controls"
              mc:Ignorable="d" 
              d:DesignHeight="800" d:DesignWidth="350">
     <Grid>
         <StackPanel>
-            <DockPanel>
-                <Label>气体数据</Label>
-                <Grid>
-                    <ComboBox></ComboBox>
-                </Grid>
-            </DockPanel>
+            <StackPanel.Resources>
+                <Style TargetType="DockPanel">
+                    <Style.Resources>
+                        <Style TargetType="Label" BasedOn="{StaticResource MetroLabel}">
+                            <Setter Property="Width" Value="70"/>
+                        </Style>
+                    </Style.Resources>
+                </Style>
+                <Style TargetType="Border">
+                    <Setter Property="BorderThickness" Value="1" />
+                    <Setter Property="BorderBrush" Value="LightGray"/>
+                    <Setter Property="Margin" Value="2"/>
+                    <Setter Property="Padding" Value="2"/>
+                </Style>
+            </StackPanel.Resources>
+
             <Border>
                 <StackPanel>
-                    <Label>无人机状态</Label>
+                    <Label FontWeight="Bold" FontSize="20" Content="{StaticResource T_UavStatus}"></Label>
                     <UniformGrid Columns="4">
-                        <Label>电量</Label>
-                        <TextBlock Text="90%"></TextBlock>
-                        <Label>回传进度</Label>
-                        <TextBlock Text="0%"></TextBlock>
-                        <Label>水平速度</Label>
-                        <TextBlock Text="100km/h"></TextBlock>
-                        <Label>海拔</Label>
-                        <TextBlock Text="{Binding NewestData.ghight}"></TextBlock>
+                        <Label Content="{StaticResource T_Battery}"></Label>
+                        <Label Content="90%"></Label>
+                        <Label Content="{StaticResource T_CallbackProgress}"></Label>
+                        <Label Content="0%"></Label>
+                        <Label Content="{StaticResource T_Altitude}"></Label>
+                        <Label Content="{Binding NewestData.ghight}"></Label>
+                        <Label Content="{StaticResource T_Speed}"></Label>
+                        <Label Content="100km/h"></Label>
                     </UniformGrid>
                 </StackPanel>
             </Border>
             <Border>
                 <StackPanel>
-                    <Label>实时气体数据</Label>
+                    <StackPanel.Resources>
+                        <Style TargetType="DockPanel">
+                            <Style.Resources>
+                                <Style TargetType="Label" BasedOn="{StaticResource MetroLabel}">
+                                    <Setter Property="Width" Value="70" />
+                                    <Setter Property="VerticalContentAlignment" Value="Center"/>
+                                </Style>
+                                <Style TargetType="ComboBox" BasedOn="{StaticResource MetroComboBox}">
+                                    <Setter Property="Margin" Value="5"/>
+                                </Style>
+                                <Style TargetType="oxy:PlotView">
+                                    <Setter Property="Height" Value="40"/>
+                                    <Setter Property="Margin" Value="5"/>
+                                    <Setter Property="BorderBrush" Value="LightGray"/>
+                                    <Setter Property="BorderThickness" Value="1"/>
+                                </Style>
+                            </Style.Resources>
+                        </Style>
+                    </StackPanel.Resources>
+                    <Label FontWeight="Bold" FontSize="20" Content="{StaticResource T_RealtimeAirSamples}"/>
                     <DockPanel>
-                        <Label>传感器状态</Label>
-                        <TextBlock></TextBlock>
+                        <Label Content="{StaticResource T_SensorStatus}"></Label>
+                        <Label HorizontalAlignment="Right" Content="{StaticResource T_Normal}"></Label>
                     </DockPanel>
                     <DockPanel>
-                        <Label>温度（℃）</Label>
-                        <DockPanel>
-                            <TextBlock DockPanel.Dock="Right"  Text="{Binding NewestData.temp}"></TextBlock>
-                            <oxy:PlotView />
-                        </DockPanel>
+                        <Label Content="{StaticResource T_DataDisplay}"></Label>
+                        <controls:ToggleSwitch OffLabel="{StaticResource T_StopSimpling}" DockPanel.Dock="Right" IsChecked="{Binding EnableSampling}" OnLabel="{StaticResource T_StartSimpling}"/>
+                        <ComboBox ItemsSource="{Binding DataNameList}" SelectedItem="{Binding DataName}" DisplayMemberPath="Item2" SelectedValuePath="Item1" SelectedIndex="0"/>
                     </DockPanel>
                     <DockPanel>
-                        <Label>湿度（%）</Label>
-                        <DockPanel>
-                            <TextBlock DockPanel.Dock="Right" Text="{Binding NewestData.humi}"></TextBlock>
-                            <oxy:PlotView />
-                        </DockPanel>
+                        <Label Content="{StaticResource T_Temperature}"></Label>
+                        <Label DockPanel.Dock="Right"  Content="{Binding NewestData.temp}"></Label>
+                        <oxy:PlotView Model="{Binding Temperature.Model}" />
                     </DockPanel>
                     <DockPanel>
-                        <Label>VOCs（ppm）</Label>
-                        <DockPanel>
-                            <TextBlock DockPanel.Dock="Right" Text="{Binding NewestData.voc}"></TextBlock>
-                            <oxy:PlotView />
-                        </DockPanel>
+                        <Label Content="{StaticResource T_Humidity}"></Label>
+                        <Label DockPanel.Dock="Right" Content="{Binding NewestData.humi}"></Label>
+                        <oxy:PlotView />
                     </DockPanel>
                     <DockPanel>
-                        <Label>SO2</Label>
-                        <DockPanel>
-                            <TextBlock DockPanel.Dock="Right" Text="{Binding NewestData.so2}"></TextBlock>
-                            <oxy:PlotView />
-                        </DockPanel>
+                        <Label Content="{StaticResource T_VOC}"></Label>
+                        <Label DockPanel.Dock="Right" Content="{Binding NewestData.voc}"></Label>
+                        <oxy:PlotView />
                     </DockPanel>
                     <DockPanel>
-                        <Label>CO</Label>
-                        <DockPanel>
-                            <TextBlock DockPanel.Dock="Right" Text="{Binding NewestData.co}"></TextBlock>
-                            <oxy:PlotView />
-                        </DockPanel>
+                        <Label Content="{StaticResource T_CO}"></Label>
+                        <Label DockPanel.Dock="Right" Content="{Binding NewestData.co}"></Label>
+                        <oxy:PlotView />
                     </DockPanel>
                     <DockPanel>
-                        <Label>NO2</Label>
-                        <DockPanel>
-                            <TextBlock DockPanel.Dock="Right" Text="{Binding NewestData.no2}"></TextBlock>
-                            <oxy:PlotView />
-                        </DockPanel>
+                        <Label Content="{StaticResource T_SO2}"></Label>
+                        <Label DockPanel.Dock="Right" Content="{Binding NewestData.so2}"></Label>
+                        <oxy:PlotView />
                     </DockPanel>
                     <DockPanel>
-                        <Label>O3</Label>
-                        <DockPanel>
-                            <TextBlock DockPanel.Dock="Right" Text="{Binding NewestData.o3}"></TextBlock>
-                            <oxy:PlotView />
-                        </DockPanel>
+                        <Label Content="{StaticResource T_NO2}"></Label>
+                        <Label DockPanel.Dock="Right" Content="{Binding NewestData.no2}"></Label>
+                        <oxy:PlotView />
                     </DockPanel>
                     <DockPanel>
-                        <Label>PM2.5</Label>
-                        <DockPanel>
-                            <TextBlock DockPanel.Dock="Right" Text="{Binding NewestData.pm25}"></TextBlock>
-                            <oxy:PlotView />
-                        </DockPanel>
+                        <Label Content="{StaticResource T_O3}"></Label>
+                        <Label DockPanel.Dock="Right" Content="{Binding NewestData.o3}"></Label>
+                        <oxy:PlotView />
                     </DockPanel>
                     <DockPanel>
-                        <Label>PM10</Label>
-                        <DockPanel>
-                            <TextBlock DockPanel.Dock="Right" Text="{Binding NewestData.pm10}"></TextBlock>
-                            <oxy:PlotView />
-                        </DockPanel>
+                        <Label Content="{StaticResource T_PM2_5}"></Label>
+                        <Label DockPanel.Dock="Right" Content="{Binding NewestData.pm25}"></Label>
+                        <oxy:PlotView />
+                    </DockPanel>
+                    <DockPanel>
+                        <Label Content="{StaticResource T_PM10}"></Label>
+                        <Label DockPanel.Dock="Right" Content="{Binding NewestData.pm10}"></Label>
+                        <oxy:PlotView />
                     </DockPanel>
                 </StackPanel>
             </Border>
