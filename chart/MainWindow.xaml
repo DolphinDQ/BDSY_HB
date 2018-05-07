@@ -4,13 +4,14 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:chart"
-         xmlns:oxy="clr-namespace:OxyPlot.Wpf;assembly=OxyPlot.Wpf" 
+         xmlns:oxy="http://oxyplot.org/wpf" 
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
     <Window.DataContext>
         <local:MainViewModel />
     </Window.DataContext>
     <Grid>
-        <oxy:PlotView Model="{Binding Model}" Margin="618,141,0,195" />
+        <oxy:PlotView  Name="Plot" Model="{Binding Model}"  />
+        <Button Margin="654,368,0,0" Click="Button_Click" ></Button>
     </Grid>
 </Window>

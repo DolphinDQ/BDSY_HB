@@ -12,17 +12,27 @@
     <sys:String x:Key="T_SensorStatus">传感器状态</sys:String>
     <sys:String x:Key="T_Normal">正常</sys:String>
     <sys:String x:Key="T_DataDisplay">显示数据</sys:String>
+    <sys:String x:Key="T_MapDisplay">地图数据</sys:String>
     <sys:String x:Key="T_StartSimpling">开始采样</sys:String>
     <sys:String x:Key="T_StopSimpling">停止采样</sys:String>
     <sys:String x:Key="T_Temperature">温度(℃)</sys:String>
     <sys:String x:Key="T_Humidity">湿度(%)</sys:String>
-    <sys:String x:Key="T_VOC" xml:space="preserve">VOC&#13;&#10;(ppm)</sys:String>
-    <sys:String x:Key="T_CO" xml:space="preserve">CO&#13;&#10;(mg/m3)</sys:String>
-    <sys:String x:Key="T_SO2" xml:space="preserve">SO2&#13;&#10;(ug/m3)</sys:String>
-    <sys:String x:Key="T_NO2" xml:space="preserve">NO2&#13;&#10;(ug/m3)</sys:String>
-    <sys:String x:Key="T_O3" xml:space="preserve">O3&#13;&#10;(ug/m3)</sys:String>
-    <sys:String x:Key="T_PM2_5" xml:space="preserve">PM2.5&#13;&#10;(ug/m3)</sys:String>
-    <sys:String x:Key="T_PM10" xml:space="preserve">PM10&#13;&#10;(ug/m3)</sys:String>
-    <sys:String x:Key="T_ReqireDataName" xml:space="preserve">请选择要显示的采样数据！</sys:String>
+    <sys:String x:Key="T_VOC">VOCs</sys:String>
+    <sys:String x:Key="T_ppm">(ppm)</sys:String>
+    <!--<sys:String x:Key="T_CO" xml:space="preserve">CO&#13;&#10;(mg/m3)</sys:String>-->
+    <sys:String x:Key="T_CO">CO</sys:String>
+    <sys:String x:Key="T_mg_m3">(mg/m3)</sys:String>
+    <sys:String x:Key="T_SO2">SO2</sys:String>
+    <sys:String x:Key="T_ug_m3">(ug/m3)</sys:String>
+    <sys:String x:Key="T_NO2">NO2</sys:String>
+    <sys:String x:Key="T_O3">O3</sys:String>
+    <sys:String x:Key="T_PM2_5" >PM2.5</sys:String>
+    <sys:String x:Key="T_PM10">PM10</sys:String>
+    <sys:String x:Key="T_ReqireDataName">请选择要显示的采样数据！</sys:String>
+    <sys:String x:Key="T_RefreshMap">刷新地图</sys:String>
+    <sys:String x:Key="T_ClearData">清空数据</sys:String>
+    <sys:String x:Key="T_UavFocus">无人机跟踪</sys:String>
+    <sys:String x:Key="T_MaxValue">最大值</sys:String>
+    <sys:String x:Key="T_MinValue">最小值</sys:String>
     
 </ResourceDictionary>

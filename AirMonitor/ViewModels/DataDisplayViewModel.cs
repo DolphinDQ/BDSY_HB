@@ -11,10 +11,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using PropertyChanged;
+using System.ComponentModel;
 
 namespace AirMonitor.ViewModels
 {
-    [PropertyChanged.AddINotifyPropertyChangedInterface]
+    [AddINotifyPropertyChangedInterface]
     class DataDisplayViewModel : Screen, IHandle<EvtAirSample>
     {
         public class SampleChart
@@ -25,9 +27,10 @@ namespace AirMonitor.ViewModels
                 ChartModel = chart.CreatLiner(Collection);
             }
 
-            public ObservableCollection<Tuple<DateTime, double>> Collection { get;private set; }
-          
+            public ObservableCollection<Tuple<DateTime, double>> Collection { get; private set; }
+
             public object ChartModel { get; private set; }
+
         }
 
         private IEventAggregator m_eventAggregator;
@@ -48,7 +51,7 @@ namespace AirMonitor.ViewModels
         public SampleChart PM2_5 { get; set; }
         public SampleChart PM10 { get; set; }
 
-
+        public List<EvtAirSample> Samples { get; set; }
         #endregion
 
         public DataDisplayViewModel(
@@ -69,7 +72,7 @@ namespace AirMonitor.ViewModels
                 Tuple.Create("pm25",resourceProvider.GetText("T_PM2_5")),
                 Tuple.Create("pm10",resourceProvider.GetText("T_PM10")),
             });
-
+            Samples = new List<EvtAirSample>();
             Temperature = new SampleChart(chartManager);
             Humidity = new SampleChart(chartManager);
             VOC = new SampleChart(chartManager);
@@ -88,21 +91,22 @@ namespace AirMonitor.ViewModels
             m_eventAggregator.Unsubscribe(this);
         }
 
-        public void OnEnableSamplingChanged()
-        {
-            if (EnableSampling)
-            {
-                ClearChart(Temperature);
-                ClearChart(Humidity);
-                ClearChart(VOC);
-                ClearChart(CO);
-                ClearChart(SO2);
-                ClearChart(NO2);
-                ClearChart(O3);
-                ClearChart(PM2_5);
-                ClearChart(PM10);
-            }
-        }
+        //public void OnEnableSamplingChanged()
+        //{
+        //    if (EnableSampling)
+        //    {
+        //        ClearChart(Temperature);
+        //        ClearChart(Humidity);
+        //        ClearChart(VOC);
+        //        ClearChart(CO);
+        //        ClearChart(SO2);
+        //        ClearChart(NO2);
+        //        ClearChart(O3);
+        //        ClearChart(PM2_5);
+        //        ClearChart(PM10);
+        //        Samples.Clear();
+        //    }
+        //}
 
         public void Handle(EvtAirSample message)
         {
@@ -118,18 +122,13 @@ namespace AirMonitor.ViewModels
                 FillChart(O3, Tuple.Create(message.RecordTime, message.o3));
                 FillChart(PM2_5, Tuple.Create(message.RecordTime, message.pm25));
                 FillChart(PM10, Tuple.Create(message.RecordTime, message.pm10));
+                Samples.Add(message);
             }
         }
 
-        private void ClearChart(SampleChart chart)
-        {
-            chart.Collection.Clear();
-        }
+        private void ClearChart(SampleChart chart) =>chart.Collection.Clear();
 
-        private void FillChart(SampleChart chart, Tuple<DateTime, double> value)
-        {
-            chart.Collection.Add(value);
-        }
+        private void FillChart(SampleChart chart, Tuple<DateTime, double> value) => chart.Collection.Add(value);
 
         /// <summary>
         /// 数据名称列表，是采样数据的名称列表。
