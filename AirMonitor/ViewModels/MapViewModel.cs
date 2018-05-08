@@ -39,7 +39,11 @@ namespace AirMonitor.ViewModels
         /// <summary>
         /// 显示无人机路径。
         /// </summary>
-        public bool ShowUavPath { get; set; }
+        public bool ShowUavPath { get; set; } = true;
+        /// <summary>
+        /// 无人机跟踪
+        /// </summary>
+        public bool IsUavFocus { get; set; } = true;
 
         public MapViewModel(
             IEventAggregator eventAggregator,

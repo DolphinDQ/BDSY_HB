@@ -5,6 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:AirMonitor.Views"
              mc:Ignorable="d" 
+             xmlns:control="http://metro.mahapps.com/winfx/xaml/controls"
              d:DesignHeight="450" d:DesignWidth="800">
     <UserControl.Resources>
         <Style TargetType="Border">
@@ -21,30 +22,55 @@
             <StackPanel Orientation="Horizontal">
                 <StackPanel.Resources>
                     <Style TargetType="Button" BasedOn="{StaticResource MetroButton}">
-                        <Setter Property="Margin" Value="5 0 0 0"/>
+                        <Setter Property="Margin" Value="2 0 0 0"/>
                     </Style>
                     <Style TargetType="ToggleButton" BasedOn="{StaticResource MetroToggleButton}">
-                        <Setter Property="Margin" Value="5 0 0 0"/>
+                        <Setter Property="Margin" Value="2 0 0 0"/>
+                    </Style>
+                    <Style TargetType="Label" BasedOn="{StaticResource MetroLabel}">
+                        <Setter Property="Margin" Value="2 0 0 0"/>
+                    </Style>
+                    <Style TargetType="ComboBox" BasedOn="{StaticResource MetroComboBox}">
+                        <Setter Property="Margin" Value="2 0 0 0"/>
+                        <Setter Property="Width" Value="80"/>
+                    </Style>
+                    <Style TargetType="control:NumericUpDown" >
+                        <Setter Property="Margin" Value="2 0 0 0"/>
+                        <Setter Property="Width" Value="80"/>
                     </Style>
                 </StackPanel.Resources>
                 <Label Content="{StaticResource T_MapDisplay}"></Label>
                 <ComboBox ItemsSource="{Binding DataNameList}" SelectedValue="{Binding MapGridOptions.dataName}" DisplayMemberPath="Item2" SelectedValuePath="Item1" SelectedIndex="0"/>
+                <Label Content="{StaticResource T_MaxValue}"></Label>
+                <control:NumericUpDown Value="{Binding MapGridOptions.maxValue}"/>
+                <Label Content="{StaticResource T_MinValue}"></Label>
+                <control:NumericUpDown Value="{Binding MapGridOptions.minValue}"/>
+                <Label Content="{StaticResource T_SideLength}"></Label>
+                <control:NumericUpDown Value="{Binding MapGridOptions.sideLength}"/>
                 <Button Name="RefreshMap" Content="{StaticResource T_RefreshMap}"></Button>
                 <ToggleButton IsChecked="{Binding IsUavFocus}" Content="{StaticResource T_UavFocus}"></ToggleButton>
-                <ToggleButton IsChecked="{Binding ShowUavPath}" Content="{StaticResource T_UavFocus}"></ToggleButton>
-                <Button Name="Test" >测试</Button>
+                <ToggleButton IsChecked="{Binding ShowUavPath}" Content="{StaticResource T_UavPath}"></ToggleButton>
+                <Button Name="Test" Visibility="Hidden" >测试</Button>
                 <Label Content="{Binding Sampling}"></Label>
                 <Label Content="{Binding Samples.Count}"></Label>
             </StackPanel>
         </Border>
         <Border DockPanel.Dock="Left">
-            <Grid  Margin="5">
+            <Grid Margin="5">
                 <Grid.Resources>
                     <Style TargetType="Label" BasedOn="{StaticResource MetroLabel}">
-                        <Setter Property="HorizontalContentAlignment" Value="Center"/>
-                        <Setter Property="VerticalContentAlignment" Value="Center"/>
+                        <Setter Property="HorizontalContentAlignment" Value="Right"/>
+                        <Setter Property="VerticalContentAlignment" Value="Bottom"/>
+                        <Setter Property="Margin" Value="0"/>
+                        <Setter Property="Padding" Value="2"/>
+                        <Setter Property="BorderBrush" Value="Gray"/>
+                        <Setter Property="BorderThickness" Value="0 0 0 1"/>
                     </Style>
                 </Grid.Resources>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="40"/>
+                    <ColumnDefinition Width="10"/>
+                </Grid.ColumnDefinitions>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="30"/>
                     <RowDefinition Height="1*"/>
@@ -54,7 +80,7 @@
                     <RowDefinition Height="1*"/>
                     <RowDefinition Height="30"/>
                 </Grid.RowDefinitions>
-                <Rectangle Grid.Row="1" Grid.RowSpan="5" Opacity="{Binding MapGridOptions.opacity}" Width="40">
+                <Rectangle Grid.Row="1" Grid.RowSpan="5" Opacity="{Binding MapGridOptions.opacity}" >
                     <Rectangle.Fill>
                         <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
                             <GradientStop Color="#ff0000" Offset="0"/>
@@ -62,13 +88,12 @@
                         </LinearGradientBrush>
                     </Rectangle.Fill>
                 </Rectangle>
-                <Label Grid.Row="0" Content="{Binding MapGridOptions.maxValue}"></Label>
-                <Label Grid.Row="1"></Label>
-                <Label Grid.Row="2"></Label>
-                <Label Grid.Row="3"></Label>
-                <Label Grid.Row="4"></Label>
-                <Label Grid.Row="5"></Label>
-                <Label Grid.Row="6" Content="{Binding MapGridOptions.minValue}"></Label>
+                <Label Grid.ColumnSpan="2" Grid.Row="0" Content="{Binding MapGridOptions.ValueStep[5]}"></Label>
+                <Label Grid.ColumnSpan="2" Grid.Row="1" Content="{Binding MapGridOptions.ValueStep[4]}"></Label>
+                <Label Grid.ColumnSpan="2" Grid.Row="2" Content="{Binding MapGridOptions.ValueStep[3]}"></Label>
+                <Label Grid.ColumnSpan="2" Grid.Row="3" Content="{Binding MapGridOptions.ValueStep[2]}"></Label>
+                <Label Grid.ColumnSpan="2" Grid.Row="4" Content="{Binding MapGridOptions.ValueStep[1]}"></Label>
+                <Label Grid.ColumnSpan="2" Grid.Row="5" Content="{Binding MapGridOptions.ValueStep[0]}"></Label>
             </Grid>
         </Border>
         <Border >

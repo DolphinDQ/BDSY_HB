@@ -55,7 +55,7 @@
                                         <Setter Property="Margin" Value="5"/>
                                     </Style>
                                     <Style TargetType="oxy:PlotView">
-                                        <Setter Property="Height" Value="40"/>
+                                        <Setter Property="Height" Value="45"/>
                                         <Setter Property="Margin" Value="5"/>
                                         <Setter Property="BorderBrush" Value="LightGray"/>
                                         <Setter Property="BorderThickness" Value="1"/>

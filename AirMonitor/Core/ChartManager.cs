@@ -26,8 +26,8 @@ namespace AirMonitor.Core
             {
                 IsAxisVisible = false,
                 Position = AxisPosition.Bottom,
-                Minimum = DateTimeAxis.ToDouble(DateTime.Now),
-                Maximum = DateTimeAxis.ToDouble(DateTime.Now.Add(Span)),
+                Minimum = DateTimeAxis.ToDouble(DateTime.Now.Add(-Span)),
+                Maximum = DateTimeAxis.ToDouble(DateTime.Now),
             });
             var series = new LineSeries {  MarkerType = MarkerType.None };
             series.Points.AddRange(data.Select(o => new DataPoint(DateTimeAxis.ToDouble(o.Item1), o.Item2)));
