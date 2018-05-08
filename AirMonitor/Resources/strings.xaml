@@ -6,19 +6,20 @@
     <sys:String x:Key="T_UavStatus">无人机状态</sys:String>
     <sys:String x:Key="T_Battery">电量</sys:String>
     <sys:String x:Key="T_CallbackProgress">回传进度</sys:String>
-    <sys:String x:Key="T_Altitude">回传进度</sys:String>
+    <sys:String x:Key="T_Altitude">海拔</sys:String>
     <sys:String x:Key="T_Speed">速度</sys:String>
     <sys:String x:Key="T_RealtimeAirSamples">实时空气采样</sys:String>
     <sys:String x:Key="T_SensorStatus">传感器状态</sys:String>
     <sys:String x:Key="T_Normal">正常</sys:String>
     <sys:String x:Key="T_DataDisplay">显示数据</sys:String>
+    <sys:String x:Key="T_Visualization">可视化数据显示</sys:String>
     <sys:String x:Key="T_MapDisplay">地图数据</sys:String>
     <sys:String x:Key="T_StartSimpling">开始采样</sys:String>
     <sys:String x:Key="T_StopSimpling">停止采样</sys:String>
     <sys:String x:Key="T_Temperature">温度(℃)</sys:String>
     <sys:String x:Key="T_Humidity">湿度(%)</sys:String>
     <sys:String x:Key="T_VOC">VOCs</sys:String>
-    <sys:String x:Key="T_ppm">(ppm)</sys:String>
+    <sys:String x:Key="T_ppp">(ppp)</sys:String>
     <!--<sys:String x:Key="T_CO" xml:space="preserve">CO&#13;&#10;(mg/m3)</sys:String>-->
     <sys:String x:Key="T_CO">CO</sys:String>
     <sys:String x:Key="T_mg_m3">(mg/m3)</sys:String>

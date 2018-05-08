@@ -11,12 +11,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
-using PropertyChanged;
 using System.ComponentModel;
 
 namespace AirMonitor.ViewModels
 {
-    [AddINotifyPropertyChangedInterface]
     class DataDisplayViewModel : Screen, IHandle<EvtAirSample>
     {
         public class SampleChart
@@ -34,24 +32,28 @@ namespace AirMonitor.ViewModels
         }
 
         private IEventAggregator m_eventAggregator;
+        private IResourceProvider m_resourceProvider;
 
         public EvtAirSample NewestData { get; set; }
 
         public bool EnableSampling { get; set; }
 
+        /// <summary>
+        /// 数据名称列表，是采样数据的名称列表。
+        /// </summary>
+        public List<Tuple<string, string>> DataNameList { get; set; }
+
         #region Sample list
-
-        public SampleChart Temperature { get; set; }
-        public SampleChart Humidity { get; set; }
-        public SampleChart VOC { get; set; }
-        public SampleChart CO { get; set; }
-        public SampleChart SO2 { get; set; }
-        public SampleChart NO2 { get; set; }
-        public SampleChart O3 { get; set; }
-        public SampleChart PM2_5 { get; set; }
-        public SampleChart PM10 { get; set; }
-
-        public List<EvtAirSample> Samples { get; set; }
+        public SampleChart Temperature => Plots[nameof(EvtAirSample.temp)];
+        public SampleChart Humidity => Plots[nameof(EvtAirSample.humi)];
+        public SampleChart VOC => Plots[nameof(EvtAirSample.voc)];
+        public SampleChart CO => Plots[nameof(EvtAirSample.co)];
+        public SampleChart SO2 => Plots[nameof(EvtAirSample.so2)];
+        public SampleChart NO2 => Plots[nameof(EvtAirSample.no2)];
+        public SampleChart O3 => Plots[nameof(EvtAirSample.o3)];
+        public SampleChart PM2_5 => Plots[nameof(EvtAirSample.pm25)];
+        public SampleChart PM10 => Plots[nameof(EvtAirSample.pm10)];
+        public Dictionary<string, SampleChart> Plots { get; set; }
         #endregion
 
         public DataDisplayViewModel(
@@ -61,28 +63,23 @@ namespace AirMonitor.ViewModels
         {
             eventAggregator.Subscribe(this);
             m_eventAggregator = eventAggregator;
-            DataNameList = new List<Tuple<string, string>>(new[] {
-                Tuple.Create("temp",resourceProvider.GetText("T_Temperature")),
-                Tuple.Create("humi",resourceProvider.GetText("T_Humidity")),
-                Tuple.Create("voc",resourceProvider.GetText("T_VOC")),
-                Tuple.Create("co",resourceProvider.GetText("T_CO")),
-                Tuple.Create("so2",resourceProvider.GetText("T_SO2")),
-                Tuple.Create("no2",resourceProvider.GetText("T_NO2")),
-                Tuple.Create("o3",resourceProvider.GetText("T_O3")),
-                Tuple.Create("pm25",resourceProvider.GetText("T_PM2_5")),
-                Tuple.Create("pm10",resourceProvider.GetText("T_PM10")),
-            });
-            Samples = new List<EvtAirSample>();
-            Temperature = new SampleChart(chartManager);
-            Humidity = new SampleChart(chartManager);
-            VOC = new SampleChart(chartManager);
-            CO = new SampleChart(chartManager);
-            SO2 = new SampleChart(chartManager);
-            NO2 = new SampleChart(chartManager);
-            O3 = new SampleChart(chartManager);
-            PM2_5 = new SampleChart(chartManager);
-            PM10 = new SampleChart(chartManager);
-
+            m_resourceProvider = resourceProvider;
+            var dataNames = new[] {
+                nameof(EvtAirSample.temp),
+                nameof(EvtAirSample.humi),
+                nameof(EvtAirSample.voc),
+                nameof(EvtAirSample.co),
+                nameof(EvtAirSample.so2),
+                nameof(EvtAirSample.no2),
+                nameof(EvtAirSample.o3),
+                nameof(EvtAirSample.pm25),
+                nameof(EvtAirSample.pm10),
+            };
+            Plots = new Dictionary<string, SampleChart>();
+            foreach (var item in dataNames)
+            {
+                Plots.Add(item, new SampleChart(chartManager));
+            }
         }
 
         public override void TryClose(bool? dialogResult = null)
@@ -91,22 +88,13 @@ namespace AirMonitor.ViewModels
             m_eventAggregator.Unsubscribe(this);
         }
 
-        //public void OnEnableSamplingChanged()
-        //{
-        //    if (EnableSampling)
-        //    {
-        //        ClearChart(Temperature);
-        //        ClearChart(Humidity);
-        //        ClearChart(VOC);
-        //        ClearChart(CO);
-        //        ClearChart(SO2);
-        //        ClearChart(NO2);
-        //        ClearChart(O3);
-        //        ClearChart(PM2_5);
-        //        ClearChart(PM10);
-        //        Samples.Clear();
-        //    }
-        //}
+        public void OnEnableSamplingChanged()
+        {
+            m_eventAggregator.PublishOnUIThread(new EvtSampling()
+            {
+                Status = EnableSampling ? SamplingStatus.Start : SamplingStatus.Stop
+            });
+        }
 
         public void Handle(EvtAirSample message)
         {
@@ -122,23 +110,27 @@ namespace AirMonitor.ViewModels
                 FillChart(O3, Tuple.Create(message.RecordTime, message.o3));
                 FillChart(PM2_5, Tuple.Create(message.RecordTime, message.pm25));
                 FillChart(PM10, Tuple.Create(message.RecordTime, message.pm10));
-                Samples.Add(message);
             }
         }
 
-        private void ClearChart(SampleChart chart) =>chart.Collection.Clear();
+
+        public void ClearData()
+        {
+            ClearChart(Temperature);
+            ClearChart(Humidity);
+            ClearChart(VOC);
+            ClearChart(CO);
+            ClearChart(SO2);
+            ClearChart(NO2);
+            ClearChart(O3);
+            ClearChart(PM2_5);
+            ClearChart(PM10);
+            m_eventAggregator.PublishOnUIThread(new EvtSampling() { Status = SamplingStatus.Clear });
+        }
+
+        private void ClearChart(SampleChart chart) => chart.Collection.Clear();
 
         private void FillChart(SampleChart chart, Tuple<DateTime, double> value) => chart.Collection.Add(value);
 
-        /// <summary>
-        /// 数据名称列表，是采样数据的名称列表。
-        /// </summary>
-        public List<Tuple<string, string>> DataNameList { get; set; }
-
-
-        /// <summary>
-        /// 采样数据名称。
-        /// </summary>
-        public string DataName { get; set; }
     }
 }

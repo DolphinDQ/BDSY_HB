@@ -20,6 +20,23 @@
 </body>
 </html>
 <script type="text/javascript">
+    if (!Array.prototype.find) {
+        Array.prototype.find = function (query) {
+            var arr = this;
+            if (query) {
+                for (var i = 0; i < arr.length; i++) {
+                    if (query(arr[i])) {
+                        return arr[i];
+                    }
+                }
+            }
+        }
+    }
+
+</script>
+<script type="text/javascript">
+
+
     // 百度地图API功能
     var map = new BMap.Map("container");    // 创建Map实例
     map.centerAndZoom(new BMap.Point(113.140761, 23.033974), 17);  // 初始化地图,设置中心点坐标和地图级别
@@ -123,7 +140,7 @@
         var lat = center.lat + sideLength * Math.round((point.lat - center.lat) / sideLength)
         var center = new BMap.Point(lng, lat);
         return {
-            center:center,
+            center: center,
             polygon: new BMap.Polygon(
                 [
                     new BMap.Point(lng + offset, lat + offset),
@@ -152,7 +169,7 @@
     }
 
     function uavAdd(name, lng, lat, data) {
-        uav(name, null, function () {
+        uav(name, null, () => {
             var point = new BMap.Point(lng, lat);
             point.data = data;
             var icon = new BMap.Icon("marker.png", new BMap.Size(30, 20));
@@ -162,19 +179,23 @@
         });
     }
     function uav(name, exist, notExist) {
-        var uav = uavList.find(function (o) { return o.name == name });
-        if (uav) {
-            if (exist) {
-                exist(uav);
+        try {
+            var uav = uavList.find(function (o) { return o.name == name });
+            if (uav) {
+                if (exist) {
+                    exist(uav);
+                } else {
+                    console.log("uav named :%s already existed", name)
+                }
             } else {
-                console.log("uav named :%s already existed", name)
+                if (notExist) {
+                    notExist();
+                } else {
+                    console.log("uav named :%s not found", name)
+                }
             }
-        } else {
-            if (notExist) {
-                notExist();
-            } else {
-                console.log("uav named :%s not found", name)
-            }
+        } catch (e) {
+            // alert(e.message);
         }
     }
     function uavMove(name, lng, lag, data) {
@@ -211,9 +232,9 @@
         });
     }
     function uavHidePath(name) {
-        uav(name,function(o) {
+        uav(name, function (o) {
             if (o.pathPoint) {
-                o.pathPoint.forEach(function(m) {
+                o.pathPoint.forEach(function (m) {
                     map.removeOverlay(m.marker);
                     map.removeOverlay(m.line);
                     delete m.marker;
@@ -236,6 +257,13 @@
         if (i != -1) {
             uavList.splice(i, 1);
         }
+    }
+
+    function uavExist(name) {
+        var obj = uavList.find(function (o) { return o.name == name });
+        var result = obj ? true : false;
+        alert(result);
+        return result;
     }
 
     function test() {
@@ -267,4 +295,7 @@
             map.clearOverlays();
         }
     }
+
+
+
 </script>

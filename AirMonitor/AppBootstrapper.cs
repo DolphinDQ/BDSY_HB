@@ -38,6 +38,8 @@ namespace AirMonitor
             
             LogManager.GetLog = o => container.GetInstance<ILog>();
             container.GetInstance<IDataManager>().Init();
+
+
         }
 
         protected override object GetInstance(Type service, string key)

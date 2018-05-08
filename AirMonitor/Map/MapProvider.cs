@@ -1,8 +1,11 @@
 ﻿using AirMonitor.EventArgs;
 using AirMonitor.Interfaces;
 using Caliburn.Micro;
+using Microsoft.Win32;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -17,9 +20,41 @@ namespace AirMonitor.Map
         public MapProvider(IEventAggregator eventAggregator)
         {
             m_eventAggregator = eventAggregator;
+            UseIE10();
+        }
+
+        private void UseIE10()
+        {
+            try
+            {
+                using (var reg = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\WOW6432Node\Microsoft\Internet Explorer\Main\FeatureControl\FEATURE_BROWSER_EMULATION", true))
+                {
+                    var name = Process.GetCurrentProcess().ProcessName + ".exe";
+                    reg.SetValue(name, 10000, RegistryValueKind.DWord);
+                }
+            }
+            catch (Exception e)
+            {
+                this.Warn("user ie 10 failed.{0}", e);
+                this.Error(e);
+            }
         }
 
         private WebBrowser Browser { get; set; }
+        public T Invoke<T>(string methodName, params object[] args)
+            => Invoke(methodName, o => JsonConvert.DeserializeObject<T>(o.ToString()), args);
+
+        public T Invoke<T>(string methodName, Func<object, T> parse, params object[] args)
+        {
+            var obj = Browser.InvokeScript(methodName, args);
+            return obj == null ? default(T) : parse(obj);
+        }
+
+        public void Invoke(string methodName, params object[] args)
+        {
+            Browser.InvokeScript(methodName, args);
+        }
+
         public void LoadMap(object mapContainer)
         {
             if (mapContainer is WebBrowser)

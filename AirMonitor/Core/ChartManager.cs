@@ -43,12 +43,13 @@ namespace AirMonitor.Core
             if (LinnerPlot.TryGetValue(sender.GetHashCode(), out var plot))
             {
                 var series = plot.Series.FirstOrDefault() as LineSeries;
-                if (series != null && e.NewItems != null)
+                if (series != null)
                 {
-                    var newItems = e.NewItems.Cast<Tuple<DateTime, double>>();
                     switch (e.Action)
                     {
                         case NotifyCollectionChangedAction.Add:
+                            if (e.NewItems == null) return;
+                            var newItems = e.NewItems.Cast<Tuple<DateTime, double>>();
                             series.Points.AddRange(newItems.Select(o => new DataPoint(DateTimeAxis.ToDouble(o.Item1), o.Item2)));
                             break;
                         case NotifyCollectionChangedAction.Remove:
