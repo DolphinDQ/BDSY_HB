@@ -1,4 +1,5 @@
 ﻿using AirMonitor.EventArgs;
+using AirMonitor.Map;
 using AirMonitor.Interfaces;
 using Caliburn.Micro;
 using Newtonsoft.Json;
@@ -27,15 +28,18 @@ namespace AirMonitor.ViewModels
         /// 采样状态。
         /// </summary>
         public bool Sampling { get; private set; }
-
         /// <summary>
         /// 地图已经加载。
         /// </summary>
         public bool MapLoad { get; private set; }
         /// <summary>
-        /// 采样数据名称。
+        /// 地图网格参数。
         /// </summary>
-        public string DataName { get; set; }
+        public MapGridOptions MapGridOptions { get; private set; }
+        /// <summary>
+        /// 显示无人机路径。
+        /// </summary>
+        public bool ShowUavPath { get; set; }
 
         public MapViewModel(
             IEventAggregator eventAggregator,
@@ -58,6 +62,7 @@ namespace AirMonitor.ViewModels
                 Tuple.Create(nameof(EvtAirSample.pm10), resourceProvider.GetText("T_PM10")),
             });
             Samples = new List<EvtAirSample>();
+            MapGridOptions = new MapGridOptions();
         }
 
         public override void TryClose(bool? dialogResult = null)
@@ -116,35 +121,30 @@ namespace AirMonitor.ViewModels
                     return;
                 }
                 var name = GetUavName(sample);
-                if (!m_mapProvider.Invoke("uavExist", o => bool.Parse(o.ToString()), name))
+                if (!m_mapProvider.UavExist(name))
                 {
-                    var first = Samples.First(o => o.lat != 0 && o.lon != 0);
-                    m_mapProvider.Invoke("uavAdd", name, first.Lng, first.Lat, JsonConvert.SerializeObject(first));
-                    for (int i = 0; i < Samples.Count; i++)
+                    var s = Samples.Where(o => o.lat != 0 && o.lon != 0).ToList();
+                    var first = s.First();
+                    m_mapProvider.UavAdd(new Uav { name = name, data = first, lat = first.GpsLat, lng = first.GpsLng });
+                    foreach (var item in s)
                     {
-                        m_mapProvider.Invoke("uavMove", name, Samples[i].Lng, Samples[i].Lat, JsonConvert.SerializeObject(Samples[i]));
+                        m_mapProvider.UavMove(new Uav() { name = name, data = item, lat = item.GpsLat, lng = item.GpsLng });
                     }
-                    m_mapProvider.Invoke("gridInit", JsonConvert.SerializeObject(new { dataName = DataName, sideLength = 20 }));
+                    m_mapProvider.GridInit(MapGridOptions);
                 }
                 else
                 {
-                    m_mapProvider.Invoke("uavMove", name, sample.Lng, sample.Lat, JsonConvert.SerializeObject(sample));
-                    m_mapProvider.Invoke("gridRefresh");
+                    m_mapProvider.UavMove(new Uav { name = name, data = sample, lat = sample.GpsLat, lng = sample.GpsLng });
+                    m_mapProvider.GridRefresh();
+                    m_mapProvider.UavPath(name, ShowUavPath);
                 }
             }
         }
-
-
 
         private string GetUavName(EvtAirSample sample) => "default";
 
         public void RefreshMap()
         {
-            if (!DataNameList.Any(o => o.Item1 == DataName))
-            {
-                MessageBox.Show(m_resourceProvider.GetText("T_ReqireDataName"));
-                return;
-            }
             MapLoad = false;
             m_mapProvider.LoadMap(MapContainer);
         }
@@ -162,21 +162,14 @@ namespace AirMonitor.ViewModels
                     {
                         Handle(new EvtAirSample()
                         {
-                            co =60+ random.NextDouble() * 40,
-                            lat = lat -= 0.00001,
-                            lon = lng -= 0.00001
+                            co = 60 + random.NextDouble() * 40,
+                            lat = lat -= 0.0001,
+                            lon = lng -= 0.0001
                         });
                     });
                     Task.Delay(1000).Wait();
                 } while (true);
             });
-            //var sample = new EvtAirSample()
-            //{
-            //    lat = 23.016791666666666667,
-            //    lon = 113.077023333333333333
-            //};
-            //m_mapProvider.Invoke("uavAdd", GetUavName(null), sample.Lng, sample.Lat);
-            //var uav = m_mapProvider.Invoke("uavExist", o => bool.Parse(o.ToString()), GetUavName(null));
         }
     }
 }

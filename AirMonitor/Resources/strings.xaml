@@ -33,7 +33,8 @@
     <sys:String x:Key="T_RefreshMap">刷新地图</sys:String>
     <sys:String x:Key="T_ClearData">清空数据</sys:String>
     <sys:String x:Key="T_UavFocus">无人机跟踪</sys:String>
+    <sys:String x:Key="T_UavPath">无人机路径</sys:String>
     <sys:String x:Key="T_MaxValue">最大值</sys:String>
     <sys:String x:Key="T_MinValue">最小值</sys:String>
-    
+
 </ResourceDictionary>

@@ -19,14 +19,57 @@
         </Border>
         <Border DockPanel.Dock="Bottom">
             <StackPanel Orientation="Horizontal">
+                <StackPanel.Resources>
+                    <Style TargetType="Button" BasedOn="{StaticResource MetroButton}">
+                        <Setter Property="Margin" Value="5 0 0 0"/>
+                    </Style>
+                    <Style TargetType="ToggleButton" BasedOn="{StaticResource MetroToggleButton}">
+                        <Setter Property="Margin" Value="5 0 0 0"/>
+                    </Style>
+                </StackPanel.Resources>
                 <Label Content="{StaticResource T_MapDisplay}"></Label>
-                <ComboBox ItemsSource="{Binding DataNameList}"  Margin="5 0" SelectedValue="{Binding DataName}" DisplayMemberPath="Item2" SelectedValuePath="Item1" SelectedIndex="0"/>
-                <Button Name="RefreshMap" DockPanel.Dock="Right"  Content="{StaticResource T_RefreshMap}"></Button>
-                <ToggleButton IsChecked="{Binding IsUavFocus}" Margin="5 0"  Content="{StaticResource T_UavFocus}"></ToggleButton>
-                <Button Name="Test" DockPanel.Dock="Right"  Content="{StaticResource T_RefreshMap}"></Button>
+                <ComboBox ItemsSource="{Binding DataNameList}" SelectedValue="{Binding MapGridOptions.dataName}" DisplayMemberPath="Item2" SelectedValuePath="Item1" SelectedIndex="0"/>
+                <Button Name="RefreshMap" Content="{StaticResource T_RefreshMap}"></Button>
+                <ToggleButton IsChecked="{Binding IsUavFocus}" Content="{StaticResource T_UavFocus}"></ToggleButton>
+                <ToggleButton IsChecked="{Binding ShowUavPath}" Content="{StaticResource T_UavFocus}"></ToggleButton>
+                <Button Name="Test" >测试</Button>
                 <Label Content="{Binding Sampling}"></Label>
                 <Label Content="{Binding Samples.Count}"></Label>
             </StackPanel>
+        </Border>
+        <Border DockPanel.Dock="Left">
+            <Grid  Margin="5">
+                <Grid.Resources>
+                    <Style TargetType="Label" BasedOn="{StaticResource MetroLabel}">
+                        <Setter Property="HorizontalContentAlignment" Value="Center"/>
+                        <Setter Property="VerticalContentAlignment" Value="Center"/>
+                    </Style>
+                </Grid.Resources>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="30"/>
+                    <RowDefinition Height="1*"/>
+                    <RowDefinition Height="1*"/>
+                    <RowDefinition Height="1*"/>
+                    <RowDefinition Height="1*"/>
+                    <RowDefinition Height="1*"/>
+                    <RowDefinition Height="30"/>
+                </Grid.RowDefinitions>
+                <Rectangle Grid.Row="1" Grid.RowSpan="5" Opacity="{Binding MapGridOptions.opacity}" Width="40">
+                    <Rectangle.Fill>
+                        <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                            <GradientStop Color="#ff0000" Offset="0"/>
+                            <GradientStop Color="#00ff00" Offset="1"/>
+                        </LinearGradientBrush>
+                    </Rectangle.Fill>
+                </Rectangle>
+                <Label Grid.Row="0" Content="{Binding MapGridOptions.maxValue}"></Label>
+                <Label Grid.Row="1"></Label>
+                <Label Grid.Row="2"></Label>
+                <Label Grid.Row="3"></Label>
+                <Label Grid.Row="4"></Label>
+                <Label Grid.Row="5"></Label>
+                <Label Grid.Row="6" Content="{Binding MapGridOptions.minValue}"></Label>
+            </Grid>
         </Border>
         <Border >
             <WebBrowser  Name="Map" Tag="{Binding MapContainer,Mode=OneWayToSource}"/>

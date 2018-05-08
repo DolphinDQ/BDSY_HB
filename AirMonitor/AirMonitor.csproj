@@ -115,7 +115,10 @@
     <Compile Include="Interfaces\IMapProvider.cs" />
     <Compile Include="Interfaces\IResourceProvider.cs" />
     <Compile Include="IShell.cs" />
+    <Compile Include="Map\MapEx.cs" />
+    <Compile Include="Map\MapGridOptions.cs" />
     <Compile Include="Map\MapProvider.cs" />
+    <Compile Include="Map\Uav.cs" />
     <Compile Include="ShellViewModel.cs" />
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>

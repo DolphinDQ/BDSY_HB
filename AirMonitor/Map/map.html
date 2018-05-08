@@ -74,6 +74,8 @@
         gridClear();
     }
 
+
+
     function getColor(value, opt) {
         var percent = (value - opt.minValue) / (opt.maxValue - opt.minValue);
         percent = percent > 1 ? 1 : percent;
@@ -178,7 +180,6 @@
     function uavAdd(name, lng, lat, d) {
         var data = d;
         if (typeof (d) == "string") {
-            alert(d);
             data = JSON.parse(d);
         }
         uav(name, null, function () {

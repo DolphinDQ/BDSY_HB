@@ -31,9 +31,9 @@ namespace AirMonitor.EventArgs
         [JsonIgnore]
         public DateTime RecordTime => DateTime.Parse(time.Replace('/', 'T'));
         [JsonIgnore]
-        public double Lat => GpsConvert(lat);
+        public double GpsLat => GpsConvert(lat);
         [JsonIgnore]
-        public double Lng => GpsConvert(lon);
+        public double GpsLng => GpsConvert(lon);
         private double GpsConvert(double source)
         {
             var i = source.ToString().Split('.');
