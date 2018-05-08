@@ -1,6 +1,7 @@
 ﻿using AirMonitor.EventArgs;
 using AirMonitor.Interfaces;
 using Caliburn.Micro;
+using Newtonsoft.Json;
 using PropertyChanged;
 using System;
 using System.Collections.Generic;
@@ -115,21 +116,25 @@ namespace AirMonitor.ViewModels
                     return;
                 }
                 var name = GetUavName(sample);
-                if (!m_mapProvider.Invoke("uavExist", o => bool.Parse(o.ToString()), GetUavName(null)))
+                if (!m_mapProvider.Invoke("uavExist", o => bool.Parse(o.ToString()), name))
                 {
-                    var first = Samples.First();
-                    m_mapProvider.Invoke("uavAdd", first.lon, first.lat, first);
+                    var first = Samples.First(o => o.lat != 0 && o.lon != 0);
+                    m_mapProvider.Invoke("uavAdd", name, first.Lng, first.Lat, JsonConvert.SerializeObject(first));
                     for (int i = 0; i < Samples.Count; i++)
                     {
-                        m_mapProvider.Invoke("uavMove", name, Samples[i].lon, Samples[i].lat, Samples[i]);
+                        m_mapProvider.Invoke("uavMove", name, Samples[i].Lng, Samples[i].Lat, JsonConvert.SerializeObject(Samples[i]));
                     }
+                    m_mapProvider.Invoke("gridInit", JsonConvert.SerializeObject(new { dataName = DataName, sideLength = 20 }));
                 }
                 else
                 {
-                    m_mapProvider.Invoke("uavMove", name, sample.lon, sample.lat, sample);
+                    m_mapProvider.Invoke("uavMove", name, sample.Lng, sample.Lat, JsonConvert.SerializeObject(sample));
+                    m_mapProvider.Invoke("gridRefresh");
                 }
             }
         }
+
+
 
         private string GetUavName(EvtAirSample sample) => "default";
 
@@ -146,8 +151,32 @@ namespace AirMonitor.ViewModels
 
         public void Test()
         {
-            m_mapProvider.Invoke("uavAdd", GetUavName(null), 113.140074, 23.033494);
-            var uav = m_mapProvider.Invoke("uavExist", o => bool.Parse(o.ToString()), GetUavName(null));
+            Task.Factory.StartNew(() =>
+            {
+                var random = new Random();
+                var lat = 23.016791666666666667;
+                var lng = 113.077023333333333333;
+                do
+                {
+                    OnUIThread(() =>
+                    {
+                        Handle(new EvtAirSample()
+                        {
+                            co =60+ random.NextDouble() * 40,
+                            lat = lat -= 0.00001,
+                            lon = lng -= 0.00001
+                        });
+                    });
+                    Task.Delay(1000).Wait();
+                } while (true);
+            });
+            //var sample = new EvtAirSample()
+            //{
+            //    lat = 23.016791666666666667,
+            //    lon = 113.077023333333333333
+            //};
+            //m_mapProvider.Invoke("uavAdd", GetUavName(null), sample.Lng, sample.Lat);
+            //var uav = m_mapProvider.Invoke("uavExist", o => bool.Parse(o.ToString()), GetUavName(null));
         }
     }
 }

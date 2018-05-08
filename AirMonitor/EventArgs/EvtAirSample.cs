@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -27,6 +28,20 @@ namespace AirMonitor.EventArgs
         public double so2 { get; set; }
         public double o3 { get; set; }
         public double no2 { get; set; }
+        [JsonIgnore]
         public DateTime RecordTime => DateTime.Parse(time.Replace('/', 'T'));
+        [JsonIgnore]
+        public double Lat => GpsConvert(lat);
+        [JsonIgnore]
+        public double Lng => GpsConvert(lon);
+        private double GpsConvert(double source)
+        {
+            var i = source.ToString().Split('.');
+            if (i.Length == 2)
+            {
+                return int.Parse(i[0]) + double.Parse(i[1].Insert(2, ".")) / 60;
+            }
+            return 0;
+        }
     }
 }

@@ -39,6 +39,7 @@
 
     // 百度地图API功能
     var map = new BMap.Map("container");    // 创建Map实例
+    var convertor = new BMap.Convertor();
     map.centerAndZoom(new BMap.Point(113.140761, 23.033974), 17);  // 初始化地图,设置中心点坐标和地图级别
     //添加地图类型控件
     map.addControl(new BMap.MapTypeControl({
@@ -54,7 +55,11 @@
     map.enableScrollWheelZoom(true);     //开启鼠标滚轮缩放
     var uavList = [];
     var blockGrid = {};
-    function gridInit(opt) {
+    function gridInit(arg) {
+        var opt = arg;
+        if (typeof (arg) == 'string') {
+            opt = JSON.parse(arg);
+        }
         //初始化网格
         if (!opt) opt = {};
         if (!opt.sideLength) opt.sideLength = 100;//默认边长100米，地图比例尺约1米约等于0.00001经纬度
@@ -112,9 +117,11 @@
         });
         blockGrid.blocks.forEach(function (block) {
             var sum = 0;
-            block.points.forEach(function (point) {
-                sum += point.data[opt.dataName]
-            })
+            for (var i = 0; i < block.points.length; i++) {
+                if (block.points[i].data) {
+                    sum += block.points[i].data[opt.dataName]
+                }
+            }
             block.polygon.setFillColor(getColor(sum / block.points.length, opt));
         });
     }
@@ -168,14 +175,24 @@
             point.lat < (center.lat + offset);
     }
 
-    function uavAdd(name, lng, lat, data) {
-        uav(name, null, () => {
+    function uavAdd(name, lng, lat, d) {
+        var data = d;
+        if (typeof (d) == "string") {
+            alert(d);
+            data = JSON.parse(d);
+        }
+        uav(name, null, function () {
             var point = new BMap.Point(lng, lat);
-            point.data = data;
-            var icon = new BMap.Icon("marker.png", new BMap.Size(30, 20));
-            var uav = { name: name, marker: new BMap.Marker(point, { icon: icon }), pathPoint: [point] };
-            uavList.push(uav);
-            map.addOverlay(uav.marker);
+            pointConvert(point, function (o) {
+                if (o.status == 0) {
+                    point = o.points[0]
+                    point.data = data;
+                    var icon = new BMap.Icon("marker.png", new BMap.Size(30, 20));
+                    var uav = { name: name, marker: new BMap.Marker(point, { icon: icon }), pathPoint: [point] };
+                    uavList.push(uav);
+                    map.addOverlay(uav.marker);
+                }
+            })
         });
     }
     function uav(name, exist, notExist) {
@@ -198,12 +215,21 @@
             // alert(e.message);
         }
     }
-    function uavMove(name, lng, lag, data) {
+    function uavMove(name, lng, lat, d) {
+        var data = d;
+        if (typeof (d) == "string") {
+            data = JSON.parse(d);
+        }
         uav(name, function (o) {
-            var point = new BMap.Point(lng, lag);
-            point.data = data;
-            o.pathPoint.push(point);
-            o.marker.setPosition(point);
+            var point = new BMap.Point(lng, lat);
+            pointConvert(point, function (i) {
+                if (i.status == 0) {
+                    point = i.points[0]
+                    point.data = data;
+                    o.pathPoint.push(point);
+                    o.marker.setPosition(point);
+                }
+            })
         });
     }
     function uavShowPath(name) {
@@ -243,7 +269,6 @@
             }
         });
     }
-
     function uavRemove(name) {
         var i = -1;
         uavList.forEach(function (o, index) {
@@ -261,16 +286,18 @@
 
     function uavExist(name) {
         var obj = uavList.find(function (o) { return o.name == name });
-        var result = obj ? true : false;
-        alert(result);
-        return result;
+        return obj ? true : false;
+    }
+
+    function pointConvert(point, call) {
+        convertor.translate([point], 1, 5, call)
     }
 
     function test() {
         var name = "uav1";
         var point = {
-            lng: 113.140074,
-            lat: 23.033494,
+            lng: 113.077023333333333333,
+            lat: 23.01679166666666666,
             direct: 1
         }
         gridInit({ dataName: "val" })
@@ -284,7 +311,7 @@
             p.lat += 0.00001 * speed * Math.random() * (Math.random() > 0.9 ? 1 : -1) * 0.5;
             uavMove(name, p.lng, p.lat, { val: Math.random() * (opt.maxValue - opt.minValue) + opt.minValue });
             uavShowPath(name);
-        }, 50, point);
+        }, 500, point);
     }
 
     function stop() {

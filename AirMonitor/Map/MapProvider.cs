@@ -46,13 +46,31 @@ namespace AirMonitor.Map
 
         public T Invoke<T>(string methodName, Func<object, T> parse, params object[] args)
         {
-            var obj = Browser.InvokeScript(methodName, args);
-            return obj == null ? default(T) : parse(obj);
+            try
+            {
+                var obj = Browser.InvokeScript(methodName, args);
+                return obj == null ? default(T) : parse(obj);
+            }
+            catch (Exception e)
+            {
+                this.Warn("invoke js [{0}] error.",methodName);
+                this.Error(e);
+                return default(T);
+            }
+           
         }
 
         public void Invoke(string methodName, params object[] args)
         {
-            Browser.InvokeScript(methodName, args);
+            try
+            {
+                Browser.InvokeScript(methodName, args);
+            }
+            catch (Exception e)
+            {
+                this.Warn("invoke js [{0}] error.", methodName);
+                this.Error(e);
+            }
         }
 
         public void LoadMap(object mapContainer)
