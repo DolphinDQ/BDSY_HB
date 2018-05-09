@@ -21,15 +21,15 @@ namespace AirMonitor.Map
         /// <summary>
         /// 网格边长。单位（米）
         /// </summary>
-        public double sideLength { get; set; } = 50;
+        public double sideLength { get; set; } = 15;
         /// <summary>
         /// 渐变色开始。格式："ffffff"，"0f0f0f"
         /// </summary>
-        public string colorBegin { get; set; } = "00ff00";
+        public string colorBegin { get; set; } = "#00ff00";
         /// <summary>
         /// 渐变色结束。格式："ffffff"，"0f0f0f"
         /// </summary>
-        public string colorEnd { get; set; } = "ff0000";
+        public string colorEnd { get; set; } = "#ff0000";
         /// <summary>
         /// 透明度。0-1
         /// </summary>
@@ -37,7 +37,7 @@ namespace AirMonitor.Map
         /// <summary>
         /// 采集数据名称。数据字段名称
         /// </summary>
-        public string dataName { get; set; }
+        public string dataName { get; set; } = "pm25";
         /// <summary>
         /// 数据最大值。
         /// </summary>

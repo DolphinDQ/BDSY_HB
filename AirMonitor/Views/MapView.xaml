@@ -83,8 +83,8 @@
                 <Rectangle Grid.Row="1" Grid.RowSpan="5" Opacity="{Binding MapGridOptions.opacity}" >
                     <Rectangle.Fill>
                         <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
-                            <GradientStop Color="#ff0000" Offset="0"/>
-                            <GradientStop Color="#00ff00" Offset="1"/>
+                            <GradientStop Color="{Binding MapGridOptions.colorEnd}" Offset="0"/>
+                            <GradientStop Color="{Binding MapGridOptions.colorBegin}" Offset="1"/>
                         </LinearGradientBrush>
                     </Rectangle.Fill>
                 </Rectangle>

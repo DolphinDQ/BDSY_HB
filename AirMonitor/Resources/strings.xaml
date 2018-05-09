@@ -19,7 +19,7 @@
     <sys:String x:Key="T_Temperature">温度(℃)</sys:String>
     <sys:String x:Key="T_Humidity">湿度(%)</sys:String>
     <sys:String x:Key="T_VOC">VOCs</sys:String>
-    <sys:String x:Key="T_ppp">(ppp)</sys:String>
+    <sys:String x:Key="T_ppb">(ppb)</sys:String>
     <!--<sys:String x:Key="T_CO" xml:space="preserve">CO&#13;&#10;(mg/m3)</sys:String>-->
     <sys:String x:Key="T_CO">CO</sys:String>
     <sys:String x:Key="T_mg_m3">(mg/m3)</sys:String>

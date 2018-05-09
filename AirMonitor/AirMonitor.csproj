@@ -105,6 +105,7 @@
     <Compile Include="Core\ChartManager.cs" />
     <Compile Include="Core\Logger.cs" />
     <Compile Include="Core\ResourcesProvider.cs" />
+    <Compile Include="Converter\RoundConverter.cs" />
     <Compile Include="EventArgs\EvtAirSample.cs" />
     <Compile Include="Data\MqttDataManager.cs" />
     <Compile Include="EventArgs\EvtSampling.cs" />

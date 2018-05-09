@@ -39,7 +39,7 @@ namespace AirMonitor.Core
 
         private void Data_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
-            this.Info("receive plot:{0} changed event.{1}", sender.GetHashCode(), e.Action);
+            //this.Info("receive plot:{0} changed event.{1}", sender.GetHashCode(), e.Action);
             if (LinnerPlot.TryGetValue(sender.GetHashCode(), out var plot))
             {
                 var series = plot.Series.FirstOrDefault() as LineSeries;
