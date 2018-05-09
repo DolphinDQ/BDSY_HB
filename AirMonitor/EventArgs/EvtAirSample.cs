@@ -43,5 +43,9 @@ namespace AirMonitor.EventArgs
             }
             return 0;
         }
+
+        public double ActualLat { get; set; }
+
+        public double ActualLng { get; set; }
     }
 }

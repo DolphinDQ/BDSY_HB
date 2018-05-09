@@ -184,16 +184,11 @@
         }
         uav(name, null, function () {
             var point = new BMap.Point(lng, lat);
-            pointConvert([point], function (o) {
-                if (o.status == 0) {
-                    point = o.points[0]
-                    point.data = data;
-                    var icon = new BMap.Icon("marker.png", new BMap.Size(30, 20));
-                    var uav = { name: name, marker: new BMap.Marker(point, { icon: icon }), pathPoint: [point] };
-                    uavList.push(uav);
-                    map.addOverlay(uav.marker);
-                }
-            })
+            point.data = data;
+            var icon = new BMap.Icon("marker.png", new BMap.Size(30, 20));
+            var uav = { name: name, marker: new BMap.Marker(point, { icon: icon }), pathPoint: [point] };
+            uavList.push(uav);
+            map.addOverlay(uav.marker);
         });
     }
     function uav(name, exist, notExist) {
@@ -223,14 +218,9 @@
         }
         uav(name, function (o) {
             var point = new BMap.Point(lng, lat);
-            pointConvert([point], function (i) {
-                if (i.status == 0) {
-                    point = i.points[0]
-                    point.data = data;
-                    o.pathPoint.push(point);
-                    o.marker.setPosition(point);
-                }
-            })
+            point.data = data;
+            o.pathPoint.push(point);
+            o.marker.setPosition(point);
         });
     }
     function uavShowPath(name) {
@@ -290,8 +280,29 @@
         return obj ? true : false;
     }
 
-    function pointConvert(point, call) {
-        convertor.translate(point, 1, 5, call)
+
+
+    function mapPointConvert(seq, p) {
+        var points = p;
+        if (typeof (p) == "string") {
+            points = JSON.parse(p);
+        }
+        convertor.translate(points, 1, 5, function (o) {
+            if (o.status == 0) {
+                window.external.On("pointConvert", JSON.stringify({ Seq: seq, Points: o.points }));
+            }
+        });
+    }
+
+    function uavFocus(name) {
+        uav(name, function (o) {
+            var point = o.marker.getPosition();
+            if (map.getZoom() == 19) {
+                map.panTo(point);
+            } else {
+                map.centerAndZoom(point, 19);
+            }
+        });
     }
 
     function test() {

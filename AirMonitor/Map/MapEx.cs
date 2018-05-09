@@ -87,5 +87,24 @@ namespace AirMonitor.Map
         {
             return map.Invoke("uavExist", o => bool.Parse(o.ToString()), name);
         }
+        /// <summary>
+        /// 地图坐标转换。转换结果通过EvtMapPointConverted事件回调。
+        /// </summary>
+        /// <param name="map"></param>
+        /// <param name="seq"></param>
+        /// <param name="points"></param>
+        public static void MapPointConvert(this IMapProvider map, int seq, MapPoint[] points)
+        {
+            map.Invoke("mapPointConvert", seq, JsonConvert.SerializeObject(points));
+        }
+        /// <summary>
+        /// 无人机跟踪。
+        /// </summary>
+        /// <param name="map"></param>
+        /// <param name="name"></param>
+        public static void UavFocus(this IMapProvider map, string name)
+        {
+            map.Invoke("uavFocus", name);
+        }
     }
 }

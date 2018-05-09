@@ -7,7 +7,7 @@
     <ProjectGuid>{060432C6-9036-404B-8E3C-BD20AA173B43}</ProjectGuid>
     <OutputType>WinExe</OutputType>
     <RootNamespace>AirMonitor</RootNamespace>
-    <AssemblyName>AirMonitor</AssemblyName>
+    <AssemblyName>AirHunter</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
@@ -108,6 +108,7 @@
     <Compile Include="Converter\RoundConverter.cs" />
     <Compile Include="EventArgs\EvtAirSample.cs" />
     <Compile Include="Data\MqttDataManager.cs" />
+    <Compile Include="EventArgs\EvtMapPointConverted.cs" />
     <Compile Include="EventArgs\EvtSampling.cs" />
     <Compile Include="EventArgs\EvtMapLoad.cs" />
     <Compile Include="Interfaces\IChartManager.cs" />
@@ -116,8 +117,10 @@
     <Compile Include="Interfaces\IMapProvider.cs" />
     <Compile Include="Interfaces\IResourceProvider.cs" />
     <Compile Include="IShell.cs" />
+    <Compile Include="Map\MapEventHandler.cs" />
     <Compile Include="Map\MapEx.cs" />
     <Compile Include="Map\MapGridOptions.cs" />
+    <Compile Include="Map\MapPoint.cs" />
     <Compile Include="Map\MapProvider.cs" />
     <Compile Include="Map\Uav.cs" />
     <Compile Include="ShellViewModel.cs" />

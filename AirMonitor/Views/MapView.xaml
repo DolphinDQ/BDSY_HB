@@ -50,7 +50,7 @@
                 <Button Name="RefreshMap" Content="{StaticResource T_RefreshMap}"></Button>
                 <ToggleButton IsChecked="{Binding IsUavFocus}" Content="{StaticResource T_UavFocus}"></ToggleButton>
                 <ToggleButton IsChecked="{Binding ShowUavPath}" Content="{StaticResource T_UavPath}"></ToggleButton>
-                <Button Name="Test" Visibility="Hidden" >测试</Button>
+                <Button Name="Test">测试</Button>
                 <Label Content="{Binding Sampling}"></Label>
                 <Label Content="{Binding Samples.Count}"></Label>
             </StackPanel>
