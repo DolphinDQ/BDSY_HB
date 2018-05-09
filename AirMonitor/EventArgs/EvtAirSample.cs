@@ -43,13 +43,14 @@ namespace AirMonitor.EventArgs
             }
             return 0;
         }
-
+        [JsonIgnore]
         public double ActualLat { get; set; }
-
+        [JsonIgnore]
         public double ActualLng { get; set; }
         /// <summary>
         /// 相对海拔。
         /// </summary>
+        [JsonIgnore]
         public double RelativeAltitude { get; set; }
     }
 }

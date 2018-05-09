@@ -185,7 +185,7 @@
         uav(name, null, function () {
             var point = new BMap.Point(lng, lat);
             point.data = data;
-            var icon = new BMap.Icon("marker.png", new BMap.Size(30, 20));
+            var icon = new BMap.Icon("marker.png", new BMap.Size(30, 30));
             var uav = { name: name, marker: new BMap.Marker(point, { icon: icon }), pathPoint: [point] };
             uavList.push(uav);
             map.addOverlay(uav.marker);
@@ -225,39 +225,53 @@
     }
     function uavShowPath(name) {
         uav(name, function (o) {
-            o.pathPoint.forEach(function (point, index) {
-                if (!point.marker) {
-                    point.marker = new BMap.Circle(point, 1, {
-                        strokeWeight: 1,
-                        strokeColor: "red",
-                        strokeOpacity: 1
-                    });
-                    map.addOverlay(point.marker);
-                    if (index > 0) {
-                        var previousPoint = o.pathPoint[index - 1];
-                        point.line = new BMap.Polyline([previousPoint, point],
-                            {
-                                enableClicking: false,
-                                strokeWeight: 1,
-                                strokeColor: "red",
-                                strokeOpacity: 0.5
-                            });
-                        map.addOverlay(point.line);
-                    }
-                }
-            });
+            if (!o.pathMarker) {
+                o.pathMarker = new BMap.Polyline([], {
+                    enableClicking: false,
+                    strokeWeight: 1,
+                    strokeColor: "red",
+                    strokeOpacity: 0.5
+                });
+                map.addOverlay(o.pathMarker);
+            }
+            o.pathMarker.setPath(o.pathPoint);
+            //o.pathPoint.forEach(function (point, index) {
+            //    if (!point.marker) {
+            //        point.marker = new BMap.Circle(point, 1, {
+            //            strokeWeight: 1,
+            //            strokeColor: "red",
+            //            strokeOpacity: 1
+            //        });
+            //        map.addOverlay(point.marker);
+            //        if (index > 0) {
+            //            var previousPoint = o.pathPoint[index - 1];
+            //            point.line = new BMap.Polyline([previousPoint, point],
+            //                {
+            //                    enableClicking: false,
+            //                    strokeWeight: 1,
+            //                    strokeColor: "red",
+            //                    strokeOpacity: 0.5
+            //                });
+            //            map.addOverlay(point.line);
+            //        }
+            //    }
+            //});
+
         });
     }
     function uavHidePath(name) {
         uav(name, function (o) {
-            if (o.pathPoint) {
-                o.pathPoint.forEach(function (m) {
-                    map.removeOverlay(m.marker);
-                    map.removeOverlay(m.line);
-                    delete m.marker;
-                    delete m.line;
-                })
+            if (o.pathMarker) {
+                o.pathMarker.setPath([]);
             }
+            //if (o.pathPoint) {
+            //    o.pathPoint.forEach(function (m) {
+            //        map.removeOverlay(m.marker);
+            //        map.removeOverlay(m.line);
+            //        delete m.marker;
+            //        delete m.line;
+            //    })
+            //}
         });
     }
     function uavRemove(name) {
@@ -266,8 +280,10 @@
             if (o.name == name) {
                 map.removeOverlay(o.marker);
                 uavHidePath(name);
+                map.removeOverlay(o.pathMarker);
                 i = index;
                 delete o.marker;
+                delete o.pathMarker;
             }
         });
         if (i != -1) {
@@ -279,8 +295,6 @@
         var obj = uavList.find(function (o) { return o.name == name });
         return obj ? true : false;
     }
-
-
 
     function mapPointConvert(seq, p) {
         var points = p;
