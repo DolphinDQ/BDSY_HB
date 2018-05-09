@@ -17,7 +17,7 @@ namespace AirMonitor.ViewModels
     {
         private IMapProvider m_mapProvider;
         private IEventAggregator m_eventAggregator;
-        private IResourceProvider m_resourceProvider;
+        private IResourceManager m_res;
         public object MapContainer { get; set; }
         public List<EvtAirSample> Samples { get; private set; }
         public List<EvtAirSample> InvalidSamples { get; private set; }
@@ -49,22 +49,22 @@ namespace AirMonitor.ViewModels
         public MapViewModel(
             IEventAggregator eventAggregator,
             IMapProvider mapProvider,
-            IResourceProvider resourceProvider)
+            IResourceManager res)
         {
             m_mapProvider = mapProvider;
             m_eventAggregator = eventAggregator;
-            m_resourceProvider = resourceProvider;
+            m_res = res;
             m_eventAggregator.Subscribe(this);
             DataNameList = new List<Tuple<string, string>>(new[] {
-                Tuple.Create(nameof(EvtAirSample.temp),resourceProvider.GetText("T_Temperature")),
-                Tuple.Create(nameof(EvtAirSample.humi),resourceProvider.GetText("T_Humidity")),
-                Tuple.Create(nameof(EvtAirSample.voc),resourceProvider.GetText("T_VOC")),
-                Tuple.Create(nameof(EvtAirSample.co),resourceProvider.GetText("T_CO")),
-                Tuple.Create(nameof(EvtAirSample.so2),resourceProvider.GetText("T_SO2")),
-                Tuple.Create(nameof(EvtAirSample.no2),resourceProvider.GetText("T_NO2")),
-                Tuple.Create(nameof(EvtAirSample.o3), resourceProvider.GetText("T_O3")),
-                Tuple.Create(nameof(EvtAirSample.pm25), resourceProvider.GetText("T_PM2_5")),
-                Tuple.Create(nameof(EvtAirSample.pm10), resourceProvider.GetText("T_PM10")),
+                Tuple.Create(nameof(EvtAirSample.temp),res.GetText("T_Temperature")),
+                Tuple.Create(nameof(EvtAirSample.humi),res.GetText("T_Humidity")),
+                Tuple.Create(nameof(EvtAirSample.voc),res.GetText("T_VOC")),
+                Tuple.Create(nameof(EvtAirSample.co),res.GetText("T_CO")),
+                Tuple.Create(nameof(EvtAirSample.so2),res.GetText("T_SO2")),
+                Tuple.Create(nameof(EvtAirSample.no2),res.GetText("T_NO2")),
+                Tuple.Create(nameof(EvtAirSample.o3), res.GetText("T_O3")),
+                Tuple.Create(nameof(EvtAirSample.pm25), res.GetText("T_PM2_5")),
+                Tuple.Create(nameof(EvtAirSample.pm10), res.GetText("T_PM10")),
             });
             Samples = new List<EvtAirSample>();
             InvalidSamples = new List<EvtAirSample>();
@@ -118,10 +118,8 @@ namespace AirMonitor.ViewModels
                     Sampling = true;
                     break;
                 case SamplingStatus.Clear:
-                    Samples.Clear();
-                    NotifyOfPropertyChange(nameof(Samples));
-                    InvalidSamples.Clear();
-                    NotifyOfPropertyChange(nameof(InvalidSamples));
+                    ClearSamples();
+
                     break;
                 default:
                     break;
@@ -141,14 +139,7 @@ namespace AirMonitor.ViewModels
                 var name = GetUavName(sample);
                 if (!m_mapProvider.UavExist(name))
                 {
-                    var s = Samples.Where(o => o.ActualLat != 0 && o.ActualLng != 0).ToList();
-                    var first = s.First();
-                    m_mapProvider.UavAdd(new Uav { name = name, data = first, lat = first.ActualLat, lng = first.ActualLng });
-                    foreach (var item in s)
-                    {
-                        m_mapProvider.UavMove(new Uav() { name = name, data = item, lat = item.ActualLat, lng = item.ActualLng });
-                    }
-                    m_mapProvider.GridInit(MapGridOptions);
+                    LoadHistoryData(name);
                 }
                 else
                 {
@@ -161,6 +152,18 @@ namespace AirMonitor.ViewModels
                     m_mapProvider.UavFocus(name);
                 }
             }
+        }
+
+        private void LoadHistoryData(string name)
+        {
+            var s = Samples.Where(o => o.ActualLat != 0 && o.ActualLng != 0).ToList();
+            var first = s.First();
+            m_mapProvider.UavAdd(new Uav { name = name, data = first, lat = first.ActualLat, lng = first.ActualLng });
+            foreach (var item in s)
+            {
+                m_mapProvider.UavMove(new Uav() { name = name, data = item, lat = item.ActualLat, lng = item.ActualLng });
+            }
+            m_mapProvider.GridInit(MapGridOptions);
         }
 
         private string GetUavName(EvtAirSample sample) => "default";
@@ -213,6 +216,25 @@ namespace AirMonitor.ViewModels
             {
                 m_mapProvider.UavFocus(GetUavName(null));
             }
+        }
+
+        public void ClearSamples()
+        {
+            Samples.Clear();
+            NotifyOfPropertyChange(nameof(Samples));
+            InvalidSamples.Clear();
+            NotifyOfPropertyChange(nameof(InvalidSamples));
+            RefreshMap();
+        }
+
+        public void SaveSamples()
+        {
+
+        }
+
+        public void LoadSamples()
+        {
+
         }
     }
 }

@@ -104,8 +104,9 @@
     <Compile Include="Config\MqttSetting.cs" />
     <Compile Include="Core\ChartManager.cs" />
     <Compile Include="Core\Logger.cs" />
-    <Compile Include="Core\ResourcesProvider.cs" />
+    <Compile Include="Core\ResourcesManager.cs" />
     <Compile Include="Converter\RoundConverter.cs" />
+    <Compile Include="Core\SaveManager.cs" />
     <Compile Include="EventArgs\EvtAirSample.cs" />
     <Compile Include="Data\MqttDataManager.cs" />
     <Compile Include="EventArgs\EvtMapPointConverted.cs" />
@@ -115,7 +116,8 @@
     <Compile Include="Interfaces\IDataManager.cs" />
     <Compile Include="Interfaces\IFactory.cs" />
     <Compile Include="Interfaces\IMapProvider.cs" />
-    <Compile Include="Interfaces\IResourceProvider.cs" />
+    <Compile Include="Interfaces\IResourceManager.cs" />
+    <Compile Include="Interfaces\ISaveManager.cs" />
     <Compile Include="IShell.cs" />
     <Compile Include="Map\MapEventHandler.cs" />
     <Compile Include="Map\MapEx.cs" />

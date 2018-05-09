@@ -322,8 +322,8 @@
     function test() {
         var name = "uav1";
         var point = {
-            lng: 113.077023333333333333,
-            lat: 23.01679166666666666,
+            lng: 113.139997,
+            lat: 23.03128,
             direct: 1
         }
         gridInit({ dataName: "val" })
@@ -334,7 +334,7 @@
         window.handle = setInterval(function (p) {
             gridRefresh();
             p.lng += 0.00001 * speed * Math.random() * (Math.random() > 0.5 ? 1 : -1);
-            p.lat += 0.00001 * speed * Math.random() * (Math.random() > 0.9 ? 1 : -1) * 0.5;
+            p.lat += 0.00001 * speed * Math.random() * (Math.random() > 0.5 ? 1 : -1);
             uavMove(name, p.lng, p.lat, { val: Math.random() * (opt.maxValue - opt.minValue) + opt.minValue });
             uavShowPath(name);
         }, 500, point);

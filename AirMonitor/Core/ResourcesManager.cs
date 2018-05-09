@@ -8,7 +8,7 @@ using System.Windows;
 
 namespace AirMonitor.Core
 {
-    class ResourceProvider : FrameworkElement, IResourceProvider
+    class ResourceProvider : FrameworkElement, IResourceManager
     {
         public string GetText(string key)
         {

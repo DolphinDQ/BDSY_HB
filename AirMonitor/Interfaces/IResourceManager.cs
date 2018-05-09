@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace AirMonitor.Interfaces
 {
-    public interface IResourceProvider
+    public interface IResourceManager
     {
         string GetText(string key);
 

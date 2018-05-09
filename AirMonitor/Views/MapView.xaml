@@ -24,13 +24,21 @@
                             <Setter Property="VerticalContentAlignment" Value="Bottom"/>
                             <Setter Property="Margin" Value="0 0 5 0"/>
                         </Style>
+                        <Style TargetType="Button" BasedOn="{StaticResource MetroButton}">
+                            <Setter Property="Height" Value="20"/>
+                            <Setter Property="VerticalAlignment" Value="Bottom"/>
+                            <Setter Property="Margin" Value="2"/>
+                        </Style>
                     </StackPanel.Resources>
-                    <Label>采样状态</Label>
+                    <Label Content="{StaticResource T_SamplingStatus}"></Label>
                     <Label Content="{Binding Sampling}"></Label>
-                    <Label>有效样本</Label>
+                    <Label Content="{StaticResource T_ValidSamples}"></Label>
                     <Label Content="{Binding Samples.Count}"></Label>
-                    <Label>无效样本</Label>
+                    <Label Content="{StaticResource T_InvalidSamples }"></Label>
                     <Label Content="{Binding InvalidSamples.Count}"></Label>
+                    <Button Name="ClearSamples" Content="{StaticResource T_ClearSamples}"></Button>
+                    <Button Name="SaveSamples" Content="{StaticResource T_SaveSamples}"></Button>
+                    <Button Name="LoadSamples" Content="{StaticResource T_LoadSamples}"></Button>
                 </StackPanel>
             </DockPanel>
         </Border>
@@ -63,6 +71,9 @@
                 <control:NumericUpDown Value="{Binding MapGridOptions.minValue}"/>
                 <Label Content="{StaticResource T_SideLength}"></Label>
                 <control:NumericUpDown Value="{Binding MapGridOptions.sideLength}"/>
+
+                <Label Content="透明度"></Label>
+                <control:NumericUpDown Value="{Binding MapGridOptions.opacity}"/>
                 <Button Name="RefreshMap" Content="{StaticResource T_RefreshMap}"></Button>
                 <ToggleButton IsChecked="{Binding IsUavFocus}" Content="{StaticResource T_UavFocus}"></ToggleButton>
                 <ToggleButton IsChecked="{Binding ShowUavPath}" Content="{StaticResource T_UavPath}"></ToggleButton>

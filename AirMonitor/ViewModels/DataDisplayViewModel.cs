@@ -32,7 +32,7 @@ namespace AirMonitor.ViewModels
         }
 
         private IEventAggregator m_eventAggregator;
-        private IResourceProvider m_resourceProvider;
+        private IResourceManager m_res;
 
         public EvtAirSample NewestData { get; set; }
 
@@ -62,11 +62,11 @@ namespace AirMonitor.ViewModels
         public DataDisplayViewModel(
             IEventAggregator eventAggregator,
             IChartManager chartManager,
-            IResourceProvider resourceProvider)
+            IResourceManager res)
         {
             eventAggregator.Subscribe(this);
             m_eventAggregator = eventAggregator;
-            m_resourceProvider = resourceProvider;
+            m_res = res;
             var dataNames = new[] {
                 nameof(EvtAirSample.temp),
                 nameof(EvtAirSample.humi),

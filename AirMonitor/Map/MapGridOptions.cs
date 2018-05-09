@@ -33,7 +33,7 @@ namespace AirMonitor.Map
         /// <summary>
         /// 透明度。0-1
         /// </summary>
-        public double opacity { get; set; } = 0.5;
+        public double opacity { get; set; } = 0.8;
         /// <summary>
         /// 采集数据名称。数据字段名称
         /// </summary>

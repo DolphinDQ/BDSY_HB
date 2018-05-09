@@ -25,8 +25,9 @@ namespace AirMonitor
 
             container.Singleton<IWindowManager, WindowManager>();
             container.Singleton<IEventAggregator, EventAggregator>();
-            container.Singleton<IResourceProvider, ResourceProvider>();
+            container.Singleton<IResourceManager, ResourceProvider>();
             container.Singleton<ILog, Logger>();
+            container.Singleton<ISaveManager, SaveManager>();
             container.Singleton<IDataManager, MqttDataManager>();
             container.Singleton<IConfigManager, ConfigManager>();
             container.Singleton<IChartManager, ChartManager>();

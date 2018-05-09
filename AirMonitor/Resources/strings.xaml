@@ -41,5 +41,12 @@
     <sys:String x:Key="T_MinValue">最小值</sys:String>
     <sys:String x:Key="T_SideLength">采样距离(米)</sys:String>
     <sys:String x:Key="T_UavLocation">无人机定位</sys:String>
+    <sys:String x:Key="T_SamplingStatus">采样状态</sys:String>
+    <sys:String x:Key="T_ValidSamples">有效样本</sys:String>
+    <sys:String x:Key="T_InvalidSamples">无效样本</sys:String>
+    <sys:String x:Key="T_ClearSamples">清空样本</sys:String>
+    <sys:String x:Key="T_ClearSamplesWarning">是否清空当前的采样数据？</sys:String>
+    <sys:String x:Key="T_SaveSamples">保存样本</sys:String>
+    <sys:String x:Key="T_LoadSamples">加载样本</sys:String>
 
 </ResourceDictionary>
