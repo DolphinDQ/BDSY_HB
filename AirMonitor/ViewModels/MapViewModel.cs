@@ -20,7 +20,7 @@ namespace AirMonitor.ViewModels
         private IResourceProvider m_resourceProvider;
         public object MapContainer { get; set; }
         public List<EvtAirSample> Samples { get; private set; }
-        public List<EvtAirSample> InvalidSample { get; private set; }
+        public List<EvtAirSample> InvalidSamples { get; private set; }
         /// <summary>
         /// 数据名称列表，是采样数据的名称列表。
         /// </summary>
@@ -67,6 +67,7 @@ namespace AirMonitor.ViewModels
                 Tuple.Create(nameof(EvtAirSample.pm10), resourceProvider.GetText("T_PM10")),
             });
             Samples = new List<EvtAirSample>();
+            InvalidSamples = new List<EvtAirSample>();
             MapGridOptions = new MapGridOptions();
         }
 
@@ -91,14 +92,17 @@ namespace AirMonitor.ViewModels
                 if (message.lat == 0 || message.lon == 0)
                 {
                     this.Warn("unknow sample location.");
-                    InvalidSample.Add(message);
-                    NotifyOfPropertyChange(nameof(InvalidSample));
+                    InvalidSamples.Add(message);
+                    NotifyOfPropertyChange(nameof(InvalidSamples));
                 }
                 else
                 {
                     Samples.Add(message);
                     NotifyOfPropertyChange(nameof(Samples));
-                    m_mapProvider.MapPointConvert(message.GetHashCode(), new[] { new MapPoint() { lat = message.GpsLat, lng = message.GpsLng } });
+                    if (MapLoad)
+                    {
+                        m_mapProvider.MapPointConvert(message.GetHashCode(), new[] { new MapPoint() { lat = message.GpsLat, lng = message.GpsLng } });
+                    }
                 }
             }
         }
@@ -116,6 +120,8 @@ namespace AirMonitor.ViewModels
                 case SamplingStatus.Clear:
                     Samples.Clear();
                     NotifyOfPropertyChange(nameof(Samples));
+                    InvalidSamples.Clear();
+                    NotifyOfPropertyChange(nameof(InvalidSamples));
                     break;
                 default:
                     break;
@@ -198,6 +204,14 @@ namespace AirMonitor.ViewModels
                 sample.ActualLat = point.lat;
                 sample.ActualLng = point.lng;
                 OnUpdateUavPosition(sample);
+            }
+        }
+
+        public void UavLocation()
+        {
+            if (MapLoad)
+            {
+                m_mapProvider.UavFocus(GetUavName(null));
             }
         }
     }

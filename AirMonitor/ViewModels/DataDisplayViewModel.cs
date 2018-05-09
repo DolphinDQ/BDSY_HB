@@ -38,6 +38,8 @@ namespace AirMonitor.ViewModels
 
         public bool EnableSampling { get; set; }
 
+        public int CorrectAltitude { get; set; }
+
         /// <summary>
         /// 数据名称列表，是采样数据的名称列表。
         /// </summary>
@@ -53,6 +55,7 @@ namespace AirMonitor.ViewModels
         public SampleChart O3 => Plots[nameof(EvtAirSample.o3)];
         public SampleChart PM2_5 => Plots[nameof(EvtAirSample.pm25)];
         public SampleChart PM10 => Plots[nameof(EvtAirSample.pm10)];
+        public SampleChart RelativeAltitude => Plots[nameof(EvtAirSample.RelativeAltitude)];
         public Dictionary<string, SampleChart> Plots { get; set; }
         #endregion
 
@@ -74,6 +77,7 @@ namespace AirMonitor.ViewModels
                 nameof(EvtAirSample.o3),
                 nameof(EvtAirSample.pm25),
                 nameof(EvtAirSample.pm10),
+                nameof(EvtAirSample.RelativeAltitude),
             };
             Plots = new Dictionary<string, SampleChart>();
             foreach (var item in dataNames)
@@ -90,7 +94,7 @@ namespace AirMonitor.ViewModels
 
         public void OnEnableSamplingChanged()
         {
-            m_eventAggregator.PublishOnUIThread(new EvtSampling()
+            m_eventAggregator.PublishOnBackgroundThread(new EvtSampling()
             {
                 Status = EnableSampling ? SamplingStatus.Start : SamplingStatus.Stop
             });
@@ -98,6 +102,7 @@ namespace AirMonitor.ViewModels
 
         public void Handle(EvtAirSample message)
         {
+            message.RelativeAltitude = message.hight - CorrectAltitude;
             NewestData = message;
             if (EnableSampling)
             {
@@ -110,6 +115,7 @@ namespace AirMonitor.ViewModels
                 FillChart(O3, Tuple.Create(message.RecordTime, message.o3));
                 FillChart(PM2_5, Tuple.Create(message.RecordTime, message.pm25));
                 FillChart(PM10, Tuple.Create(message.RecordTime, message.pm10));
+                FillChart(RelativeAltitude, Tuple.Create(message.RecordTime, message.RelativeAltitude));
             }
         }
 
@@ -125,7 +131,8 @@ namespace AirMonitor.ViewModels
             ClearChart(O3);
             ClearChart(PM2_5);
             ClearChart(PM10);
-            m_eventAggregator.PublishOnUIThread(new EvtSampling() { Status = SamplingStatus.Clear });
+            ClearChart(RelativeAltitude);
+            m_eventAggregator.PublishOnBackgroundThread(new EvtSampling() { Status = SamplingStatus.Clear });
         }
 
         private void ClearChart(SampleChart chart) => chart.Collection.Clear();

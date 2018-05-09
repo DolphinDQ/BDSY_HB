@@ -47,5 +47,9 @@ namespace AirMonitor.EventArgs
         public double ActualLat { get; set; }
 
         public double ActualLng { get; set; }
+        /// <summary>
+        /// 相对海拔。
+        /// </summary>
+        public double RelativeAltitude { get; set; }
     }
 }

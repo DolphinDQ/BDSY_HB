@@ -6,7 +6,10 @@
     <sys:String x:Key="T_UavStatus">无人机状态</sys:String>
     <sys:String x:Key="T_Battery">电量</sys:String>
     <sys:String x:Key="T_CallbackProgress">回传进度</sys:String>
-    <sys:String x:Key="T_Altitude">海拔</sys:String>
+    <sys:String x:Key="T_GpsAltitude">GPS海拔</sys:String>
+    <sys:String x:Key="T_PressureAltitude">气压海拔</sys:String>
+    <sys:String x:Key="T_RelativeAltitude">高度(m)</sys:String>
+    <sys:String x:Key="T_CorrectAltitude">高度修正</sys:String>
     <sys:String x:Key="T_Speed">速度</sys:String>
     <sys:String x:Key="T_RealtimeAirSamples">实时空气采样</sys:String>
     <sys:String x:Key="T_SensorStatus">传感器状态</sys:String>
@@ -37,5 +40,6 @@
     <sys:String x:Key="T_MaxValue">最大值</sys:String>
     <sys:String x:Key="T_MinValue">最小值</sys:String>
     <sys:String x:Key="T_SideLength">采样距离(米)</sys:String>
+    <sys:String x:Key="T_UavLocation">无人机定位</sys:String>
 
 </ResourceDictionary>

@@ -25,7 +25,7 @@ namespace AirMonitor.Map
             switch (name)
             {
                 case "pointConvert":
-                    m_eventAggregator.PublishOnUIThread(JsonConvert.DeserializeObject<EvtMapPointConverted>(json));
+                    m_eventAggregator.PublishOnBackgroundThread(JsonConvert.DeserializeObject<EvtMapPointConverted>(json));
                     break;
                 default:
                     break;

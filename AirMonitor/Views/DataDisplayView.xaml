@@ -9,8 +9,8 @@
              mc:Ignorable="d" 
              d:DesignHeight="800" d:DesignWidth="350">
     <Grid>
-        <StackPanel>
-            <StackPanel.Resources>
+        <DockPanel>
+            <DockPanel.Resources>
                 <Style TargetType="DockPanel">
                     <Style.Resources>
                         <Style TargetType="Label" BasedOn="{StaticResource MetroLabel}">
@@ -24,9 +24,9 @@
                     <Setter Property="Margin" Value="2"/>
                     <Setter Property="Padding" Value="2"/>
                 </Style>
-            </StackPanel.Resources>
+            </DockPanel.Resources>
 
-            <Border>
+            <Border DockPanel.Dock="Top">
                 <StackPanel>
                     <Label Style="{StaticResource Lbl_Title}" Content="{StaticResource T_UavStatus}"></Label>
                     <UniformGrid Columns="4">
@@ -34,35 +34,39 @@
                         <Label Content="90%"></Label>
                         <Label Content="{StaticResource T_CallbackProgress}"></Label>
                         <Label Content="0%"></Label>
-                        <Label Content="{StaticResource T_Altitude}"></Label>
+                        <Label Content="{StaticResource T_GpsAltitude}"></Label>
                         <Label Content="{Binding NewestData.ghight}"></Label>
-                        <Label Content="{StaticResource T_Speed}"></Label>
-                        <Label Content="100km/h"></Label>
+                        <Label Content="{StaticResource T_PressureAltitude}"></Label>
+                        <Label Content="{Binding NewestData.hight}"></Label>
+                        <Label Content="{StaticResource T_CorrectAltitude}"></Label>
+                        <controls:NumericUpDown Value="{Binding CorrectAltitude}"></controls:NumericUpDown>
+                        <Label Content="{StaticResource T_RelativeAltitude}"></Label>
+                        <Label Content="{Binding NewestData.RelativeAltitude}"></Label>
                     </UniformGrid>
                 </StackPanel>
             </Border>
             <Border>
-                <ScrollViewer VerticalScrollBarVisibility="Auto">
-                    <StackPanel>
-                        <StackPanel.Resources>
-                            <Style TargetType="DockPanel">
-                                <Style.Resources>
-                                    <Style TargetType="Label" BasedOn="{StaticResource MetroLabel}">
-                                        <Setter Property="Width" Value="70" />
-                                        <Setter Property="VerticalContentAlignment" Value="Center"/>
-                                    </Style>
-                                    <Style TargetType="ComboBox" BasedOn="{StaticResource MetroComboBox}">
-                                        <Setter Property="Margin" Value="5"/>
-                                    </Style>
-                                    <Style TargetType="oxy:PlotView">
-                                        <Setter Property="Height" Value="45"/>
-                                        <Setter Property="Margin" Value="5"/>
-                                        <Setter Property="BorderBrush" Value="LightGray"/>
-                                        <Setter Property="BorderThickness" Value="1"/>
-                                    </Style>
-                                </Style.Resources>
-                            </Style>
-                        </StackPanel.Resources>
+                <DockPanel>
+                    <DockPanel.Resources>
+                        <Style TargetType="DockPanel">
+                            <Style.Resources>
+                                <Style TargetType="Label" BasedOn="{StaticResource MetroLabel}">
+                                    <Setter Property="Width" Value="70" />
+                                    <Setter Property="VerticalContentAlignment" Value="Center"/>
+                                </Style>
+                                <Style TargetType="ComboBox" BasedOn="{StaticResource MetroComboBox}">
+                                    <Setter Property="Margin" Value="5"/>
+                                </Style>
+                                <Style TargetType="oxy:PlotView">
+                                    <Setter Property="Height" Value="50"/>
+                                    <Setter Property="Margin" Value="5"/>
+                                    <Setter Property="BorderBrush" Value="LightGray"/>
+                                    <Setter Property="BorderThickness" Value="1"/>
+                                </Style>
+                            </Style.Resources>
+                        </Style>
+                    </DockPanel.Resources>
+                    <StackPanel DockPanel.Dock="Top">
                         <Label Style="{StaticResource Lbl_Title}" Content="{StaticResource T_RealtimeAirSamples}"/>
                         <DockPanel>
                             <Label Content="{StaticResource T_SensorStatus}"></Label>
@@ -73,90 +77,98 @@
                             <Button Name="ClearData" Width="65" Margin="0 5 5 5" Content="{StaticResource T_ClearData}"  DockPanel.Dock="Right" ></Button>
                             <controls:ToggleSwitch Margin="5 0" OffLabel="{StaticResource T_StopSimpling}" IsChecked="{Binding EnableSampling}" OnLabel="{StaticResource T_StartSimpling}"/>
                         </DockPanel>
-                        
-                        <DockPanel>
-                            <Label Content="{StaticResource T_Temperature}"></Label>
-                            <Label DockPanel.Dock="Right"  Content="{Binding NewestData.temp}"></Label>
-                            <oxy:PlotView Model="{Binding Temperature.ChartModel}" />
-                        </DockPanel>
-                        <DockPanel>
-                            <Label Content="{StaticResource T_Humidity}"></Label>
-                            <Label DockPanel.Dock="Right" Content="{Binding NewestData.humi}"></Label>
-                            <oxy:PlotView Model="{Binding Humidity.ChartModel}" />
-                        </DockPanel>
-                        <DockPanel>
-                            <Label>
-                                <StackPanel Orientation="Horizontal">
-                                    <TextBlock Text="{StaticResource T_VOC}"/>
-                                    <TextBlock Text="{StaticResource T_ppb}" FontSize="8" VerticalAlignment="Bottom" Margin="2"/>
-                                </StackPanel>
-                            </Label>
-                            <Label DockPanel.Dock="Right" Content="{Binding NewestData.voc}"></Label>
-                            <oxy:PlotView Model="{Binding VOC.ChartModel}" />
-                        </DockPanel>
-                        <DockPanel>
-                            <Label>
-                                <StackPanel Orientation="Horizontal">
-                                    <TextBlock Text="{StaticResource T_CO}"/>
-                                    <TextBlock Text="{StaticResource T_mg_m3}" FontSize="8" VerticalAlignment="Bottom" Margin="2"/>
-                                </StackPanel>
-                            </Label>
-                            <Label DockPanel.Dock="Right" Content="{Binding NewestData.co}"></Label>
-                            <oxy:PlotView Model="{Binding CO.ChartModel}" />
-                        </DockPanel>
-                        <DockPanel>
-                            <Label >
-                                <StackPanel Orientation="Horizontal">
-                                    <TextBlock Text="{StaticResource T_SO2}"/>
-                                    <TextBlock Text="{StaticResource T_ug_m3}" FontSize="8" VerticalAlignment="Bottom" Margin="2"/>
-                                </StackPanel>
-                            </Label>
-                            <Label DockPanel.Dock="Right" Content="{Binding NewestData.so2}"></Label>
-                            <oxy:PlotView Model="{Binding SO2.ChartModel}" />
-                        </DockPanel>
-                        <DockPanel>
-                            <Label >
-                                <StackPanel Orientation="Horizontal">
-                                    <TextBlock Text="{StaticResource T_NO2}"/>
-                                    <TextBlock Text="{StaticResource T_ug_m3}" FontSize="8" VerticalAlignment="Bottom" Margin="2"/>
-                                </StackPanel>
-                            </Label>
-                            <Label DockPanel.Dock="Right" Content="{Binding NewestData.no2}"></Label>
-                            <oxy:PlotView Model="{Binding NO2.ChartModel}" />
-                        </DockPanel>
-                        <DockPanel>
-                            <Label>
-                                <StackPanel Orientation="Horizontal">
-                                    <TextBlock Text="{StaticResource T_O3}"/>
-                                    <TextBlock Text="{StaticResource T_ug_m3}" FontSize="8" VerticalAlignment="Bottom" Margin="2"/>
-                                </StackPanel>
-                            </Label>
-                            <Label DockPanel.Dock="Right" Content="{Binding NewestData.o3}"></Label>
-                            <oxy:PlotView Model="{Binding O3.ChartModel}" />
-                        </DockPanel>
-                        <DockPanel>
-                            <Label>
-                                <StackPanel Orientation="Vertical">
-                                    <TextBlock Text="{StaticResource T_PM2_5}"/>
-                                    <TextBlock Text="{StaticResource T_ug_m3}" FontSize="8" VerticalAlignment="Bottom" Margin="2"/>
-                                </StackPanel>
-                            </Label>
-                            <Label DockPanel.Dock="Right" Content="{Binding NewestData.pm25}"></Label>
-                            <oxy:PlotView Model="{Binding PM2_5.ChartModel}" />
-                        </DockPanel>
-                        <DockPanel>
-                            <Label>
-                                <StackPanel Orientation="Vertical">
-                                    <TextBlock Text="{StaticResource T_PM10}"/>
-                                    <TextBlock Text="{StaticResource T_ug_m3}" FontSize="8" VerticalAlignment="Bottom" Margin="2"/>
-                                </StackPanel>
-                            </Label>
-                            <Label DockPanel.Dock="Right" Content="{Binding NewestData.pm10}"></Label>
-                            <oxy:PlotView Model="{Binding PM10.ChartModel}" />
-                        </DockPanel>
                     </StackPanel>
-                </ScrollViewer>
+                    <ScrollViewer VerticalScrollBarVisibility="Auto">
+                        <StackPanel>
+                            <DockPanel>
+                                <Label Content="{StaticResource T_RelativeAltitude}"></Label>
+                                <Label DockPanel.Dock="Right" Content="{Binding NewestData.RelativeAltitude}" />
+                                <oxy:PlotView Model="{Binding RelativeAltitude.ChartModel}" />
+                            </DockPanel>
+                            <DockPanel>
+                                <Label Content="{StaticResource T_Temperature}"></Label>
+                                <Label DockPanel.Dock="Right"  Content="{Binding NewestData.temp}"></Label>
+                                <oxy:PlotView Model="{Binding Temperature.ChartModel}" />
+                            </DockPanel>
+                            <DockPanel>
+                                <Label Content="{StaticResource T_Humidity}"></Label>
+                                <Label DockPanel.Dock="Right" Content="{Binding NewestData.humi}"></Label>
+                                <oxy:PlotView Model="{Binding Humidity.ChartModel}" />
+                            </DockPanel>
+                            <DockPanel>
+                                <Label>
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock Text="{StaticResource T_VOC}"/>
+                                        <TextBlock Text="{StaticResource T_ppb}" FontSize="8" VerticalAlignment="Bottom" Margin="2"/>
+                                    </StackPanel>
+                                </Label>
+                                <Label DockPanel.Dock="Right" Content="{Binding NewestData.voc}"></Label>
+                                <oxy:PlotView Model="{Binding VOC.ChartModel}" />
+                            </DockPanel>
+                            <DockPanel>
+                                <Label>
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock Text="{StaticResource T_CO}"/>
+                                        <TextBlock Text="{StaticResource T_mg_m3}" FontSize="8" VerticalAlignment="Bottom" Margin="2"/>
+                                    </StackPanel>
+                                </Label>
+                                <Label DockPanel.Dock="Right" Content="{Binding NewestData.co}"></Label>
+                                <oxy:PlotView Model="{Binding CO.ChartModel}" />
+                            </DockPanel>
+                            <DockPanel>
+                                <Label >
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock Text="{StaticResource T_SO2}"/>
+                                        <TextBlock Text="{StaticResource T_ug_m3}" FontSize="8" VerticalAlignment="Bottom" Margin="2"/>
+                                    </StackPanel>
+                                </Label>
+                                <Label DockPanel.Dock="Right" Content="{Binding NewestData.so2}"></Label>
+                                <oxy:PlotView Model="{Binding SO2.ChartModel}" />
+                            </DockPanel>
+                            <DockPanel>
+                                <Label >
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock Text="{StaticResource T_NO2}"/>
+                                        <TextBlock Text="{StaticResource T_ug_m3}" FontSize="8" VerticalAlignment="Bottom" Margin="2"/>
+                                    </StackPanel>
+                                </Label>
+                                <Label DockPanel.Dock="Right" Content="{Binding NewestData.no2}"></Label>
+                                <oxy:PlotView Model="{Binding NO2.ChartModel}" />
+                            </DockPanel>
+                            <DockPanel>
+                                <Label>
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock Text="{StaticResource T_O3}"/>
+                                        <TextBlock Text="{StaticResource T_ug_m3}" FontSize="8" VerticalAlignment="Bottom" Margin="2"/>
+                                    </StackPanel>
+                                </Label>
+                                <Label DockPanel.Dock="Right" Content="{Binding NewestData.o3}"></Label>
+                                <oxy:PlotView Model="{Binding O3.ChartModel}" />
+                            </DockPanel>
+                            <DockPanel>
+                                <Label>
+                                    <StackPanel Orientation="Vertical">
+                                        <TextBlock Text="{StaticResource T_PM2_5}"/>
+                                        <TextBlock Text="{StaticResource T_ug_m3}" FontSize="8" VerticalAlignment="Bottom" Margin="2"/>
+                                    </StackPanel>
+                                </Label>
+                                <Label DockPanel.Dock="Right" Content="{Binding NewestData.pm25}"></Label>
+                                <oxy:PlotView Model="{Binding PM2_5.ChartModel}" />
+                            </DockPanel>
+                            <DockPanel>
+                                <Label>
+                                    <StackPanel Orientation="Vertical">
+                                        <TextBlock Text="{StaticResource T_PM10}"/>
+                                        <TextBlock Text="{StaticResource T_ug_m3}" FontSize="8" VerticalAlignment="Bottom" Margin="2"/>
+                                    </StackPanel>
+                                </Label>
+                                <Label DockPanel.Dock="Right" Content="{Binding NewestData.pm10}"></Label>
+                                <oxy:PlotView Model="{Binding PM10.ChartModel}" />
+                            </DockPanel>
+                        </StackPanel>
+                    </ScrollViewer>
+                </DockPanel>
             </Border>
-        </StackPanel>
+        </DockPanel>
     </Grid>
 </UserControl>

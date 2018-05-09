@@ -42,13 +42,13 @@ namespace AirMonitor.Data
             await DoConnect();
         }
 
-        private async void OnReceived(object sender, MqttApplicationMessageReceivedEventArgs e)
+        private void OnReceived(object sender, MqttApplicationMessageReceivedEventArgs e)
         {
             string message = e.ApplicationMessage.ConvertPayloadToString();
             this.Info("On Received:{0}", message);
             if (e.ApplicationMessage.Topic == m_setting.EnvironmentTopic)
             {
-              await  m_eventAggregator.PublishOnUIThreadAsync(
+              m_eventAggregator.PublishOnBackgroundThread(
                     JsonConvert.DeserializeObject<EvtAirSample>(message));
             }
         }
@@ -130,7 +130,7 @@ namespace AirMonitor.Data
             {
                 this.Error(e);
             }
-           
+
         }
     }
 }

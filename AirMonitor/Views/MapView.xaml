@@ -16,7 +16,23 @@
     </UserControl.Resources>
     <DockPanel>
         <Border DockPanel.Dock="Top">
-            <Label Style="{StaticResource Lbl_Title}" Content="{StaticResource T_Visualization}"></Label>
+            <DockPanel>
+                <Label DockPanel.Dock="Left" Style="{StaticResource Lbl_Title}" Content="{StaticResource T_Visualization}"></Label>
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                    <StackPanel.Resources>
+                        <Style TargetType="Label" BasedOn="{StaticResource MetroLabel}">
+                            <Setter Property="VerticalContentAlignment" Value="Bottom"/>
+                            <Setter Property="Margin" Value="0 0 5 0"/>
+                        </Style>
+                    </StackPanel.Resources>
+                    <Label>采样状态</Label>
+                    <Label Content="{Binding Sampling}"></Label>
+                    <Label>有效样本</Label>
+                    <Label Content="{Binding Samples.Count}"></Label>
+                    <Label>无效样本</Label>
+                    <Label Content="{Binding InvalidSamples.Count}"></Label>
+                </StackPanel>
+            </DockPanel>
         </Border>
         <Border DockPanel.Dock="Bottom">
             <StackPanel Orientation="Horizontal">
@@ -50,9 +66,9 @@
                 <Button Name="RefreshMap" Content="{StaticResource T_RefreshMap}"></Button>
                 <ToggleButton IsChecked="{Binding IsUavFocus}" Content="{StaticResource T_UavFocus}"></ToggleButton>
                 <ToggleButton IsChecked="{Binding ShowUavPath}" Content="{StaticResource T_UavPath}"></ToggleButton>
-                <Button Name="Test">测试</Button>
-                <Label Content="{Binding Sampling}"></Label>
-                <Label Content="{Binding Samples.Count}"></Label>
+                <Button Name="UavLocation" Content="{StaticResource T_UavLocation}"></Button>
+
+                <Button Name="Test" Visibility="Hidden">测试</Button>
             </StackPanel>
         </Border>
         <Border DockPanel.Dock="Left">

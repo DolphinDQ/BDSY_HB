@@ -48,23 +48,26 @@ namespace AirMonitor.Map
         {
             try
             {
-                var obj = Browser.InvokeScript(methodName, args);
-                return obj == null ? default(T) : parse(obj);
+                return Browser.Dispatcher.Invoke(() =>
+                 {
+                     var obj = Browser.InvokeScript(methodName, args);
+                     return obj == null ? default(T) : parse(obj);
+                 });
             }
             catch (Exception e)
             {
-                this.Warn("invoke js [{0}] error.",methodName);
+                this.Warn("invoke js [{0}] error.", methodName);
                 this.Error(e);
                 return default(T);
             }
-           
+
         }
 
         public void Invoke(string methodName, params object[] args)
         {
             try
             {
-                Browser.InvokeScript(methodName, args);
+                Browser.Dispatcher.Invoke(() => Browser.InvokeScript(methodName, args));
             }
             catch (Exception e)
             {
@@ -87,7 +90,7 @@ namespace AirMonitor.Map
 
         private void Browser_LoadCompleted(object sender, System.Windows.Navigation.NavigationEventArgs e)
         {
-            m_eventAggregator.PublishOnUIThread(new EvtMapLoad()
+            m_eventAggregator.PublishOnBackgroundThread(new EvtMapLoad()
             {
                 Provider = this,
                 Url = e.Uri.ToString(),
