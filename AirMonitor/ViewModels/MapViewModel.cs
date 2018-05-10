@@ -18,6 +18,8 @@ namespace AirMonitor.ViewModels
         private IMapProvider m_mapProvider;
         private IEventAggregator m_eventAggregator;
         private IResourceManager m_res;
+        private ISaveManager m_saveManager;
+
         public object MapContainer { get; set; }
         public List<EvtAirSample> Samples { get; private set; }
         public List<EvtAirSample> InvalidSamples { get; private set; }
@@ -49,11 +51,13 @@ namespace AirMonitor.ViewModels
         public MapViewModel(
             IEventAggregator eventAggregator,
             IMapProvider mapProvider,
+            ISaveManager saveManager,
             IResourceManager res)
         {
             m_mapProvider = mapProvider;
             m_eventAggregator = eventAggregator;
             m_res = res;
+            m_saveManager = saveManager;
             m_eventAggregator.Subscribe(this);
             DataNameList = new List<Tuple<string, string>>(new[] {
                 Tuple.Create(nameof(EvtAirSample.temp),res.GetText("T_Temperature")),
@@ -210,6 +214,13 @@ namespace AirMonitor.ViewModels
             }
         }
 
+        public void OnMapLoadChanged()
+        {
+            if (Samples.Any())
+            {
+                LoadHistoryData(GetUavName(null));
+            }
+        }
         public void UavLocation()
         {
             if (MapLoad)
@@ -220,21 +231,90 @@ namespace AirMonitor.ViewModels
 
         public void ClearSamples()
         {
-            Samples.Clear();
-            NotifyOfPropertyChange(nameof(Samples));
-            InvalidSamples.Clear();
-            NotifyOfPropertyChange(nameof(InvalidSamples));
-            RefreshMap();
+            if (Samples.Any() && MessageBox.Show(m_res.GetText("T_ClearSamplesWarning"), "", MessageBoxButton.YesNo) == MessageBoxResult.Yes)
+            {
+                Samples.Clear();
+                NotifyOfPropertyChange(nameof(Samples));
+                InvalidSamples.Clear();
+                NotifyOfPropertyChange(nameof(InvalidSamples));
+                RefreshMap();
+            }
         }
 
         public void SaveSamples()
         {
+            if (!Samples.Any()) return;
+            try
+            {
+                var file = m_saveManager.ShowSaveFileDialog();
+                if (file == null) return;
+                m_saveManager.Save(file, Samples);
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show(m_res.GetText("T_SaveSamplesFailed") + e.Message);
+            }
 
         }
 
         public void LoadSamples()
         {
+            if (Sampling)
+            {
+                MessageBox.Show(m_res.GetText("T_LoadSamplesWarning"));
+                return;
+            }
 
+            try
+            {
+                var file = m_saveManager.ShowOpenFileDialog();
+                if (file != null)
+                {
+                    IEnumerable<EvtAirSample> samples = m_saveManager.Load<EvtAirSample[]>(file);
+                    MessageBoxResult overwriteSample = MessageBoxResult.Yes;
+                    if (Samples.Any())
+                    {
+                        overwriteSample = MessageBox.Show(m_res.GetText("T_LoadSamplesOverwriteWarning"), "", MessageBoxButton.YesNoCancel);
+                        if (overwriteSample == MessageBoxResult.Yes)
+                        {
+                            samples = samples.OrderBy(o => o.RecordTime);
+                            Samples.Clear();
+                        }
+                        if (overwriteSample == MessageBoxResult.No)
+                        {
+                            samples = samples.Concat(Samples).OrderBy(o => o.RecordTime);
+                            Samples.Clear();
+                        }
+                    }
+                    else
+                    {
+                        samples = samples.OrderBy(o => o.RecordTime);
+                    }
+                    switch (overwriteSample)
+                    {
+                        case MessageBoxResult.None:
+                        case MessageBoxResult.OK:
+                        case MessageBoxResult.Cancel:
+                            return;
+                    }
+                    Samples.AddRange(samples);
+                    NotifyOfPropertyChange(nameof(Samples));
+                    RefreshMap();
+
+                }
+
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show(m_res.GetText("T_LoadSamplesFailed") + e.Message);
+            }
+
+        }
+
+        public void RefreshBlock()
+        {
+            m_mapProvider.GridInit(MapGridOptions);
+            m_mapProvider.GridRefresh();
         }
     }
 }

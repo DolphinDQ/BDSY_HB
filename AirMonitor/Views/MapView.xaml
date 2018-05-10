@@ -65,20 +65,20 @@
                 </StackPanel.Resources>
                 <Label Content="{StaticResource T_MapDisplay}"></Label>
                 <ComboBox ItemsSource="{Binding DataNameList}" SelectedValue="{Binding MapGridOptions.dataName}" DisplayMemberPath="Item2" SelectedValuePath="Item1" SelectedIndex="0"/>
-                <Label Content="{StaticResource T_MaxValue}"></Label>
-                <control:NumericUpDown Value="{Binding MapGridOptions.maxValue}"/>
+
                 <Label Content="{StaticResource T_MinValue}"></Label>
                 <control:NumericUpDown Value="{Binding MapGridOptions.minValue}"/>
+                <Label Content="{StaticResource T_MaxValue}"></Label>
+                <control:NumericUpDown Value="{Binding MapGridOptions.maxValue}"/>
                 <Label Content="{StaticResource T_SideLength}"></Label>
-                <control:NumericUpDown Value="{Binding MapGridOptions.sideLength}"/>
-
+                <control:NumericUpDown Value="{Binding MapGridOptions.sideLength}" Minimum="5"/>
                 <Label Content="透明度"></Label>
-                <control:NumericUpDown Value="{Binding MapGridOptions.opacity}"/>
-                <Button Name="RefreshMap" Content="{StaticResource T_RefreshMap}"></Button>
+                <control:NumericUpDown Value="{Binding MapGridOptions.opacity}" Maximum="1" Minimum="0" Interval="0.1"/>
+                <Button Name="RefreshBlock" Content="{StaticResource T_RefreshBlock}"></Button>
                 <ToggleButton IsChecked="{Binding IsUavFocus}" Content="{StaticResource T_UavFocus}"></ToggleButton>
                 <ToggleButton IsChecked="{Binding ShowUavPath}" Content="{StaticResource T_UavPath}"></ToggleButton>
                 <Button Name="UavLocation" Content="{StaticResource T_UavLocation}"></Button>
-
+                <Button Name="RefreshMap" Content="{StaticResource T_RefreshMap}"></Button>
                 <Button Name="Test" Visibility="Hidden">测试</Button>
             </StackPanel>
         </Border>

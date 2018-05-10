@@ -24,5 +24,16 @@ namespace AirMonitor.Interfaces
         /// <param name="path"></param>
         /// <returns></returns>
         T Load<T>(string path);
+
+        /// <summary>
+        /// 显示保存文件对话框。
+        /// </summary>
+        /// <returns>未选择或者取消返回null，否则放开文件路径。</returns>
+        string ShowSaveFileDialog();
+        /// <summary>
+        /// 显示选择文件对话框。
+        /// </summary>
+        /// <returns></returns>
+        string ShowOpenFileDialog();
     }
 }
