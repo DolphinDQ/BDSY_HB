@@ -282,7 +282,7 @@ namespace AirMonitor.ViewModels
                         }
                         if (overwriteSample == MessageBoxResult.No)
                         {
-                            samples = samples.Concat(Samples).OrderBy(o => o.RecordTime);
+                            samples = samples.Concat(Samples).OrderBy(o => o.RecordTime).ToArray();
                             Samples.Clear();
                         }
                     }
@@ -315,6 +315,7 @@ namespace AirMonitor.ViewModels
         {
             m_mapProvider.GridInit(MapGridOptions);
             m_mapProvider.GridRefresh();
+            m_mapProvider.UavPath(GetUavName(null), ShowUavPath);
         }
     }
 }

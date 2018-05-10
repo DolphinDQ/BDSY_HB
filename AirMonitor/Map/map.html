@@ -232,46 +232,18 @@
                     strokeColor: "red",
                     strokeOpacity: 0.5
                 });
-                map.addOverlay(o.pathMarker);
+            } else {
+                map.removeOverlay(o.pathMarker);
+                o.pathMarker.setPath(o.pathPoint);
             }
-            o.pathMarker.setPath(o.pathPoint);
-            //o.pathPoint.forEach(function (point, index) {
-            //    if (!point.marker) {
-            //        point.marker = new BMap.Circle(point, 1, {
-            //            strokeWeight: 1,
-            //            strokeColor: "red",
-            //            strokeOpacity: 1
-            //        });
-            //        map.addOverlay(point.marker);
-            //        if (index > 0) {
-            //            var previousPoint = o.pathPoint[index - 1];
-            //            point.line = new BMap.Polyline([previousPoint, point],
-            //                {
-            //                    enableClicking: false,
-            //                    strokeWeight: 1,
-            //                    strokeColor: "red",
-            //                    strokeOpacity: 0.5
-            //                });
-            //            map.addOverlay(point.line);
-            //        }
-            //    }
-            //});
-
+            map.addOverlay(o.pathMarker);
         });
     }
     function uavHidePath(name) {
         uav(name, function (o) {
             if (o.pathMarker) {
-                o.pathMarker.setPath([]);
+                o.pathMarker.hide();
             }
-            //if (o.pathPoint) {
-            //    o.pathPoint.forEach(function (m) {
-            //        map.removeOverlay(m.marker);
-            //        map.removeOverlay(m.line);
-            //        delete m.marker;
-            //        delete m.line;
-            //    })
-            //}
         });
     }
     function uavRemove(name) {

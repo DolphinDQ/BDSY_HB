@@ -81,10 +81,14 @@ namespace AirMonitor.Map
             if (mapContainer is WebBrowser)
             {
                 Browser = mapContainer as WebBrowser;
-                Browser.ObjectForScripting = new MapEventHandler(m_eventAggregator);
-                Browser.Source = new Uri($"file:///{AppDomain.CurrentDomain.BaseDirectory.Replace("\\", "/")}Map/map.html");
-                Browser.LoadCompleted -= Browser_LoadCompleted;
-                Browser.LoadCompleted += Browser_LoadCompleted;
+                Browser.Dispatcher.Invoke(() =>
+                {
+                    Browser.ObjectForScripting = new MapEventHandler(m_eventAggregator);
+                    Browser.Source = new Uri($"file:///{AppDomain.CurrentDomain.BaseDirectory.Replace("\\", "/")}Map/map.html");
+                    Browser.LoadCompleted -= Browser_LoadCompleted;
+                    Browser.LoadCompleted += Browser_LoadCompleted;
+                });
+              
             }
         }
 
