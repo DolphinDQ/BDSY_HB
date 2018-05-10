@@ -41,7 +41,7 @@ namespace AirMonitor.ViewModels
 
         public bool EnableSampling { get; set; }
 
-        public int CorrectAltitude { get; set; }
+        public double CorrectAltitude { get; set; }
 
         /// <summary>
         /// 数据名称列表，是采样数据的名称列表。
@@ -135,6 +135,13 @@ namespace AirMonitor.ViewModels
             }
         }
 
+        public void CorrectHeight()
+        {
+            if (NewestData != null)
+            {
+                CorrectAltitude = NewestData.hight;
+            }
+        }
 
         public void ClearData()
         {
