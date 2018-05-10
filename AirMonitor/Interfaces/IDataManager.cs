@@ -15,5 +15,9 @@ namespace AirMonitor.Interfaces
         /// 初始化。
         /// </summary>
         void Init();
+        /// <summary>
+        /// 连接状态。
+        /// </summary>
+        bool IsConnected { get; }
     }
 }

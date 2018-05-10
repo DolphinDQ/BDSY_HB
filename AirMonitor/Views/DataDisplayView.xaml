@@ -71,11 +71,11 @@
                         <Label Style="{StaticResource Lbl_Title}" Content="{StaticResource T_RealtimeAirSamples}"/>
                         <DockPanel>
                             <Label Content="{StaticResource T_SensorStatus}"></Label>
-                            <Label HorizontalAlignment="Right" Content="{StaticResource T_Normal}"></Label>
+                            <Label HorizontalAlignment="Right" Content="{Binding DataManager.IsConnected}"></Label>
                         </DockPanel>
                         <DockPanel>
                             <Label Content="{StaticResource T_DataDisplay}"></Label>
-                            <Button Name="ClearData" Width="65" Margin="0 5 5 5" Content="{StaticResource T_ClearData}"  DockPanel.Dock="Right" ></Button>
+                            <Button Name="ClearData" Width="65" Margin="0 5 5 5" Content="{StaticResource T_ClearReport}"  DockPanel.Dock="Right" ></Button>
                             <controls:ToggleSwitch Margin="5 0" OffLabel="{StaticResource T_StopSimpling}" IsChecked="{Binding EnableSampling}" OnLabel="{StaticResource T_StartSimpling}"/>
                         </DockPanel>
                     </StackPanel>

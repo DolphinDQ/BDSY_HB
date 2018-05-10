@@ -12,6 +12,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.ComponentModel;
+using AirMonitor.Config;
 
 namespace AirMonitor.ViewModels
 {
@@ -19,10 +20,10 @@ namespace AirMonitor.ViewModels
     {
         public class SampleChart
         {
-            public SampleChart(IChartManager chart)
+            public SampleChart(IChartManager chart, double max = double.NaN, double min = double.NaN)
             {
                 Collection = new ObservableCollection<Tuple<DateTime, double>>();
-                ChartModel = chart.CreatLiner(Collection);
+                ChartModel = chart.CreatLiner(Collection, max, min);
             }
 
             public ObservableCollection<Tuple<DateTime, double>> Collection { get; private set; }
@@ -33,6 +34,8 @@ namespace AirMonitor.ViewModels
 
         private IEventAggregator m_eventAggregator;
         private IResourceManager m_res;
+
+        public IDataManager DataManager { get; }
 
         public EvtAirSample NewestData { get; set; }
 
@@ -62,11 +65,14 @@ namespace AirMonitor.ViewModels
         public DataDisplayViewModel(
             IEventAggregator eventAggregator,
             IChartManager chartManager,
+            IConfigManager configManager,
+            IDataManager data,
             IResourceManager res)
         {
             eventAggregator.Subscribe(this);
             m_eventAggregator = eventAggregator;
             m_res = res;
+            DataManager = data;
             var dataNames = new[] {
                 nameof(EvtAirSample.temp),
                 nameof(EvtAirSample.humi),
@@ -80,9 +86,19 @@ namespace AirMonitor.ViewModels
                 nameof(EvtAirSample.RelativeAltitude),
             };
             Plots = new Dictionary<string, SampleChart>();
+            var standard = configManager.GetConfig<AirStandardSetting>();
             foreach (var item in dataNames)
             {
-                Plots.Add(item, new SampleChart(chartManager));
+                var pollutant = standard.Pollutant.FirstOrDefault(o => o.Name == item);
+                if (pollutant == null)
+                {
+                    this.Warn("no found pollutant {0} setting.", item);
+                    Plots.Add(item, new SampleChart(chartManager));
+                }
+                else
+                {
+                    Plots.Add(item, new SampleChart(chartManager, pollutant.MaxValue, pollutant.MinValue));
+                }
             }
         }
 
@@ -122,17 +138,20 @@ namespace AirMonitor.ViewModels
 
         public void ClearData()
         {
-            ClearChart(Temperature);
-            ClearChart(Humidity);
-            ClearChart(VOC);
-            ClearChart(CO);
-            ClearChart(SO2);
-            ClearChart(NO2);
-            ClearChart(O3);
-            ClearChart(PM2_5);
-            ClearChart(PM10);
-            ClearChart(RelativeAltitude);
-            m_eventAggregator.PublishOnBackgroundThread(new EvtSampling() { Status = SamplingStatus.Clear });
+            if (MessageBox.Show(m_res.GetText("T_ClearReportWarning"), "", MessageBoxButton.YesNo) == MessageBoxResult.Yes)
+            {
+                ClearChart(Temperature);
+                ClearChart(Humidity);
+                ClearChart(VOC);
+                ClearChart(CO);
+                ClearChart(SO2);
+                ClearChart(NO2);
+                ClearChart(O3);
+                ClearChart(PM2_5);
+                ClearChart(PM10);
+                ClearChart(RelativeAltitude);
+                m_eventAggregator.PublishOnBackgroundThread(new EvtSampling() { Status = SamplingStatus.Clear });
+            }
         }
 
         private void ClearChart(SampleChart chart) => chart.Collection.Clear();

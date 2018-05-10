@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using AirMonitor.EventArgs;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -37,7 +38,7 @@ namespace AirMonitor.Map
         /// <summary>
         /// 采集数据名称。数据字段名称
         /// </summary>
-        public string dataName { get; set; } = "pm25";
+        public string dataName { get; set; } = nameof(EvtAirSample.temp);
         /// <summary>
         /// 数据最大值。
         /// </summary>

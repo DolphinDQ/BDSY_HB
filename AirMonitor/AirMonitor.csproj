@@ -102,6 +102,8 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="AppBootstrapper.cs" />
+    <Compile Include="Config\AirPollutant.cs" />
+    <Compile Include="Config\AirStandardSetting.cs" />
     <Compile Include="Config\MqttSetting.cs" />
     <Compile Include="Core\ChartManager.cs" />
     <Compile Include="Core\Logger.cs" />

@@ -12,7 +12,7 @@ namespace AirMonitor.Interfaces
         /// 创建线性报表。
         /// </summary>
         /// <returns></returns>
-        object CreatLiner(ObservableCollection<Tuple<DateTime, double>> data);
+        object CreatLiner(ObservableCollection<Tuple<DateTime, double>> data, double maxValue = double.NaN, double minValue = double.NaN);
 
     }
 

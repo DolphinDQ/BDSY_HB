@@ -14,11 +14,14 @@ using System.Threading.Tasks;
 
 namespace AirMonitor.Data
 {
+    [PropertyChanged.AddINotifyPropertyChangedInterface]
     class MqttDataManager : IDataManager
     {
         private IEventAggregator m_eventAggregator;
         private IMqttClient m_client;
         private MqttSetting m_setting;
+
+        public bool IsConnected { get; set; }
 
         public MqttDataManager(
             IEventAggregator eventAggregator,
@@ -46,16 +49,18 @@ namespace AirMonitor.Data
         {
             string message = e.ApplicationMessage.ConvertPayloadToString();
             this.Info("On Received:{0}", message);
+            IsConnected = true;
             if (e.ApplicationMessage.Topic == m_setting.EnvironmentTopic)
             {
-              m_eventAggregator.PublishOnBackgroundThread(
-                    JsonConvert.DeserializeObject<EvtAirSample>(message));
+                m_eventAggregator.PublishOnBackgroundThread(
+                      JsonConvert.DeserializeObject<EvtAirSample>(message));
             }
         }
 
         private async void OnConnected(object sender, MqttClientConnectedEventArgs e)
         {
             this.Info("MQTT server {0}:{1} connected.", m_setting.Host, m_setting.Port);
+            IsConnected = true;
             await Subscribe(m_setting.EnvironmentTopic);
         }
 
@@ -107,6 +112,7 @@ namespace AirMonitor.Data
         {
             this.Warn("MQTT server was disconnected." + e.ClientWasConnected);
             this.Error(e.Exception);
+            IsConnected = false;
             await Task.Delay(3000);
             await DoConnect();
         }

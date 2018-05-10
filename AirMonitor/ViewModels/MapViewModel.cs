@@ -10,6 +10,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using AirMonitor.Config;
 
 namespace AirMonitor.ViewModels
 {
@@ -19,6 +20,7 @@ namespace AirMonitor.ViewModels
         private IEventAggregator m_eventAggregator;
         private IResourceManager m_res;
         private ISaveManager m_saveManager;
+        private AirStandardSetting m_airStandard;
 
         public object MapContainer { get; set; }
         public List<EvtAirSample> Samples { get; private set; }
@@ -39,6 +41,7 @@ namespace AirMonitor.ViewModels
         /// 地图网格参数。
         /// </summary>
         public MapGridOptions MapGridOptions { get; private set; }
+
         /// <summary>
         /// 显示无人机路径。
         /// </summary>
@@ -47,11 +50,16 @@ namespace AirMonitor.ViewModels
         /// 无人机跟踪
         /// </summary>
         public bool IsUavFocus { get; set; } = true;
+        /// <summary>
+        /// 污染物名称。
+        /// </summary>
+        public Tuple<string, string> DataName { get; set; }
 
         public MapViewModel(
             IEventAggregator eventAggregator,
             IMapProvider mapProvider,
             ISaveManager saveManager,
+            IConfigManager configManager,
             IResourceManager res)
         {
             m_mapProvider = mapProvider;
@@ -59,6 +67,10 @@ namespace AirMonitor.ViewModels
             m_res = res;
             m_saveManager = saveManager;
             m_eventAggregator.Subscribe(this);
+            m_airStandard = configManager.GetConfig<AirStandardSetting>();
+            Samples = new List<EvtAirSample>();
+            InvalidSamples = new List<EvtAirSample>();
+            MapGridOptions = new MapGridOptions();
             DataNameList = new List<Tuple<string, string>>(new[] {
                 Tuple.Create(nameof(EvtAirSample.temp),res.GetText("T_Temperature")),
                 Tuple.Create(nameof(EvtAirSample.humi),res.GetText("T_Humidity")),
@@ -70,15 +82,23 @@ namespace AirMonitor.ViewModels
                 Tuple.Create(nameof(EvtAirSample.pm25), res.GetText("T_PM2_5")),
                 Tuple.Create(nameof(EvtAirSample.pm10), res.GetText("T_PM10")),
             });
-            Samples = new List<EvtAirSample>();
-            InvalidSamples = new List<EvtAirSample>();
-            MapGridOptions = new MapGridOptions();
+            DataName = DataNameList.First();
         }
 
         public override void TryClose(bool? dialogResult = null)
         {
             m_eventAggregator.Unsubscribe(this);
             base.TryClose(dialogResult);
+        }
+
+        public void OnDataNameChanged()
+        {
+            var pollutant = m_airStandard.Pollutant.FirstOrDefault(o => o.Name == DataName.Item1);
+            if (pollutant != null)
+            {
+                MapGridOptions.maxValue = pollutant.MaxValue;
+                MapGridOptions.minValue = pollutant.MinValue;
+            }
         }
 
         public void OnMapContainerChanged()
@@ -122,8 +142,7 @@ namespace AirMonitor.ViewModels
                     Sampling = true;
                     break;
                 case SamplingStatus.Clear:
-                    ClearSamples();
-
+                    //ClearSamples(true);
                     break;
                 default:
                     break;
@@ -229,9 +248,9 @@ namespace AirMonitor.ViewModels
             }
         }
 
-        public void ClearSamples()
+        public void ClearSamples(bool focus = false)
         {
-            if (Samples.Any() && MessageBox.Show(m_res.GetText("T_ClearSamplesWarning"), "", MessageBoxButton.YesNo) == MessageBoxResult.Yes)
+            if (Samples.Any() && (focus || MessageBox.Show(m_res.GetText("T_ClearSamplesWarning"), "", MessageBoxButton.YesNo) == MessageBoxResult.Yes))
             {
                 Samples.Clear();
                 NotifyOfPropertyChange(nameof(Samples));

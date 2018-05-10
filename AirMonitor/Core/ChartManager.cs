@@ -16,12 +16,12 @@ namespace AirMonitor.Core
 
         public ConcurrentDictionary<int, PlotModel> LinnerPlot { get; set; } = new ConcurrentDictionary<int, PlotModel>();
 
-        public object CreatLiner(ObservableCollection<Tuple<DateTime, double>> data)
+        public object CreatLiner(ObservableCollection<Tuple<DateTime, double>> data, double maxValue, double minValue)
         {
             data.CollectionChanged -= Data_CollectionChanged;
             data.CollectionChanged += Data_CollectionChanged;
             var plot = new PlotModel { IsLegendVisible = false, Padding = new OxyThickness(2), PlotAreaBorderThickness = new OxyThickness(0) };
-            plot.Axes.Add(new LinearAxis() { IsAxisVisible = false });
+            plot.Axes.Add(new LinearAxis() { IsAxisVisible = false, Maximum = maxValue, Minimum = minValue });
             plot.Axes.Add(new DateTimeAxis()
             {
                 IsAxisVisible = false,
@@ -29,13 +29,15 @@ namespace AirMonitor.Core
                 Minimum = DateTimeAxis.ToDouble(DateTime.Now.Add(-Span)),
                 Maximum = DateTimeAxis.ToDouble(DateTime.Now),
             });
-            var series = new LineSeries {  MarkerType = MarkerType.None };
+            var series = new LineSeries { MarkerType = MarkerType.None };
             series.Points.AddRange(data.Select(o => new DataPoint(DateTimeAxis.ToDouble(o.Item1), o.Item2)));
             plot.Series.Add(series);
             LinnerPlot.TryAdd(data.GetHashCode(), plot);
             this.Info("add plot :{0}", data.GetHashCode());
             return plot;
         }
+
+
 
         private void Data_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {

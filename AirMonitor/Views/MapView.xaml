@@ -64,7 +64,7 @@
                     </Style>
                 </StackPanel.Resources>
                 <Label Content="{StaticResource T_MapDisplay}"></Label>
-                <ComboBox ItemsSource="{Binding DataNameList}" SelectedValue="{Binding MapGridOptions.dataName}" DisplayMemberPath="Item2" SelectedValuePath="Item1" SelectedIndex="0"/>
+                <ComboBox ItemsSource="{Binding DataNameList}" SelectedItem="{Binding DataName}" SelectedValue="{Binding MapGridOptions.dataName}" DisplayMemberPath="Item2" SelectedValuePath="Item1" SelectedIndex="0"/>
 
                 <Label Content="{StaticResource T_MinValue}"></Label>
                 <control:NumericUpDown Value="{Binding MapGridOptions.minValue}"/>

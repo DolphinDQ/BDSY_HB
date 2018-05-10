@@ -35,7 +35,8 @@
     <sys:String x:Key="T_ReqireDataName">请选择要显示的采样数据！</sys:String>
     <sys:String x:Key="T_RefreshMap">刷新地图</sys:String>
     <sys:String x:Key="T_RefreshBlock">刷新采样</sys:String>
-    <sys:String x:Key="T_ClearData">清空数据</sys:String>
+    <sys:String x:Key="T_ClearReport">清空报表</sys:String>
+    <sys:String x:Key="T_ClearReportWarning">确认要清空当前报表采样数据？</sys:String>
     <sys:String x:Key="T_UavFocus">无人机跟踪</sys:String>
     <sys:String x:Key="T_UavPath">无人机路径</sys:String>
     <sys:String x:Key="T_MaxValue">最大值</sys:String>
@@ -45,8 +46,8 @@
     <sys:String x:Key="T_SamplingStatus">采样状态</sys:String>
     <sys:String x:Key="T_ValidSamples">有效样本</sys:String>
     <sys:String x:Key="T_InvalidSamples">无效样本</sys:String>
-    <sys:String x:Key="T_ClearSamples">清空样本</sys:String>
-    <sys:String x:Key="T_ClearSamplesWarning">是否清空当前的采样数据？</sys:String>
+    <sys:String x:Key="T_ClearSamples">清空地图</sys:String>
+    <sys:String x:Key="T_ClearSamplesWarning">确认要清空当前地图采样数据？</sys:String>
     <sys:String x:Key="T_SaveSamples">保存样本</sys:String>
     <sys:String x:Key="T_SaveSamplesFailed">保存样本失败。</sys:String>
     <sys:String x:Key="T_LoadSamples">加载样本</sys:String>
