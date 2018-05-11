@@ -38,10 +38,10 @@
             font-size: small;
         }
 
-        .pollutant_avg {
+        .pollutant_val {
             float: left;
             margin: 0 5px;
-            width: 50px;
+            width: 80px;
         }
     </style>
     <script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=TCgR2Y0IGMmPR4qteh4McpXzMyYpFrEx"></script>
@@ -90,6 +90,7 @@
         options: {},
         blocks: []//BMap.Polygon[]
     };
+
     function gridInit(arg) {
         var opt = arg;
         if (typeof (arg) == 'string') {
@@ -138,22 +139,30 @@
         return result.length < 2 ? "0" + result : result;
     }
 
-    function createInfoWindowContent(title,avg,opt) {
-        var template = '<div class="pollutant_message"><div class="pollutant_block" style="background:{{background}};opacity:{{opacity}}"></div><div class="pollutant_title">{{title}}</div><div class="pollutant_avg">{{avg}}</div><div class="pollutant_unit">{{unit}}</div></div>';
-        debugger;
-        var pollutant = opt.pollutants.find(function (p) { return p.Name == title });
-        if (!pollutant) return "";
-        var background = getColor(avg, opt, pollutant.MinValue, pollutant.MaxValue);
-        title = pollutant.DisplayName;
-        var opacity = opt.opacity;
-        avg = Math.round(avg * 100) / 100 ;
-        var unit = pollutant.Unit;
-        template= template.replace("{{title}}", title);
-        template= template.replace("{{avg}}", avg);
-        template= template.replace("{{unit}}", unit);
-        template= template.replace("{{background}}", background);
-        template= template.replace("{{opacity}}", opacity);
+    function getInfoWindowContentTemplate(opt) {
+        var template =  '<div class="pollutant_message"><div class="pollutant_block" style="background:{{background}};opacity:{{opacity}}"></div><div class="pollutant_title">{{title}}</div><div class="pollutant_val">{{min}}</div><div class="pollutant_val">{{avg}}</div><div class="pollutant_val">{{max}}</div><div class="pollutant_unit">{{unit}}</div></div>';
+        template = template.replace("{{title}}", opt.title);
+        template = template.replace("{{min}}", opt. min);
+        template = template.replace("{{max}}", opt. max);
+        template = template.replace("{{avg}}", opt.avg);
+        template = template.replace("{{unit}}", opt. unit);
+        template = template.replace("{{background}}", opt.background);
+        template = template.replace("{{opacity}}", opt.opacity);
         return template;
+    }
+
+    function createInfoWindowContent(contentData,opt) {
+        var pollutant = opt.pollutants.find(function (p) { return p.Name == contentData.title });
+        if (!pollutant) return "";
+        return getInfoWindowContentTemplate({
+            title: pollutant.DisplayName,
+            min : Math.round(contentData.min * 100) / 100,
+            max : Math.round(contentData.max * 100) / 100,
+            avg : Math.round(contentData.avg * 100) / 100,
+            unit: pollutant.Unit,
+            background: getColor(contentData.avg, opt, pollutant.MinValue, pollutant.MaxValue),
+            opacity: opt.opacity,
+        });
     }
 
     function gridRefresh() {
@@ -173,12 +182,12 @@
                     console.dir(e);
                     if (!opt.infoWindow) {
                         opt.infoWindow = new BMap.InfoWindow("", {
-                            width: 250,
+                            width: 500,
                             height: 300
                         });
                     }
                     var pointsInBlock = e.target.points;//方块里的点。
-                    var content = '<div class="sample_title">实时采样数据：</div><div class="sample_time">({{time}})</div>';
+                    var content = '<div><span>实时采样数据：</span><span>({{time}})</span></div>';
                     var contentData = [];
                     /* {
                         title: "",
@@ -190,23 +199,34 @@
                         var blockData = pointsInBlock[i].data;
                         if (!time) time = blockData.time;
                         for (var title in blockData) {
+                            var val = blockData[title];
                             var tmp = contentData.find(function (d) { return d.title == title; });
                             if (!tmp) {
                                 tmp = {
                                     title: title,
-                                    avg:0,
+                                    avg: 0,
+                                    min: val ,
+                                    max: val
                                 };
                                 contentData.push(tmp);
                             }
-                            //alert(JSON.stringify(tmp) + "=====" + blockData[title])
-                            tmp.avg = (tmp.avg * i + blockData[title]) / (i + 1);
-                            //alert(JSON.stringify(tmp))
+                            if (tmp.min > val) tmp.min = val;
+                            if (tmp.max < val) tmp.max = val;
+                            tmp.avg = (tmp.avg * i + val) / (i + 1);
                         }
                     }
                     content = content.replace("{{time}}", time);
+                    content += getInfoWindowContentTemplate({
+                        title:"采样类型",
+                        min: "最小值",
+                        max: "最大值",
+                        avg: "平均值",
+                        unit:"单位",
+                        background:"white",
+                        opacity:1,
+                    });
                     for (var i = 0; i < contentData.length; i++) {
-                        var tmp = contentData[i];
-                        content += createInfoWindowContent(tmp.title,tmp.avg,opt)
+                        content += createInfoWindowContent(contentData[i],opt)
                     }
                     opt.infoWindow.setContent(content);
                     map.openInfoWindow(opt.infoWindow, e.point)
