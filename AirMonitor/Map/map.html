@@ -11,6 +11,38 @@
             margin: 0;
             font-family: "微软雅黑";
         }
+
+        .pollutant_message {
+            float: left;
+            padding: 2px;
+        }
+
+        .pollutant_block {
+            float: left;
+            width: 18px;
+            height: 18px;
+            background-color: red;
+            opacity: 0.5;
+            margin: 3px;
+        }
+
+        .pollutant_title {
+            float: left;
+            font-weight: bold;
+            width: 80px;
+        }
+
+        .pollutant_unit {
+            float: left;
+            font-style: italic;
+            font-size: small;
+        }
+
+        .pollutant_avg {
+            float: left;
+            margin: 0 5px;
+            width: 50px;
+        }
     </style>
     <script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=TCgR2Y0IGMmPR4qteh4McpXzMyYpFrEx"></script>
     <title>地图展示</title>
@@ -54,7 +86,10 @@
     //map.addControl(new BMap.GeolocationControl());
     map.enableScrollWheelZoom(true);     //开启鼠标滚轮缩放
     var uavList = [];
-    var blockGrid = {};
+    var blockGrid = {
+        options: {},
+        blocks: []//BMap.Polygon[]
+    };
     function gridInit(arg) {
         var opt = arg;
         if (typeof (arg) == 'string') {
@@ -70,14 +105,18 @@
         if (!opt.dataName) opt.dataName = "";
         if (!opt.maxValue) opt.maxValue = 100;
         if (!opt.minValue) opt.minValue = 0;
+        if (!opt.pollutants) opt.pollutants = [];//格式：{Name:"",DisplayName:"",MaxValue:0,MinValue:0,Unit:""}
         blockGrid.options = opt;
         gridClear();
     }
 
 
 
-    function getColor(value, opt) {
-        var percent = (value - opt.minValue) / (opt.maxValue - opt.minValue);
+    function getColor(value, opt, min, max) {
+        if (!min) min = opt.minValue
+        if (!max) max = opt.maxValue
+
+        var percent = (value - min) / (max - min);
         percent = percent > 1 ? 1 : percent;
         percent = percent < 0 ? 0 : percent;
 
@@ -99,6 +138,24 @@
         return result.length < 2 ? "0" + result : result;
     }
 
+    function createInfoWindowContent(title,avg,opt) {
+        var template = '<div class="pollutant_message"><div class="pollutant_block" style="background:{{background}};opacity:{{opacity}}"></div><div class="pollutant_title">{{title}}</div><div class="pollutant_avg">{{avg}}</div><div class="pollutant_unit">{{unit}}</div></div>';
+        debugger;
+        var pollutant = opt.pollutants.find(function (p) { return p.Name == title });
+        if (!pollutant) return "";
+        var background = getColor(avg, opt, pollutant.MinValue, pollutant.MaxValue);
+        title = pollutant.DisplayName;
+        var opacity = opt.opacity;
+        avg = Math.round(avg * 100) / 100 ;
+        var unit = pollutant.Unit;
+        template= template.replace("{{title}}", title);
+        template= template.replace("{{avg}}", avg);
+        template= template.replace("{{unit}}", unit);
+        template= template.replace("{{background}}", background);
+        template= template.replace("{{opacity}}", opacity);
+        return template;
+    }
+
     function gridRefresh() {
         var points = [];
         for (var i = 0; i < uavList.length; i++) {
@@ -112,7 +169,49 @@
             if (!block) {
                 block = createBlock(point, opt);
                 blockGrid.blocks.push(block);
-                map.addOverlay(block.polygon);
+                block.addEventListener("click", function (e) {
+                    console.dir(e);
+                    if (!opt.infoWindow) {
+                        opt.infoWindow = new BMap.InfoWindow("", {
+                            width: 250,
+                            height: 300
+                        });
+                    }
+                    var pointsInBlock = e.target.points;//方块里的点。
+                    var content = '<div class="sample_title">实时采样数据：</div><div class="sample_time">({{time}})</div>';
+                    var contentData = [];
+                    /* {
+                        title: "",
+                        sum: 0,
+                        len: pointsInBlock.length
+                    }*/
+                    var time = null;
+                    for (var i = 0; i < pointsInBlock.length; i++) {
+                        var blockData = pointsInBlock[i].data;
+                        if (!time) time = blockData.time;
+                        for (var title in blockData) {
+                            var tmp = contentData.find(function (d) { return d.title == title; });
+                            if (!tmp) {
+                                tmp = {
+                                    title: title,
+                                    avg:0,
+                                };
+                                contentData.push(tmp);
+                            }
+                            //alert(JSON.stringify(tmp) + "=====" + blockData[title])
+                            tmp.avg = (tmp.avg * i + blockData[title]) / (i + 1);
+                            //alert(JSON.stringify(tmp))
+                        }
+                    }
+                    content = content.replace("{{time}}", time);
+                    for (var i = 0; i < contentData.length; i++) {
+                        var tmp = contentData[i];
+                        content += createInfoWindowContent(tmp.title,tmp.avg,opt)
+                    }
+                    opt.infoWindow.setContent(content);
+                    map.openInfoWindow(opt.infoWindow, e.point)
+                })
+                map.addOverlay(block);
             } else {
                 block.points.push(point);
             }
@@ -124,15 +223,16 @@
                     sum += block.points[i].data[opt.dataName]
                 }
             }
-            block.polygon.setFillColor(getColor(sum / block.points.length, opt));
+            block.avgValue = sum / block.points.length;
+            block.setFillColor(getColor(block.avgValue, opt));
         });
     }
 
     function gridClear() {
         if (blockGrid.blocks) {
             blockGrid.blocks.forEach(function (o) {
-                map.removeOverlay(o.polygon);
-                delete o.polygon;
+                map.removeOverlay(o);
+                delete o;
             });
         }
         delete blockGrid.blocks;
@@ -140,7 +240,6 @@
     }
 
     function createBlock(point, opt) {
-
         var center = opt.firstPoint;
         var sideLength = opt.sideLength * 0.00001;
         var opacity = opt.opacity;
@@ -148,24 +247,23 @@
         var lng = center.lng + sideLength * Math.round((point.lng - center.lng) / sideLength);
         var lat = center.lat + sideLength * Math.round((point.lat - center.lat) / sideLength)
         var center = new BMap.Point(lng, lat);
-        return {
-            center: center,
-            polygon: new BMap.Polygon(
-                [
-                    new BMap.Point(lng + offset, lat + offset),
-                    new BMap.Point(lng - offset, lat + offset),
-                    new BMap.Point(lng - offset, lat - offset),
-                    new BMap.Point(lng + offset, lat - offset),
-                ],
-                {
-                    fillOpacity: opacity,
-                    strokeWeight: 1,
-                    strokeOpacity: 0.5,
-                    strokeColor: "white"
-                }
-            ),
-            points: [point]
-        };
+        var polygon = new BMap.Polygon(
+            [
+                new BMap.Point(lng + offset, lat + offset),
+                new BMap.Point(lng - offset, lat + offset),
+                new BMap.Point(lng - offset, lat - offset),
+                new BMap.Point(lng + offset, lat - offset),
+            ],
+            {
+                fillOpacity: opacity,
+                strokeWeight: 1,
+                strokeOpacity: 0.5,
+                strokeColor: "white"
+            }
+        );
+        polygon.center = center;
+        polygon.points = [point]
+        return polygon;
     }
 
     function isInBlock(center, sideLength, point) {
@@ -321,6 +419,14 @@
             map.clearOverlays();
         }
     }
+
+    function pause() {
+        if (window.handle) {
+            clearInterval(window.handle);
+        }
+    }
+
+
 
 
 

@@ -86,19 +86,19 @@ namespace AirMonitor.ViewModels
                 nameof(EvtAirSample.RelativeAltitude),
             };
             Plots = new Dictionary<string, SampleChart>();
-            var standard = configManager.GetConfig<AirStandardSetting>();
+            //var standard = configManager.GetConfig<AirStandardSetting>();
             foreach (var item in dataNames)
             {
-                var pollutant = standard.Pollutant.FirstOrDefault(o => o.Name == item);
-                if (pollutant == null)
-                {
-                    this.Warn("no found pollutant {0} setting.", item);
+                //var pollutant = standard.Pollutant.FirstOrDefault(o => o.Name == item);
+                //if (pollutant == null)
+                //{
+                    //this.Warn("no found pollutant {0} setting.", item);
                     Plots.Add(item, new SampleChart(chartManager));
-                }
-                else
-                {
-                    Plots.Add(item, new SampleChart(chartManager, pollutant.MaxValue, pollutant.MinValue));
-                }
+                //}
+                //else
+                //{
+                //    Plots.Add(item, new SampleChart(chartManager, pollutant.MaxValue, pollutant.MinValue));
+                //}
             }
         }
 

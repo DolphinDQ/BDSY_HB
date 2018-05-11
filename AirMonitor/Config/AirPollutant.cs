@@ -23,5 +23,13 @@ namespace AirMonitor.Config
         /// 最小值。
         /// </summary>
         public double MinValue { get; set; }
+        /// <summary>
+        /// 显示名称。
+        /// </summary>
+        public string DisplayName { get; set; }
+        /// <summary>
+        /// 单位。
+        /// </summary>
+        public string Unit { get; set; }
     }
 }

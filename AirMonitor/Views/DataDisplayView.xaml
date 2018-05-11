@@ -36,15 +36,15 @@
                     <Label Content="{StaticResource T_GpsAltitude}"></Label>
                     <Label Content="{Binding NewestData.ghight}"></Label>
                     <Label Content="{StaticResource T_PressureAltitude}"></Label>
-                    <Button Name="CorrectHeight" Content="{Binding NewestData.hight}"></Button>
+                    <Button Name="CorrectHeight" Content="{Binding NewestData.hight,Converter={StaticResource Round}}"></Button>
 
                     <!--<Label Content="{StaticResource T_RelativeAltitude}"></Label>-->
                 </UniformGrid>
                 <DockPanel Margin="5">
                     <Label DockPanel.Dock="Left" VerticalContentAlignment="Center" Content="{StaticResource T_CorrectAltitude}"></Label>
-                    <Label DockPanel.Dock="Right" Content="{Binding NewestData.RelativeAltitude}"></Label>
+                    <Label DockPanel.Dock="Right" Content="{Binding NewestData.RelativeAltitude,Converter={StaticResource Round}}"></Label>
 
-                    <controls:NumericUpDown Margin="10 0" Value="{Binding CorrectAltitude}"></controls:NumericUpDown>
+                    <controls:NumericUpDown Margin="10 0" Value="{Binding CorrectAltitude,Converter={StaticResource Round}}"></controls:NumericUpDown>
                 </DockPanel>
             </StackPanel>
         </Border>
@@ -86,17 +86,17 @@
                     <StackPanel>
                         <DockPanel>
                             <Label Content="{StaticResource T_RelativeAltitude}"></Label>
-                            <Label DockPanel.Dock="Right" Content="{Binding NewestData.RelativeAltitude}" />
+                            <Label DockPanel.Dock="Right" Content="{Binding NewestData.RelativeAltitude,Converter={StaticResource Round}}" />
                             <oxy:PlotView Model="{Binding RelativeAltitude.ChartModel}" />
                         </DockPanel>
                         <DockPanel>
                             <Label Content="{StaticResource T_Temperature}"></Label>
-                            <Label DockPanel.Dock="Right"  Content="{Binding NewestData.temp}"></Label>
+                            <Label DockPanel.Dock="Right"  Content="{Binding NewestData.temp,Converter={StaticResource Round}}"></Label>
                             <oxy:PlotView Model="{Binding Temperature.ChartModel}" />
                         </DockPanel>
                         <DockPanel>
                             <Label Content="{StaticResource T_Humidity}"></Label>
-                            <Label DockPanel.Dock="Right" Content="{Binding NewestData.humi}"></Label>
+                            <Label DockPanel.Dock="Right" Content="{Binding NewestData.humi,Converter={StaticResource Round}}"></Label>
                             <oxy:PlotView Model="{Binding Humidity.ChartModel}" />
                         </DockPanel>
                         <DockPanel>
@@ -106,7 +106,7 @@
                                     <TextBlock Text="{StaticResource T_ppb}" FontSize="8" VerticalAlignment="Bottom" Margin="2"/>
                                 </StackPanel>
                             </Label>
-                            <Label DockPanel.Dock="Right" Content="{Binding NewestData.voc}"></Label>
+                            <Label DockPanel.Dock="Right" Content="{Binding NewestData.voc,Converter={StaticResource Round}}"></Label>
                             <oxy:PlotView Model="{Binding VOC.ChartModel}" />
                         </DockPanel>
                         <DockPanel>
@@ -116,7 +116,7 @@
                                     <TextBlock Text="{StaticResource T_mg_m3}" FontSize="8" VerticalAlignment="Bottom" Margin="2"/>
                                 </StackPanel>
                             </Label>
-                            <Label DockPanel.Dock="Right" Content="{Binding NewestData.co}"></Label>
+                            <Label DockPanel.Dock="Right" Content="{Binding NewestData.co,Converter={StaticResource Round}}"></Label>
                             <oxy:PlotView Model="{Binding CO.ChartModel}" />
                         </DockPanel>
                         <DockPanel>
@@ -126,7 +126,7 @@
                                     <TextBlock Text="{StaticResource T_ug_m3}" FontSize="8" VerticalAlignment="Bottom" Margin="2"/>
                                 </StackPanel>
                             </Label>
-                            <Label DockPanel.Dock="Right" Content="{Binding NewestData.so2}"></Label>
+                            <Label DockPanel.Dock="Right" Content="{Binding NewestData.so2,Converter={StaticResource Round}}"></Label>
                             <oxy:PlotView Model="{Binding SO2.ChartModel}" />
                         </DockPanel>
                         <DockPanel>
@@ -136,7 +136,7 @@
                                     <TextBlock Text="{StaticResource T_ug_m3}" FontSize="8" VerticalAlignment="Bottom" Margin="2"/>
                                 </StackPanel>
                             </Label>
-                            <Label DockPanel.Dock="Right" Content="{Binding NewestData.no2}"></Label>
+                            <Label DockPanel.Dock="Right" Content="{Binding NewestData.no2,Converter={StaticResource Round}}"></Label>
                             <oxy:PlotView Model="{Binding NO2.ChartModel}" />
                         </DockPanel>
                         <DockPanel>
@@ -146,7 +146,7 @@
                                     <TextBlock Text="{StaticResource T_ug_m3}" FontSize="8" VerticalAlignment="Bottom" Margin="2"/>
                                 </StackPanel>
                             </Label>
-                            <Label DockPanel.Dock="Right" Content="{Binding NewestData.o3}"></Label>
+                            <Label DockPanel.Dock="Right" Content="{Binding NewestData.o3,Converter={StaticResource Round}}"></Label>
                             <oxy:PlotView Model="{Binding O3.ChartModel}" />
                         </DockPanel>
                         <DockPanel>
@@ -156,7 +156,7 @@
                                     <TextBlock Text="{StaticResource T_ug_m3}" FontSize="8" VerticalAlignment="Bottom" Margin="2"/>
                                 </StackPanel>
                             </Label>
-                            <Label DockPanel.Dock="Right" Content="{Binding NewestData.pm25}"></Label>
+                            <Label DockPanel.Dock="Right" Content="{Binding NewestData.pm25,Converter={StaticResource Round}}"></Label>
                             <oxy:PlotView Model="{Binding PM2_5.ChartModel}" />
                         </DockPanel>
                         <DockPanel>
@@ -166,7 +166,7 @@
                                     <TextBlock Text="{StaticResource T_ug_m3}" FontSize="8" VerticalAlignment="Bottom" Margin="2"/>
                                 </StackPanel>
                             </Label>
-                            <Label DockPanel.Dock="Right" Content="{Binding NewestData.pm10}"></Label>
+                            <Label DockPanel.Dock="Right" Content="{Binding NewestData.pm10,Converter={StaticResource Round}}"></Label>
                             <oxy:PlotView Model="{Binding PM10.ChartModel}" />
                         </DockPanel>
                     </StackPanel>

@@ -70,18 +70,15 @@ namespace AirMonitor.ViewModels
             m_airStandard = configManager.GetConfig<AirStandardSetting>();
             Samples = new List<EvtAirSample>();
             InvalidSamples = new List<EvtAirSample>();
-            MapGridOptions = new MapGridOptions();
-            DataNameList = new List<Tuple<string, string>>(new[] {
-                Tuple.Create(nameof(EvtAirSample.temp),res.GetText("T_Temperature")),
-                Tuple.Create(nameof(EvtAirSample.humi),res.GetText("T_Humidity")),
-                Tuple.Create(nameof(EvtAirSample.voc),res.GetText("T_VOC")),
-                Tuple.Create(nameof(EvtAirSample.co),res.GetText("T_CO")),
-                Tuple.Create(nameof(EvtAirSample.so2),res.GetText("T_SO2")),
-                Tuple.Create(nameof(EvtAirSample.no2),res.GetText("T_NO2")),
-                Tuple.Create(nameof(EvtAirSample.o3), res.GetText("T_O3")),
-                Tuple.Create(nameof(EvtAirSample.pm25), res.GetText("T_PM2_5")),
-                Tuple.Create(nameof(EvtAirSample.pm10), res.GetText("T_PM10")),
-            });
+            MapGridOptions = new MapGridOptions()
+            {
+                pollutants = m_airStandard.Pollutant
+            };
+            DataNameList = new List<Tuple<string, string>>();
+            foreach (var item in m_airStandard.Pollutant)
+            {
+                DataNameList.Add(Tuple.Create(item.Name, item.DisplayName));
+            }
             DataName = DataNameList.First();
         }
 

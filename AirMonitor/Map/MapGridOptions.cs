@@ -1,4 +1,5 @@
-﻿using AirMonitor.EventArgs;
+﻿using AirMonitor.Config;
+using AirMonitor.EventArgs;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -36,9 +37,13 @@ namespace AirMonitor.Map
         /// </summary>
         public double opacity { get; set; } = 0.8;
         /// <summary>
-        /// 采集数据名称。数据字段名称
+        /// 采集数据名称。/*数据字段名称*/
         /// </summary>
         public string dataName { get; set; } = nameof(EvtAirSample.temp);
+        /// <summary>
+        /// 污染物。
+        /// </summary>
+        public AirPollutant[] pollutants { get; set; }
         /// <summary>
         /// 数据最大值。
         /// </summary>
@@ -64,6 +69,12 @@ namespace AirMonitor.Map
                 }
                 res[5] = maxValue;
                 ValueStep = res;
+                if (pollutants != null)
+                {
+                    var item = pollutants.FirstOrDefault(o => o.Name == dataName);
+                    item.MinValue = minValue;
+                    item.MaxValue = maxValue;
+                }
             }
         }
         [JsonIgnore]

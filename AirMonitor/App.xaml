@@ -2,12 +2,14 @@
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:local="clr-namespace:AirMonitor"
+             xmlns:converter="clr-namespace:AirMonitor.Converter"
              >
     <Application.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary>
                     <local:AppBootstrapper x:Key="bootstrapper" />
+                    <converter:RoundConverter x:Key="Round"/>
                 </ResourceDictionary>
                 <!-- MahApps.Metro resource dictionaries. Make sure that all file names are Case Sensitive! -->
                 <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Controls.xaml" />
