@@ -2,6 +2,7 @@ namespace AirMonitor
 {
     using System;
     using System.Collections.Generic;
+    using System.Windows.Threading;
     using AirMonitor.Config;
     using AirMonitor.Core;
     using AirMonitor.Data;
@@ -36,12 +37,20 @@ namespace AirMonitor
             container.RegisterInstance(typeof(IFactory), null, this);
             container.PerRequest<DataDisplayViewModel>();
             container.PerRequest<MapViewModel>();
-            
+
             LogManager.GetLog = o => container.GetInstance<ILog>();
             container.GetInstance<IDataManager>().Init();
 
 
         }
+
+        protected override void OnUnhandledException(object sender, DispatcherUnhandledExceptionEventArgs e)
+        {
+            this.Warn("unhandle error  from {0} : {1}", sender, e.Exception.Message);
+            this.Error(e.Exception);
+            e.Handled = true;
+        }
+
 
         protected override object GetInstance(Type service, string key)
         {

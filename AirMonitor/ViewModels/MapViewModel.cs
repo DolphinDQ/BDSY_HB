@@ -177,7 +177,8 @@ namespace AirMonitor.ViewModels
         private void LoadHistoryData(string name)
         {
             var s = Samples.Where(o => o.ActualLat != 0 && o.ActualLng != 0).ToList();
-            var first = s.First();
+            var first = s.FirstOrDefault();
+            if (first == null) return;
             m_mapProvider.UavAdd(new Uav { name = name, data = first, lat = first.ActualLat, lng = first.ActualLng });
             foreach (var item in s)
             {
