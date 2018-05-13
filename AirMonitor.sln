@@ -13,6 +13,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UseIEVersion", "UseIEVersio
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "chart", "chart\chart.csproj", "{1C63FC60-C7C0-4C2E-A000-A91E8A5C780E}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Viewport3DTest", "Viewport3DTest\Viewport3DTest.csproj", "{93EB80F2-380C-4443-A3B5-5A624C6F80F8}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,6 +41,10 @@ Global
 		{1C63FC60-C7C0-4C2E-A000-A91E8A5C780E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1C63FC60-C7C0-4C2E-A000-A91E8A5C780E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1C63FC60-C7C0-4C2E-A000-A91E8A5C780E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{93EB80F2-380C-4443-A3B5-5A624C6F80F8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{93EB80F2-380C-4443-A3B5-5A624C6F80F8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{93EB80F2-380C-4443-A3B5-5A624C6F80F8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{93EB80F2-380C-4443-A3B5-5A624C6F80F8}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
