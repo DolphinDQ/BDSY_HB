@@ -42,8 +42,7 @@
                 </UniformGrid>
                 <DockPanel Margin="5">
                     <Label DockPanel.Dock="Left" VerticalContentAlignment="Center" Content="{StaticResource T_CorrectAltitude}"></Label>
-                    <Label DockPanel.Dock="Right" Content="{Binding NewestData.RelativeAltitude,Converter={StaticResource Round}}"></Label>
-
+                    <Label DockPanel.Dock="Right" Content="{Binding NewestData.RelativeHeight,Converter={StaticResource Round}}"></Label>
                     <controls:NumericUpDown Margin="10 0" Value="{Binding CorrectAltitude,Converter={StaticResource Round}}"></controls:NumericUpDown>
                 </DockPanel>
             </StackPanel>
@@ -85,9 +84,9 @@
                 <ScrollViewer VerticalScrollBarVisibility="Auto">
                     <StackPanel>
                         <DockPanel>
-                            <Label Content="{StaticResource T_RelativeAltitude}"></Label>
-                            <Label DockPanel.Dock="Right" Content="{Binding NewestData.RelativeAltitude,Converter={StaticResource Round}}" />
-                            <oxy:PlotView Model="{Binding RelativeAltitude.ChartModel}" />
+                            <Label Content="{StaticResource T_RelativeHeight}"></Label>
+                            <Label DockPanel.Dock="Right" Content="{Binding NewestData.RelativeHeight,Converter={StaticResource Round}}" />
+                            <oxy:PlotView Model="{Binding RelativeHeight.ChartModel}" />
                         </DockPanel>
                         <DockPanel>
                             <Label Content="{StaticResource T_Temperature}"></Label>

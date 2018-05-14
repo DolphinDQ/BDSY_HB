@@ -58,7 +58,7 @@ namespace AirMonitor.ViewModels
         public SampleChart O3 => Plots[nameof(EvtAirSample.o3)];
         public SampleChart PM2_5 => Plots[nameof(EvtAirSample.pm25)];
         public SampleChart PM10 => Plots[nameof(EvtAirSample.pm10)];
-        public SampleChart RelativeAltitude => Plots[nameof(EvtAirSample.RelativeAltitude)];
+        public SampleChart RelativeHeight => Plots[nameof(EvtAirSample.RelativeHeight)];
         public Dictionary<string, SampleChart> Plots { get; set; }
         #endregion
 
@@ -83,7 +83,7 @@ namespace AirMonitor.ViewModels
                 nameof(EvtAirSample.o3),
                 nameof(EvtAirSample.pm25),
                 nameof(EvtAirSample.pm10),
-                nameof(EvtAirSample.RelativeAltitude),
+                nameof(EvtAirSample.RelativeHeight),
             };
             Plots = new Dictionary<string, SampleChart>();
             //var standard = configManager.GetConfig<AirStandardSetting>();
@@ -118,7 +118,7 @@ namespace AirMonitor.ViewModels
 
         public void Handle(EvtAirSample message)
         {
-            message.RelativeAltitude = message.hight - CorrectAltitude;
+            message.RelativeHeight = message.hight - CorrectAltitude;
             NewestData = message;
             if (EnableSampling)
             {
@@ -131,7 +131,7 @@ namespace AirMonitor.ViewModels
                 FillChart(O3, Tuple.Create(message.RecordTime, message.o3));
                 FillChart(PM2_5, Tuple.Create(message.RecordTime, message.pm25));
                 FillChart(PM10, Tuple.Create(message.RecordTime, message.pm10));
-                FillChart(RelativeAltitude, Tuple.Create(message.RecordTime, message.RelativeAltitude));
+                FillChart(RelativeHeight, Tuple.Create(message.RecordTime, message.RelativeHeight));
             }
         }
 
@@ -156,7 +156,7 @@ namespace AirMonitor.ViewModels
                 ClearChart(O3);
                 ClearChart(PM2_5);
                 ClearChart(PM10);
-                ClearChart(RelativeAltitude);
+                ClearChart(RelativeHeight);
                 m_eventAggregator.PublishOnBackgroundThread(new EvtSampling() { Status = SamplingStatus.Clear });
             }
         }

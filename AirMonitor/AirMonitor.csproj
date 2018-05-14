@@ -107,6 +107,7 @@
     <Compile Include="Config\MqttSetting.cs" />
     <Compile Include="Core\ChartManager.cs" />
     <Compile Include="Core\Logger.cs" />
+    <Compile Include="Core\LoggerListener.cs" />
     <Compile Include="Core\ResourcesManager.cs" />
     <Compile Include="Converter\RoundConverter.cs" />
     <Compile Include="Core\SaveManager.cs" />

@@ -25,11 +25,11 @@ namespace AirMonitor.Map
         /// </summary>
         public double sideLength { get; set; } = 15;
         /// <summary>
-        /// 渐变色开始。格式："ffffff"，"0f0f0f"
+        /// 渐变色开始。格式："#ffffff"，"#0f0f0f"
         /// </summary>
         public string colorBegin { get; set; } = "#00ff00";
         /// <summary>
-        /// 渐变色结束。格式："ffffff"，"0f0f0f"
+        /// 渐变色结束。格式："#ffffff"，"#0f0f0f"
         /// </summary>
         public string colorEnd { get; set; } = "#ff0000";
         /// <summary>

@@ -11,20 +11,30 @@ namespace AirMonitor.Core
 {
     public class Logger : ILog
     {
+        [Flags]
+        public enum LogType
+        {
+            None = 0,
+            Info = 1,
+            Warn = 2,
+            Error = 4,
+        }
+
 
         public void Error(Exception exception)
         {
-            Debug.Print("[Error]" + exception.ToString());
+            Trace.Fail($"[{LogType.Error}]{exception}");
+            Trace.TraceError(exception.Message, exception.ToString());
         }
 
         public void Info(string format, params object[] args)
         {
-            Debug.Print("[Info]" + format, args);
+            Trace.TraceInformation($"[{LogType.Info}]{format}", args);
         }
 
         public void Warn(string format, params object[] args)
         {
-            Debug.Print("[Warn]" + format, args);
+            Trace.TraceWarning($"[{LogType.Warn}]{format}", args);
         }
 
     }

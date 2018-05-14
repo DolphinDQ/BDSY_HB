@@ -48,7 +48,6 @@ namespace AirMonitor.EventArgs
         /// <summary>
         /// 相对海拔。
         /// </summary>
-        [JsonIgnore]
-        public double RelativeAltitude { get; set; }
+        public double RelativeHeight { get; set; }
     }
 }
