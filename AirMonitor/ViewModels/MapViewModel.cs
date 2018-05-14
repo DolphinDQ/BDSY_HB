@@ -88,16 +88,6 @@ namespace AirMonitor.ViewModels
             base.TryClose(dialogResult);
         }
 
-        public void OnDataNameChanged()
-        {
-            var pollutant = m_airStandard.Pollutant.FirstOrDefault(o => o.Name == DataName.Item1);
-            if (pollutant != null)
-            {
-                MapGridOptions.maxValue = pollutant.MaxValue;
-                MapGridOptions.minValue = pollutant.MinValue;
-            }
-        }
-
         public void OnMapContainerChanged()
         {
             m_mapProvider.LoadMap(MapContainer);

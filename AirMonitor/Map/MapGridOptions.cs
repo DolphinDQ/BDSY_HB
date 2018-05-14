@@ -41,10 +41,6 @@ namespace AirMonitor.Map
         /// </summary>
         public string dataName { get; set; } = nameof(EvtAirSample.temp);
         /// <summary>
-        /// 污染物。
-        /// </summary>
-        public AirPollutant[] pollutants { get; set; }
-        /// <summary>
         /// 数据最大值。
         /// </summary>
         public double maxValue { get; set; } = 100;
@@ -52,10 +48,24 @@ namespace AirMonitor.Map
         /// 数据最小值。
         /// </summary>
         public double minValue { get; set; } = 0;
+        /// <summary>
+        /// 污染物。
+        /// </summary>
+        public AirPollutant[] pollutants { get; set; }
 
         public void OnmaxValueChanged() => SetValueStep();
 
         public void OnminValueChanged() => SetValueStep();
+
+        public void OndataNameChanged()
+        {
+            if (pollutants != null)
+            {
+                var item = pollutants.FirstOrDefault(o => o.Name == dataName);
+                minValue = item.MinValue;
+                maxValue = item.MaxValue;
+            }
+        }
 
         private void SetValueStep()
         {
@@ -69,12 +79,12 @@ namespace AirMonitor.Map
                 }
                 res[5] = maxValue;
                 ValueStep = res;
-                if (pollutants != null)
-                {
-                    var item = pollutants.FirstOrDefault(o => o.Name == dataName);
-                    item.MinValue = minValue;
-                    item.MaxValue = maxValue;
-                }
+            }
+            if (pollutants != null)
+            {
+                var item = pollutants.FirstOrDefault(o => o.Name == dataName);
+                item.MinValue = minValue;
+                item.MaxValue = maxValue;
             }
         }
         [JsonIgnore]
