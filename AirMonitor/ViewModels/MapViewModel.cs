@@ -14,13 +14,12 @@ using AirMonitor.Config;
 
 namespace AirMonitor.ViewModels
 {
-    public class MapViewModel : Screen, IHandle<EvtAirSample>, IHandle<EvtSampling>, IHandle<EvtMapLoad>, IHandle<EvtMapPointConverted>
+    public class MapViewModel : Screen, IHandle<EvtAirSample>, IHandle<EvtSampling>, IHandle<EvtMapLoad>, IHandle<EvtMapPointConverted>, IHandle<EvtSetting>
     {
         private IMapProvider m_mapProvider;
         private IEventAggregator m_eventAggregator;
         private IResourceManager m_res;
         private ISaveManager m_saveManager;
-        private AirStandardSetting m_airStandard;
 
         public object MapContainer { get; set; }
         public List<EvtAirSample> Samples { get; private set; }
@@ -67,15 +66,15 @@ namespace AirMonitor.ViewModels
             m_res = res;
             m_saveManager = saveManager;
             m_eventAggregator.Subscribe(this);
-            m_airStandard = configManager.GetConfig<AirStandardSetting>();
+            var setting = configManager.GetConfig<AirStandardSetting>();
             Samples = new List<EvtAirSample>();
             InvalidSamples = new List<EvtAirSample>();
             MapGridOptions = new MapGridOptions()
             {
-                pollutants = m_airStandard.Pollutant
+                pollutants = setting.Pollutant
             };
             DataNameList = new List<Tuple<string, string>>();
-            foreach (var item in m_airStandard.Pollutant)
+            foreach (var item in setting.Pollutant)
             {
                 DataNameList.Add(Tuple.Create(item.Name, item.DisplayName));
             }
@@ -323,6 +322,14 @@ namespace AirMonitor.ViewModels
             m_mapProvider.GridInit(MapGridOptions);
             m_mapProvider.GridRefresh();
             m_mapProvider.UavPath(GetUavName(null), ShowUavPath);
+        }
+
+        public void Handle(EvtSetting message)
+        {
+            if (message.Command == SettingCommands.Changed && message.SettingObject is AirStandardSetting setting)
+            {
+                MapGridOptions.pollutants = setting.Pollutant;
+            }
         }
     }
 }

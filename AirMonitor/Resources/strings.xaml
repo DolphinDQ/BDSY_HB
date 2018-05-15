@@ -8,7 +8,7 @@
     <sys:String x:Key="T_CallbackProgress">回传进度</sys:String>
     <sys:String x:Key="T_GpsAltitude">GPS海拔</sys:String>
     <sys:String x:Key="T_PressureAltitude">气压海拔</sys:String>
-    <sys:String x:Key="T_RelativeHeight">高度(m)</sys:String>
+    <sys:String x:Key="T_RelativeHeight">高度</sys:String>
     <sys:String x:Key="T_CorrectAltitude">高度修正</sys:String>
     <sys:String x:Key="T_Speed">速度</sys:String>
     <sys:String x:Key="T_RealtimeAirSamples">实时空气采样</sys:String>
@@ -19,8 +19,8 @@
     <sys:String x:Key="T_MapDisplay">地图数据</sys:String>
     <sys:String x:Key="T_StartSimpling">开始采样</sys:String>
     <sys:String x:Key="T_StopSimpling">停止采样</sys:String>
-    <sys:String x:Key="T_Temperature">温度(℃)</sys:String>
-    <sys:String x:Key="T_Humidity">湿度(%)</sys:String>
+    <sys:String x:Key="T_Temperature">温度</sys:String>
+    <sys:String x:Key="T_Humidity">湿度</sys:String>
     <sys:String x:Key="T_VOC">VOCs</sys:String>
     <sys:String x:Key="T_ppb">(ppb)</sys:String>
     <!--<sys:String x:Key="T_CO" xml:space="preserve">CO&#13;&#10;(mg/m3)</sys:String>-->
@@ -54,6 +54,10 @@
     <sys:String x:Key="T_LoadSamplesFailed">加载样本失败。</sys:String>
     <sys:String x:Key="T_LoadSamplesOverwriteWarning">是否要覆盖当前采样数据，否则将合并采样数据？</sys:String>
     <sys:String x:Key="T_LoadSamplesWarning">加载样本之前需要先停止采样！</sys:String>
+    <sys:String x:Key="T_Pollutant">污染源</sys:String>
+    <sys:String x:Key="T_Unit">计数单位</sys:String>
+    <sys:String x:Key="T_Confirm">确认</sys:String>
+    <sys:String x:Key="T_Setting">配置</sys:String>
 
 
 </ResourceDictionary>

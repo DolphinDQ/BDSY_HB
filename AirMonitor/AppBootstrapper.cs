@@ -37,11 +37,10 @@ namespace AirMonitor
             container.RegisterInstance(typeof(IFactory), null, this);
             container.PerRequest<DataDisplayViewModel>();
             container.PerRequest<MapViewModel>();
-
+            container.PerRequest<PollutantSettingViewModel>();
+            
             LogManager.GetLog = o => container.GetInstance<ILog>();
             container.GetInstance<IDataManager>().Init();
-
-
         }
 
         protected override void OnUnhandledException(object sender, DispatcherUnhandledExceptionEventArgs e)

@@ -105,6 +105,7 @@
     <Compile Include="Config\AirPollutant.cs" />
     <Compile Include="Config\AirStandardSetting.cs" />
     <Compile Include="Config\MqttSetting.cs" />
+    <Compile Include="Converter\IsNullConverter.cs" />
     <Compile Include="Core\ChartManager.cs" />
     <Compile Include="Core\Logger.cs" />
     <Compile Include="Core\LoggerListener.cs" />
@@ -116,6 +117,7 @@
     <Compile Include="EventArgs\EvtMapPointConverted.cs" />
     <Compile Include="EventArgs\EvtSampling.cs" />
     <Compile Include="EventArgs\EvtMapLoad.cs" />
+    <Compile Include="EventArgs\EvtSetting.cs" />
     <Compile Include="Interfaces\IChartManager.cs" />
     <Compile Include="Interfaces\IDataManager.cs" />
     <Compile Include="Interfaces\IFactory.cs" />
@@ -138,11 +140,15 @@
     <Compile Include="Interfaces\IConfigManager.cs" />
     <Compile Include="ViewModels\DataDisplayViewModel.cs" />
     <Compile Include="ViewModels\MapViewModel.cs" />
+    <Compile Include="ViewModels\PollutantSettingViewModel.cs" />
     <Compile Include="Views\DataDisplayView.xaml.cs">
       <DependentUpon>DataDisplayView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\MapView.xaml.cs">
       <DependentUpon>MapView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\PollutantSettingView.xaml.cs">
+      <DependentUpon>PollutantSettingView.xaml</DependentUpon>
     </Compile>
     <Page Include="Resources\NamedStyles.xaml">
       <SubType>Designer</SubType>
@@ -161,6 +167,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\MapView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\PollutantSettingView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -191,7 +201,9 @@
     <None Include="readme.md" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="App.config" />
+    <None Include="App.config">
+      <SubType>Designer</SubType>
+    </None>
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>

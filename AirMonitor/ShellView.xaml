@@ -6,8 +6,13 @@
         MinWidth="1000"  MinHeight="600"
                      Title="{StaticResource T_AppName}"
         >
-    <DockPanel>
-        <control:TransitioningContentControl cal:View.Model="{Binding Sider}" Width="300" DockPanel.Dock="Right"/>
-        <control:TransitioningContentControl cal:View.Model="{Binding Container}"/>
-    </DockPanel>
+    <Grid>
+        <DockPanel>
+            <control:TransitioningContentControl cal:View.Model="{Binding Sider}" Width="300" DockPanel.Dock="Right"/>
+            <control:TransitioningContentControl cal:View.Model="{Binding Container}"/>
+        </DockPanel>
+        <control:Flyout Width="300" Position="Right" IsOpen="{Binding EnableSetting}"  Theme="Accent" AnimateOpacity="True"  Header="{StaticResource T_Setting}">
+            <ContentControl cal:View.Model="{Binding Setting}"></ContentControl>
+        </control:Flyout>
+    </Grid>
 </control:MetroWindow>

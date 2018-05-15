@@ -60,6 +60,7 @@ namespace AirMonitor.ViewModels
         public SampleChart PM10 => Plots[nameof(EvtAirSample.pm10)];
         public SampleChart RelativeHeight => Plots[nameof(EvtAirSample.RelativeHeight)];
         public Dictionary<string, SampleChart> Plots { get; set; }
+        public AirStandardSetting StandardSetting { get; }
         #endregion
 
         public DataDisplayViewModel(
@@ -86,14 +87,14 @@ namespace AirMonitor.ViewModels
                 nameof(EvtAirSample.RelativeHeight),
             };
             Plots = new Dictionary<string, SampleChart>();
-            //var standard = configManager.GetConfig<AirStandardSetting>();
+            StandardSetting = configManager.GetConfig<AirStandardSetting>();
             foreach (var item in dataNames)
             {
                 //var pollutant = standard.Pollutant.FirstOrDefault(o => o.Name == item);
                 //if (pollutant == null)
                 //{
-                    //this.Warn("no found pollutant {0} setting.", item);
-                    Plots.Add(item, new SampleChart(chartManager));
+                //this.Warn("no found pollutant {0} setting.", item);
+                Plots.Add(item, new SampleChart(chartManager));
                 //}
                 //else
                 //{
@@ -165,5 +166,9 @@ namespace AirMonitor.ViewModels
 
         private void FillChart(SampleChart chart, Tuple<DateTime, double> value) => chart.Collection.Add(value);
 
+        public void Config()
+        {
+            m_eventAggregator.PublishOnBackgroundThread(new EvtSetting() { SettingObject = StandardSetting });
+        }
     }
 }
