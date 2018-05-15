@@ -63,7 +63,7 @@
                                 <Setter Property="Height" Value="50"/>
                                 <Setter Property="Margin" Value="5"/>
                                 <Setter Property="BorderThickness" Value="1"/>
-                                <Setter Property="IsMouseWheelEnabled" Value="False"/>
+                                <!--<Setter Property="IsMouseWheelEnabled" Value="False"/>-->
                             </Style>
                         </Style.Resources>
                     </Style>
@@ -108,6 +108,10 @@
                             <UniformGrid Style="{StaticResource Panel_PollutantValue}" >
                                 <TextBlock Text="{StaticResource T_Realtime}"></TextBlock>
                                 <TextBlock Text="{Binding NewestData.RelativeHeight,Converter={StaticResource Round}}"></TextBlock>
+                                <TextBlock Text="{StaticResource T_Max}"></TextBlock>
+                                <TextBlock Text="{Binding RelativeHeight.ActualMax,Converter={StaticResource Round}}"></TextBlock>
+                                <TextBlock Text="{StaticResource T_Min}"></TextBlock>
+                                <TextBlock Text="{Binding RelativeHeight.ActualMin,Converter={StaticResource Round}}"></TextBlock>
                                 <TextBlock Text="{StaticResource T_Avg}"></TextBlock>
                                 <TextBlock Text="{Binding RelativeHeight.ActualAvg,Converter={StaticResource Round}}"></TextBlock>
                             </UniformGrid>
