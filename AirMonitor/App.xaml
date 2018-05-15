@@ -11,6 +11,7 @@
                     <local:AppBootstrapper x:Key="bootstrapper" />
                     <converter:RoundConverter x:Key="Round"/>
                     <converter:IsNullConverter x:Key="IsNull"/>
+                    <converter:WarningConverter x:Key="Warning"/>
                 </ResourceDictionary>
                 <!-- MahApps.Metro resource dictionaries. Make sure that all file names are Case Sensitive! -->
                 <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Controls.xaml" />

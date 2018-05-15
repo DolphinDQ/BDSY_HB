@@ -22,12 +22,9 @@
     <sys:String x:Key="T_Temperature">温度</sys:String>
     <sys:String x:Key="T_Humidity">湿度</sys:String>
     <sys:String x:Key="T_VOC">VOCs</sys:String>
-    <sys:String x:Key="T_ppb">(ppb)</sys:String>
     <!--<sys:String x:Key="T_CO" xml:space="preserve">CO&#13;&#10;(mg/m3)</sys:String>-->
     <sys:String x:Key="T_CO">CO</sys:String>
-    <sys:String x:Key="T_mg_m3">(mg/m3)</sys:String>
     <sys:String x:Key="T_SO2">SO2</sys:String>
-    <sys:String x:Key="T_ug_m3">(ug/m3)</sys:String>
     <sys:String x:Key="T_NO2">NO2</sys:String>
     <sys:String x:Key="T_O3">O3</sys:String>
     <sys:String x:Key="T_PM2_5" >PM2.5</sys:String>
@@ -58,6 +55,11 @@
     <sys:String x:Key="T_Unit">计数单位</sys:String>
     <sys:String x:Key="T_Confirm">确认</sys:String>
     <sys:String x:Key="T_Setting">配置</sys:String>
+    <sys:String x:Key="T_Max">最大</sys:String>
+    <sys:String x:Key="T_Min">最小</sys:String>
+    <sys:String x:Key="T_Avg">平均</sys:String>
+    <sys:String x:Key="T_Realtime">实时</sys:String>
+    <sys:String x:Key="T_Threshold">阈值</sys:String>
 
 
 </ResourceDictionary>

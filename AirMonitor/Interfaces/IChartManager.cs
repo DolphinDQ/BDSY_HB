@@ -14,6 +14,7 @@ namespace AirMonitor.Interfaces
         /// <returns></returns>
         object CreatLiner(ObservableCollection<Tuple<DateTime, double>> data, double maxValue = double.NaN, double minValue = double.NaN);
 
+     
     }
 
 }

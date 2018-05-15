@@ -106,6 +106,7 @@
     <Compile Include="Config\AirStandardSetting.cs" />
     <Compile Include="Config\MqttSetting.cs" />
     <Compile Include="Converter\IsNullConverter.cs" />
+    <Compile Include="Converter\WarningConverter.cs" />
     <Compile Include="Core\ChartManager.cs" />
     <Compile Include="Core\Logger.cs" />
     <Compile Include="Core\LoggerListener.cs" />

@@ -13,26 +13,68 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.ComponentModel;
 using AirMonitor.Config;
+using PropertyChanged;
 
 namespace AirMonitor.ViewModels
 {
-    class DataDisplayViewModel : Screen, IHandle<EvtAirSample>
+    class DataDisplayViewModel : Screen, IHandle<EvtAirSample>, IHandle<EvtSetting>
     {
+        [AddINotifyPropertyChangedInterface]
         public class SampleChart
         {
+            private IChartManager m_chart;
+
             public SampleChart(IChartManager chart, double max = double.NaN, double min = double.NaN)
             {
                 Collection = new ObservableCollection<Tuple<DateTime, double>>();
                 ChartModel = chart.CreatLiner(Collection, max, min);
+                Collection.CollectionChanged += Collection_CollectionChanged;
+                m_chart = chart;
+            }
+
+            private void Collection_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+            {
+                if (Collection.Any())
+                {
+                    ActualMax = Collection.Max(o => o.Item2);
+                    ActualMin = Collection.Min(o => o.Item2);
+                    ActualAvg = Collection.Average(o => o.Item2);
+                }
+                else
+                {
+                    ActualMax = 0;
+                    ActualMin = 0;
+                    ActualAvg = 0;
+                }
+                IsWarning = ActualMax > MaxValue || ActualMin < MinValue;
             }
 
             public ObservableCollection<Tuple<DateTime, double>> Collection { get; private set; }
 
             public object ChartModel { get; private set; }
 
+            public AirPollutant Pollutant { get; set; }
+
+            [DependsOn(nameof(Pollutant))]
+            public string Unit => Pollutant?.Unit;
+
+            [DependsOn(nameof(Pollutant))]
+            public double MaxValue => Pollutant?.MaxValue ?? 0;
+
+            [DependsOn(nameof(Pollutant))]
+            public double MinValue => Pollutant?.MinValue ?? 0;
+
+            public double ActualMax { get; private set; }
+
+            public double ActualMin { get; private set; }
+
+            public double ActualAvg { get; private set; }
+
+            public bool IsWarning { get; private set; }
         }
 
         private IEventAggregator m_eventAggregator;
+
         private IResourceManager m_res;
 
         public IDataManager DataManager { get; }
@@ -60,7 +102,7 @@ namespace AirMonitor.ViewModels
         public SampleChart PM10 => Plots[nameof(EvtAirSample.pm10)];
         public SampleChart RelativeHeight => Plots[nameof(EvtAirSample.RelativeHeight)];
         public Dictionary<string, SampleChart> Plots { get; set; }
-        public AirStandardSetting StandardSetting { get; }
+        public AirStandardSetting StandardSetting { get; private set; }
         #endregion
 
         public DataDisplayViewModel(
@@ -74,32 +116,22 @@ namespace AirMonitor.ViewModels
             m_eventAggregator = eventAggregator;
             m_res = res;
             DataManager = data;
-            var dataNames = new[] {
-                nameof(EvtAirSample.temp),
-                nameof(EvtAirSample.humi),
-                nameof(EvtAirSample.voc),
-                nameof(EvtAirSample.co),
-                nameof(EvtAirSample.so2),
-                nameof(EvtAirSample.no2),
-                nameof(EvtAirSample.o3),
-                nameof(EvtAirSample.pm25),
-                nameof(EvtAirSample.pm10),
-                nameof(EvtAirSample.RelativeHeight),
-            };
             Plots = new Dictionary<string, SampleChart>();
-            StandardSetting = configManager.GetConfig<AirStandardSetting>();
-            foreach (var item in dataNames)
+            Plots.Add(nameof(EvtAirSample.RelativeHeight), new SampleChart(chartManager)
             {
-                //var pollutant = standard.Pollutant.FirstOrDefault(o => o.Name == item);
-                //if (pollutant == null)
-                //{
-                //this.Warn("no found pollutant {0} setting.", item);
-                Plots.Add(item, new SampleChart(chartManager));
-                //}
-                //else
-                //{
-                //    Plots.Add(item, new SampleChart(chartManager, pollutant.MaxValue, pollutant.MinValue));
-                //}
+                Pollutant = new AirPollutant()
+                {
+                    Name = nameof(EvtAirSample.RelativeHeight),
+                    DisplayName = res.GetText("T_RelativeHeight"),
+                    Unit = "m",
+                    MinValue = 0,
+                    MaxValue = 1000,
+                }
+            });
+            StandardSetting = configManager.GetConfig<AirStandardSetting>();
+            foreach (var item in StandardSetting.Pollutant)
+            {
+                Plots.Add(item.Name, new SampleChart(chartManager) { Pollutant = item });
             }
         }
 
@@ -162,13 +194,34 @@ namespace AirMonitor.ViewModels
             }
         }
 
-        private void ClearChart(SampleChart chart) => chart.Collection.Clear();
+        private void ClearChart(SampleChart chart) => OnUIThread(() => chart.Collection.Clear());
 
-        private void FillChart(SampleChart chart, Tuple<DateTime, double> value) => chart.Collection.Add(value);
+        private void FillChart(SampleChart chart, Tuple<DateTime, double> value) => OnUIThread(() => chart.Collection.Add(value));
 
         public void Config()
         {
             m_eventAggregator.PublishOnBackgroundThread(new EvtSetting() { SettingObject = StandardSetting });
+        }
+
+        public void Handle(EvtSetting message)
+        {
+            try
+            {
+                if (message.Command == SettingCommands.Changed && message.SettingObject is AirStandardSetting setting)
+                {
+                    StandardSetting = setting;
+                    foreach (var item in StandardSetting.Pollutant)
+                    {
+                        Plots[item.Name].Pollutant = null;
+                        Plots[item.Name].Pollutant = item;
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                this.Warn("handler message {0} error", JsonConvert.SerializeObject(message));
+                this.Error(e);
+            }
         }
     }
 }

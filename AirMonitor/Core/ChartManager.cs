@@ -37,7 +37,7 @@ namespace AirMonitor.Core
             return plot;
         }
 
-
+        
 
         private void Data_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {

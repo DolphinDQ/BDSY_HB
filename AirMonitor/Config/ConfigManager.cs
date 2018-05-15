@@ -68,13 +68,13 @@ namespace AirMonitor.Config
                 Pollutant = new[] {
                     new AirPollutant(){ Name=nameof( EvtAirSample.temp), MinValue = 0 , MaxValue = 100, DisplayName= m_res.GetText("T_Temperature") , Unit="℃"},
                     new AirPollutant(){ Name=nameof( EvtAirSample.humi), MinValue = 0 , MaxValue = 100, DisplayName= m_res.GetText("T_Humidity") , Unit="%" },
-                    new AirPollutant(){ Name=nameof( EvtAirSample.voc), MinValue = 0 , MaxValue = 250 , DisplayName= m_res.GetText("T_VOC") , Unit= m_res.GetText("T_ppb") },
-                    new AirPollutant(){ Name=nameof( EvtAirSample.co), MinValue = 0 , MaxValue = 4, DisplayName= m_res.GetText("T_CO") , Unit= m_res.GetText("T_mg_m3")  },
-                    new AirPollutant(){ Name=nameof( EvtAirSample.so2), MinValue = 0 , MaxValue = 300, DisplayName= m_res.GetText("T_SO2") , Unit= m_res.GetText("T_ug_m3")  },
-                    new AirPollutant(){ Name=nameof( EvtAirSample.no2), MinValue = 0 , MaxValue = 500, DisplayName= m_res.GetText("T_NO2") , Unit= m_res.GetText("T_ug_m3")  },
-                    new AirPollutant(){ Name=nameof( EvtAirSample.o3), MinValue = 0 , MaxValue = 300, DisplayName= m_res.GetText("T_O3") , Unit= m_res.GetText("T_ug_m3")  },
-                    new AirPollutant(){ Name=nameof( EvtAirSample.pm25), MinValue = 0 , MaxValue = 200, DisplayName= m_res.GetText("T_PM2_5") , Unit= m_res.GetText("T_ug_m3")  },
-                    new AirPollutant(){ Name=nameof( EvtAirSample.pm10), MinValue = 0 , MaxValue = 250, DisplayName= m_res.GetText("T_PM10") , Unit= m_res.GetText("T_ug_m3")  },
+                    new AirPollutant(){ Name=nameof( EvtAirSample.voc), MinValue = 0 , MaxValue = 250 , DisplayName= m_res.GetText("T_VOC") , Unit= "ppb" },
+                    new AirPollutant(){ Name=nameof( EvtAirSample.co), MinValue = 0 , MaxValue = 4, DisplayName= m_res.GetText("T_CO") , Unit= "mg/m3"  },
+                    new AirPollutant(){ Name=nameof( EvtAirSample.so2), MinValue = 0 , MaxValue = 300, DisplayName= m_res.GetText("T_SO2") , Unit= "ug/m3"  },
+                    new AirPollutant(){ Name=nameof( EvtAirSample.no2), MinValue = 0 , MaxValue = 500, DisplayName= m_res.GetText("T_NO2") , Unit= "ug/m3"  },
+                    new AirPollutant(){ Name=nameof( EvtAirSample.o3), MinValue = 0 , MaxValue = 300, DisplayName= m_res.GetText("T_O3") , Unit= "ug/m3"  },
+                    new AirPollutant(){ Name=nameof( EvtAirSample.pm25), MinValue = 0 , MaxValue = 200, DisplayName= m_res.GetText("T_PM2_5") , Unit= "ug/m3" },
+                    new AirPollutant(){ Name=nameof( EvtAirSample.pm10), MinValue = 0 , MaxValue = 250, DisplayName= m_res.GetText("T_PM10") , Unit="ug/m3"  },
                  },
             };
         }

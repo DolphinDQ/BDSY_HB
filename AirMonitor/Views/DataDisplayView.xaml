@@ -62,7 +62,6 @@
                             <Style TargetType="oxy:PlotView">
                                 <Setter Property="Height" Value="50"/>
                                 <Setter Property="Margin" Value="5"/>
-                                <Setter Property="BorderBrush" Value="LightGray"/>
                                 <Setter Property="BorderThickness" Value="1"/>
                                 <Setter Property="IsMouseWheelEnabled" Value="False"/>
                             </Style>
@@ -86,90 +85,311 @@
                 </StackPanel>
                 <ScrollViewer VerticalScrollBarVisibility="Auto">
                     <StackPanel>
+                        <StackPanel.Resources>
+                            <Style TargetType="StackPanel" x:Key="Panel_PollutantName">
+                                <Setter Property="DockPanel.Dock" Value="Left"/>
+                                <Setter Property="Width" Value="45"/>
+                                <Setter Property="VerticalAlignment" Value="Center"/>
+                                <Setter Property="Margin" Value="5"/>
+                            </Style>
+                            <Style TargetType="UniformGrid" x:Key="Panel_PollutantValue">
+                                <Setter Property="DockPanel.Dock" Value="Right"/>
+                                <Setter Property="Width" Value="80"/>
+                                <Setter Property="Margin" Value="5"/>
+                                <Setter Property="VerticalAlignment" Value="Center"/>
+                                <Setter Property="Columns" Value="2"/>
+                            </Style>
+                        </StackPanel.Resources>
                         <DockPanel>
-                            <Label Content="{StaticResource T_RelativeHeight}"></Label>
-                            <Label DockPanel.Dock="Right" Content="{Binding NewestData.RelativeHeight,Converter={StaticResource Round}}" />
-                            <oxy:PlotView Model="{Binding RelativeHeight.ChartModel}" />
+                            <StackPanel Style="{StaticResource Panel_PollutantName}">
+                                <TextBlock Text="{StaticResource T_RelativeHeight}"></TextBlock>
+                                <TextBlock  Text="{Binding RelativeHeight.Unit}"/>
+                            </StackPanel>
+                            <UniformGrid Style="{StaticResource Panel_PollutantValue}" >
+                                <TextBlock Text="{StaticResource T_Realtime}"></TextBlock>
+                                <TextBlock Text="{Binding NewestData.RelativeHeight,Converter={StaticResource Round}}"></TextBlock>
+                                <TextBlock Text="{StaticResource T_Avg}"></TextBlock>
+                                <TextBlock Text="{Binding RelativeHeight.ActualAvg,Converter={StaticResource Round}}"></TextBlock>
+                            </UniformGrid>
+                            <oxy:PlotView Model="{Binding RelativeHeight.ChartModel}" BorderBrush="{Binding RelativeHeight.IsWarning,Converter={StaticResource Warning}}" />
                         </DockPanel>
                         <DockPanel>
-                            <Label Content="{StaticResource T_Temperature}"></Label>
-                            <Label DockPanel.Dock="Right"  Content="{Binding NewestData.temp,Converter={StaticResource Round}}"></Label>
-                            <oxy:PlotView Model="{Binding Temperature.ChartModel}" />
+                            <StackPanel  Style="{StaticResource Panel_PollutantName}">
+                                <TextBlock Text="{StaticResource T_Temperature}"></TextBlock>
+                                <TextBlock Text="{Binding Temperature.Unit}"></TextBlock>
+                            </StackPanel>
+                            <UniformGrid Style="{StaticResource Panel_PollutantValue}">
+                                <TextBlock Text="{StaticResource T_Realtime}"></TextBlock>
+                                <TextBlock Text="{Binding NewestData.temp,Converter={StaticResource Round}}"></TextBlock>
+                                <TextBlock Text="{StaticResource T_Max}"></TextBlock>
+                                <TextBlock Text="{Binding Temperature.ActualMax,Converter={StaticResource Round}}"></TextBlock>
+                                <TextBlock Text="{StaticResource T_Min}"></TextBlock>
+                                <TextBlock Text="{Binding Temperature.ActualMin,Converter={StaticResource Round}}"></TextBlock>
+                                <TextBlock Text="{StaticResource T_Avg}"></TextBlock>
+                                <TextBlock Text="{Binding Temperature.ActualAvg,Converter={StaticResource Round}}"></TextBlock>
+                            </UniformGrid>
+                            <!--<Label DockPanel.Dock="Right"  Content="{Binding NewestData.temp,Converter={StaticResource Round}}"></Label>-->
+                            <DockPanel>
+                                <TextBlock Margin="5 0" DockPanel.Dock="Bottom">
+                                    <TextBlock.Text>
+                                        <MultiBinding StringFormat="{}{0} : ({1} - {2})">
+                                            <Binding Source="{StaticResource T_Threshold}"></Binding>
+                                            <Binding Path="Temperature.MinValue"></Binding>
+                                            <Binding Path="Temperature.MaxValue"></Binding>
+                                        </MultiBinding>
+                                    </TextBlock.Text>
+                                </TextBlock>
+                                <oxy:PlotView Model="{Binding Temperature.ChartModel}" BorderBrush="{Binding Temperature.IsWarning,Converter={StaticResource Warning}}"/>
+                            </DockPanel>
                         </DockPanel>
                         <DockPanel>
-                            <Label Content="{StaticResource T_Humidity}"></Label>
-                            <Label DockPanel.Dock="Right" Content="{Binding NewestData.humi,Converter={StaticResource Round}}"></Label>
-                            <oxy:PlotView Model="{Binding Humidity.ChartModel}" />
+                            <StackPanel  Style="{StaticResource Panel_PollutantName}">
+                                <TextBlock Text="{StaticResource T_Humidity}"></TextBlock>
+                                <TextBlock Text="{Binding Humidity.Unit}"></TextBlock>
+                            </StackPanel>
+
+                            <!--<Label DockPanel.Dock="Right" Content="{Binding NewestData.humi,Converter={StaticResource Round}}"></Label>-->
+                            <!--<oxy:PlotView Model="{Binding Humidity.ChartModel}" />-->
+
+                            <UniformGrid Style="{StaticResource Panel_PollutantValue}">
+                                <TextBlock Text="{StaticResource T_Realtime}"></TextBlock>
+                                <TextBlock Text="{Binding NewestData.humi,Converter={StaticResource Round}}"></TextBlock>
+                                <TextBlock Text="{StaticResource T_Max}"></TextBlock>
+                                <TextBlock Text="{Binding Humidity.ActualMax,Converter={StaticResource Round}}"></TextBlock>
+                                <TextBlock Text="{StaticResource T_Min}"></TextBlock>
+                                <TextBlock Text="{Binding Humidity.ActualMin,Converter={StaticResource Round}}"></TextBlock>
+                                <TextBlock Text="{StaticResource T_Avg}"></TextBlock>
+                                <TextBlock Text="{Binding Humidity.ActualAvg,Converter={StaticResource Round}}"></TextBlock>
+                            </UniformGrid>
+                            <DockPanel>
+                                <TextBlock Margin="5 0" DockPanel.Dock="Bottom">
+                                    <TextBlock.Text>
+                                        <MultiBinding StringFormat="{}{0} : ({1} - {2})">
+                                            <Binding Source="{StaticResource T_Threshold}"></Binding>
+                                            <Binding Path="Humidity.MinValue"></Binding>
+                                            <Binding Path="Humidity.MaxValue"></Binding>
+                                        </MultiBinding>
+                                    </TextBlock.Text>
+                                </TextBlock>
+                                <oxy:PlotView Model="{Binding Humidity.ChartModel}" BorderBrush="{Binding Humidity.IsWarning,Converter={StaticResource Warning}}"/>
+                            </DockPanel>
                         </DockPanel>
                         <DockPanel>
-                            <Label>
-                                <StackPanel Orientation="Horizontal">
-                                    <TextBlock Text="{StaticResource T_VOC}"/>
-                                    <TextBlock Text="{StaticResource T_ppb}" FontSize="8" VerticalAlignment="Bottom" Margin="2"/>
-                                </StackPanel>
-                            </Label>
-                            <Label DockPanel.Dock="Right" Content="{Binding NewestData.voc,Converter={StaticResource Round}}"></Label>
-                            <oxy:PlotView Model="{Binding VOC.ChartModel}" />
+                            <StackPanel Style="{StaticResource Panel_PollutantName}">
+                                <TextBlock Text="{StaticResource T_VOC}"/>
+                                <TextBlock Text="{Binding VOC.Unit}"/>
+                            </StackPanel>
+                            <!--<Label DockPanel.Dock="Right" Content="{Binding NewestData.voc,Converter={StaticResource Round}}"></Label>
+                            <oxy:PlotView Model="{Binding VOC.ChartModel}" />-->
+
+                            <UniformGrid Style="{StaticResource Panel_PollutantValue}">
+                                <TextBlock Text="{StaticResource T_Realtime}"></TextBlock>
+                                <TextBlock Text="{Binding NewestData.voc,Converter={StaticResource Round}}"></TextBlock>
+                                <TextBlock Text="{StaticResource T_Max}"></TextBlock>
+                                <TextBlock Text="{Binding VOC.ActualMax,Converter={StaticResource Round}}"></TextBlock>
+                                <TextBlock Text="{StaticResource T_Min}"></TextBlock>
+                                <TextBlock Text="{Binding VOC.ActualMin,Converter={StaticResource Round}}"></TextBlock>
+                                <TextBlock Text="{StaticResource T_Avg}"></TextBlock>
+                                <TextBlock Text="{Binding VOC.ActualAvg,Converter={StaticResource Round}}"></TextBlock>
+                            </UniformGrid>
+                            <DockPanel>
+                                <TextBlock Margin="5 0" DockPanel.Dock="Bottom">
+                                    <TextBlock.Text>
+                                        <MultiBinding StringFormat="{}{0} : ({1} - {2})">
+                                            <Binding Source="{StaticResource T_Threshold}"></Binding>
+                                            <Binding Path="VOC.MinValue"></Binding>
+                                            <Binding Path="VOC.MaxValue"></Binding>
+                                        </MultiBinding>
+                                    </TextBlock.Text>
+                                </TextBlock>
+                                <oxy:PlotView Model="{Binding VOC.ChartModel}" BorderBrush="{Binding VOC.IsWarning,Converter={StaticResource Warning}}"/>
+                            </DockPanel>
                         </DockPanel>
                         <DockPanel>
-                            <Label>
-                                <StackPanel Orientation="Horizontal">
-                                    <TextBlock Text="{StaticResource T_CO}"/>
-                                    <TextBlock Text="{StaticResource T_mg_m3}" FontSize="8" VerticalAlignment="Bottom" Margin="2"/>
-                                </StackPanel>
-                            </Label>
-                            <Label DockPanel.Dock="Right" Content="{Binding NewestData.co,Converter={StaticResource Round}}"></Label>
-                            <oxy:PlotView Model="{Binding CO.ChartModel}" />
+                            <StackPanel  Style="{StaticResource Panel_PollutantName}">
+                                <TextBlock Text="{StaticResource T_CO}"/>
+                                <TextBlock Text="{Binding CO.Unit}"/>
+                            </StackPanel>
+                            <!--<Label DockPanel.Dock="Right" Content="{Binding NewestData.co,Converter={StaticResource Round}}"></Label>
+                            <oxy:PlotView Model="{Binding CO.ChartModel}" />-->
+
+                            <UniformGrid Style="{StaticResource Panel_PollutantValue}">
+                                <TextBlock Text="{StaticResource T_Realtime}"></TextBlock>
+                                <TextBlock Text="{Binding NewestData.co,Converter={StaticResource Round}}"></TextBlock>
+                                <TextBlock Text="{StaticResource T_Max}"></TextBlock>
+                                <TextBlock Text="{Binding CO.ActualMax,Converter={StaticResource Round}}"></TextBlock>
+                                <TextBlock Text="{StaticResource T_Min}"></TextBlock>
+                                <TextBlock Text="{Binding CO.ActualMin,Converter={StaticResource Round}}"></TextBlock>
+                                <TextBlock Text="{StaticResource T_Avg}"></TextBlock>
+                                <TextBlock Text="{Binding CO.ActualAvg,Converter={StaticResource Round}}"></TextBlock>
+                            </UniformGrid>
+                            <DockPanel>
+                                <TextBlock Margin="5 0" DockPanel.Dock="Bottom">
+                                    <TextBlock.Text>
+                                        <MultiBinding StringFormat="{}{0} : ({1} - {2})">
+                                            <Binding Source="{StaticResource T_Threshold}"></Binding>
+                                            <Binding Path="CO.MinValue"></Binding>
+                                            <Binding Path="CO.MaxValue"></Binding>
+                                        </MultiBinding>
+                                    </TextBlock.Text>
+                                </TextBlock>
+                                <oxy:PlotView Model="{Binding CO.ChartModel}" BorderBrush="{Binding CO.IsWarning,Converter={StaticResource Warning}}"/>
+                            </DockPanel>
                         </DockPanel>
                         <DockPanel>
-                            <Label >
-                                <StackPanel Orientation="Horizontal">
-                                    <TextBlock Text="{StaticResource T_SO2}"/>
-                                    <TextBlock Text="{StaticResource T_ug_m3}" FontSize="8" VerticalAlignment="Bottom" Margin="2"/>
-                                </StackPanel>
-                            </Label>
-                            <Label DockPanel.Dock="Right" Content="{Binding NewestData.so2,Converter={StaticResource Round}}"></Label>
-                            <oxy:PlotView Model="{Binding SO2.ChartModel}" />
+                            <StackPanel Style="{StaticResource Panel_PollutantName}">
+                                <TextBlock Text="{StaticResource T_SO2}"/>
+                                <TextBlock Text="{Binding SO2.Unit}"/>
+                            </StackPanel>
+                            <!--<Label DockPanel.Dock="Right" Content="{Binding NewestData.so2,Converter={StaticResource Round}}"></Label>
+                            <oxy:PlotView Model="{Binding SO2.ChartModel}" />-->
+
+                            <UniformGrid Style="{StaticResource Panel_PollutantValue}">
+                                <TextBlock Text="{StaticResource T_Realtime}"></TextBlock>
+                                <TextBlock Text="{Binding NewestData.so2,Converter={StaticResource Round}}"></TextBlock>
+                                <TextBlock Text="{StaticResource T_Max}"></TextBlock>
+                                <TextBlock Text="{Binding SO2.ActualMax,Converter={StaticResource Round}}"></TextBlock>
+                                <TextBlock Text="{StaticResource T_Min}"></TextBlock>
+                                <TextBlock Text="{Binding SO2.ActualMin,Converter={StaticResource Round}}"></TextBlock>
+                                <TextBlock Text="{StaticResource T_Avg}"></TextBlock>
+                                <TextBlock Text="{Binding SO2.ActualAvg,Converter={StaticResource Round}}"></TextBlock>
+                            </UniformGrid>
+                            <DockPanel>
+                                <TextBlock Margin="5 0" DockPanel.Dock="Bottom">
+                                    <TextBlock.Text>
+                                        <MultiBinding StringFormat="{}{0} : ({1} - {2})">
+                                            <Binding Source="{StaticResource T_Threshold}"></Binding>
+                                            <Binding Path="SO2.MinValue"></Binding>
+                                            <Binding Path="SO2.MaxValue"></Binding>
+                                        </MultiBinding>
+                                    </TextBlock.Text>
+                                </TextBlock>
+                                <oxy:PlotView Model="{Binding SO2.ChartModel}" BorderBrush="{Binding SO2.IsWarning,Converter={StaticResource Warning}}"/>
+                            </DockPanel>
                         </DockPanel>
                         <DockPanel>
-                            <Label >
-                                <StackPanel Orientation="Horizontal">
-                                    <TextBlock Text="{StaticResource T_NO2}"/>
-                                    <TextBlock Text="{StaticResource T_ug_m3}" FontSize="8" VerticalAlignment="Bottom" Margin="2"/>
-                                </StackPanel>
-                            </Label>
-                            <Label DockPanel.Dock="Right" Content="{Binding NewestData.no2,Converter={StaticResource Round}}"></Label>
-                            <oxy:PlotView Model="{Binding NO2.ChartModel}" />
+                            <StackPanel Style="{StaticResource Panel_PollutantName}">
+                                <TextBlock Text="{StaticResource T_NO2}"/>
+                                <TextBlock Text="{Binding NO2.Unit}"/>
+                            </StackPanel>
+                            <!--<Label DockPanel.Dock="Right" Content="{Binding NewestData.no2,Converter={StaticResource Round}}"></Label>
+                            <oxy:PlotView Model="{Binding NO2.ChartModel}" />-->
+
+                            <UniformGrid Style="{StaticResource Panel_PollutantValue}">
+                                <TextBlock Text="{StaticResource T_Realtime}"></TextBlock>
+                                <TextBlock Text="{Binding NewestData.no2,Converter={StaticResource Round}}"></TextBlock>
+                                <TextBlock Text="{StaticResource T_Max}"></TextBlock>
+                                <TextBlock Text="{Binding NO2.ActualMax,Converter={StaticResource Round}}"></TextBlock>
+                                <TextBlock Text="{StaticResource T_Min}"></TextBlock>
+                                <TextBlock Text="{Binding NO2.ActualMin,Converter={StaticResource Round}}"></TextBlock>
+                                <TextBlock Text="{StaticResource T_Avg}"></TextBlock>
+                                <TextBlock Text="{Binding NO2.ActualAvg,Converter={StaticResource Round}}"></TextBlock>
+                            </UniformGrid>
+                            <DockPanel>
+                                <TextBlock Margin="5 0" DockPanel.Dock="Bottom">
+                                    <TextBlock.Text>
+                                        <MultiBinding StringFormat="{}{0} : ({1} - {2})">
+                                            <Binding Source="{StaticResource T_Threshold}"></Binding>
+                                            <Binding Path="NO2.MinValue"></Binding>
+                                            <Binding Path="NO2.MaxValue"></Binding>
+                                        </MultiBinding>
+                                    </TextBlock.Text>
+                                </TextBlock>
+                                <oxy:PlotView Model="{Binding NO2.ChartModel}" BorderBrush="{Binding NO2.IsWarning,Converter={StaticResource Warning}}"/>
+                            </DockPanel>
                         </DockPanel>
                         <DockPanel>
-                            <Label>
-                                <StackPanel Orientation="Horizontal">
-                                    <TextBlock Text="{StaticResource T_O3}"/>
-                                    <TextBlock Text="{StaticResource T_ug_m3}" FontSize="8" VerticalAlignment="Bottom" Margin="2"/>
-                                </StackPanel>
-                            </Label>
-                            <Label DockPanel.Dock="Right" Content="{Binding NewestData.o3,Converter={StaticResource Round}}"></Label>
-                            <oxy:PlotView Model="{Binding O3.ChartModel}" />
+                            <StackPanel Style="{StaticResource Panel_PollutantName}">
+                                <TextBlock Text="{StaticResource T_O3}"/>
+                                <TextBlock Text="{Binding O3.Unit}"/>
+                            </StackPanel>
+                            <!--<Label DockPanel.Dock="Right" Content="{Binding NewestData.o3,Converter={StaticResource Round}}"></Label>
+                            <oxy:PlotView Model="{Binding O3.ChartModel}" />-->
+
+                            <UniformGrid Style="{StaticResource Panel_PollutantValue}">
+                                <TextBlock Text="{StaticResource T_Realtime}"></TextBlock>
+                                <TextBlock Text="{Binding NewestData.o3,Converter={StaticResource Round}}"></TextBlock>
+                                <TextBlock Text="{StaticResource T_Max}"></TextBlock>
+                                <TextBlock Text="{Binding O3.ActualMax,Converter={StaticResource Round}}"></TextBlock>
+                                <TextBlock Text="{StaticResource T_Min}"></TextBlock>
+                                <TextBlock Text="{Binding O3.ActualMin,Converter={StaticResource Round}}"></TextBlock>
+                                <TextBlock Text="{StaticResource T_Avg}"></TextBlock>
+                                <TextBlock Text="{Binding O3.ActualAvg,Converter={StaticResource Round}}"></TextBlock>
+                            </UniformGrid>
+                            <DockPanel>
+                                <TextBlock Margin="5 0" DockPanel.Dock="Bottom">
+                                    <TextBlock.Text>
+                                        <MultiBinding StringFormat="{}{0} : ({1} - {2})">
+                                            <Binding Source="{StaticResource T_Threshold}"></Binding>
+                                            <Binding Path="O3.MinValue"></Binding>
+                                            <Binding Path="O3.MaxValue"></Binding>
+                                        </MultiBinding>
+                                    </TextBlock.Text>
+                                </TextBlock>
+                                <oxy:PlotView Model="{Binding O3.ChartModel}" BorderBrush="{Binding O3.IsWarning,Converter={StaticResource Warning}}"/>
+                            </DockPanel>
                         </DockPanel>
                         <DockPanel>
-                            <Label>
-                                <StackPanel Orientation="Vertical">
-                                    <TextBlock Text="{StaticResource T_PM2_5}"/>
-                                    <TextBlock Text="{StaticResource T_ug_m3}" FontSize="8" VerticalAlignment="Bottom" Margin="2"/>
-                                </StackPanel>
-                            </Label>
-                            <Label DockPanel.Dock="Right" Content="{Binding NewestData.pm25,Converter={StaticResource Round}}"></Label>
-                            <oxy:PlotView Model="{Binding PM2_5.ChartModel}" />
+                            <StackPanel Style="{StaticResource Panel_PollutantName}">
+                                <TextBlock Text="{StaticResource T_PM2_5}"/>
+                                <TextBlock Text="{Binding PM2_5.Unit}"/>
+                            </StackPanel>
+                            <!--<Label DockPanel.Dock="Right" Content="{Binding NewestData.pm25,Converter={StaticResource Round}}"></Label>
+                            <oxy:PlotView Model="{Binding PM2_5.ChartModel}" />-->
+
+                            <UniformGrid Style="{StaticResource Panel_PollutantValue}">
+                                <TextBlock Text="{StaticResource T_Realtime}"></TextBlock>
+                                <TextBlock Text="{Binding NewestData.pm25,Converter={StaticResource Round}}"></TextBlock>
+                                <TextBlock Text="{StaticResource T_Max}"></TextBlock>
+                                <TextBlock Text="{Binding PM2_5.ActualMax,Converter={StaticResource Round}}"></TextBlock>
+                                <TextBlock Text="{StaticResource T_Min}"></TextBlock>
+                                <TextBlock Text="{Binding PM2_5.ActualMin,Converter={StaticResource Round}}"></TextBlock>
+                                <TextBlock Text="{StaticResource T_Avg}"></TextBlock>
+                                <TextBlock Text="{Binding PM2_5.ActualAvg,Converter={StaticResource Round}}"></TextBlock>
+                            </UniformGrid>
+                            <DockPanel>
+                                <TextBlock Margin="5 0" DockPanel.Dock="Bottom">
+                                    <TextBlock.Text>
+                                        <MultiBinding StringFormat="{}{0} : ({1} - {2})">
+                                            <Binding Source="{StaticResource T_Threshold}"></Binding>
+                                            <Binding Path="PM2_5.MinValue"></Binding>
+                                            <Binding Path="PM2_5.MaxValue"></Binding>
+                                        </MultiBinding>
+                                    </TextBlock.Text>
+                                </TextBlock>
+                                <oxy:PlotView Model="{Binding PM2_5.ChartModel}" BorderBrush="{Binding PM2_5.IsWarning,Converter={StaticResource Warning}}"/>
+                            </DockPanel>
                         </DockPanel>
                         <DockPanel>
-                            <Label>
-                                <StackPanel Orientation="Vertical">
-                                    <TextBlock Text="{StaticResource T_PM10}"/>
-                                    <TextBlock Text="{StaticResource T_ug_m3}" FontSize="8" VerticalAlignment="Bottom" Margin="2"/>
-                                </StackPanel>
-                            </Label>
-                            <Label DockPanel.Dock="Right" Content="{Binding NewestData.pm10,Converter={StaticResource Round}}"></Label>
-                            <oxy:PlotView Model="{Binding PM10.ChartModel}" />
+                            <StackPanel Style="{StaticResource Panel_PollutantName}">
+                                <TextBlock Text="{StaticResource T_PM10}"/>
+                                <TextBlock Text="{Binding PM10.Unit}"/>
+                            </StackPanel>
+                            <!--<Label DockPanel.Dock="Right" Content="{Binding NewestData.pm10,Converter={StaticResource Round}}"></Label>
+                            <oxy:PlotView Model="{Binding PM10.ChartModel}" />-->
+
+                            <UniformGrid Style="{StaticResource Panel_PollutantValue}">
+                                <TextBlock Text="{StaticResource T_Realtime}"></TextBlock>
+                                <TextBlock Text="{Binding NewestData.pm10,Converter={StaticResource Round}}"></TextBlock>
+                                <TextBlock Text="{StaticResource T_Max}"></TextBlock>
+                                <TextBlock Text="{Binding PM10.ActualMax,Converter={StaticResource Round}}"></TextBlock>
+                                <TextBlock Text="{StaticResource T_Min}"></TextBlock>
+                                <TextBlock Text="{Binding PM10.ActualMin,Converter={StaticResource Round}}"></TextBlock>
+                                <TextBlock Text="{StaticResource T_Avg}"></TextBlock>
+                                <TextBlock Text="{Binding PM10.ActualAvg,Converter={StaticResource Round}}"></TextBlock>
+                            </UniformGrid>
+                            <DockPanel>
+                                <TextBlock Margin="5 0" DockPanel.Dock="Bottom">
+                                    <TextBlock.Text>
+                                        <MultiBinding StringFormat="{}{0} : ({1} - {2})">
+                                            <Binding Source="{StaticResource T_Threshold}"></Binding>
+                                            <Binding Path="PM10.MinValue"></Binding>
+                                            <Binding Path="PM10.MaxValue"></Binding>
+                                        </MultiBinding>
+                                    </TextBlock.Text>
+                                </TextBlock>
+                                <oxy:PlotView Model="{Binding PM10.ChartModel}" BorderBrush="{Binding PM10.IsWarning,Converter={StaticResource Warning}}"/>
+                            </DockPanel>
                         </DockPanel>
                     </StackPanel>
                 </ScrollViewer>
