@@ -80,11 +80,15 @@ abstract class MapBase implements IMapProvider {
     abstract load(container: string);
     abstract gridRefresh();
     protected loadJs(url: string, onLoad: (e) => any) {
-        var file = document.createElement("script");
-        file.setAttribute("type", "text/javascript");
-        file.setAttribute("src", url);
-        file.onload = onLoad;
-        document.getElementsByTagName("head")[0].appendChild(file);
+        try {
+            var file = document.createElement("script");
+            file.setAttribute("type", "text/javascript");
+            file.setAttribute("src", url);
+            file.onload = onLoad;
+            document.getElementsByTagName("head")[0].appendChild(file);
+        } catch (e) {
+            alert(e);
+        }
     }
     protected parseJson<T>(obj: T): T {
         if (typeof (obj) == "string")
@@ -415,7 +419,7 @@ class BaiduMapProvider extends MapBase {
             this.uavList.splice(i, 1);
         }
     }
-    uavExist(name: string):boolean {
+    uavExist(name: string): boolean {
         var obj = this.uavList.find(function (o) { return o.name == name });
         return obj ? true : false;
     }

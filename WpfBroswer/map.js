@@ -44,11 +44,16 @@ var MapBase = /** @class */ (function () {
     function MapBase() {
     }
     MapBase.prototype.loadJs = function (url, onLoad) {
-        var file = document.createElement("script");
-        file.setAttribute("type", "text/javascript");
-        file.setAttribute("src", url);
-        file.onload = onLoad;
-        document.getElementsByTagName("head")[0].appendChild(file);
+        try {
+            var file = document.createElement("script");
+            file.setAttribute("type", "text/javascript");
+            file.setAttribute("src", url);
+            file.onload = onLoad;
+            document.getElementsByTagName("head")[0].appendChild(file);
+        }
+        catch (e) {
+            alert(e);
+        }
     };
     MapBase.prototype.parseJson = function (obj) {
         if (typeof (obj) == "string")
