@@ -10,6 +10,11 @@
     <DockPanel>
         <StackPanel Width="200">
             <Button Name="Load" Click="Load_Click">加载地图</Button>
+            <Button  Click="ShowVersion_Click">显示版本</Button>
+            <DockPanel>
+                <Button Click="ChangeVersion_Click">切换版本</Button>
+                <TextBox Name="Version"></TextBox>
+            </DockPanel>
         </StackPanel>
         <WebBrowser Name="Map" />
     </DockPanel>

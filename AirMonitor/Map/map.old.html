@@ -44,10 +44,10 @@
             width: 80px;
         }
     </style>
-    <script type="text/javascript"  src="http://api.map.baidu.com/api?v=2.0&ak=TCgR2Y0IGMmPR4qteh4McpXzMyYpFrEx"></script>
+    <script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=TCgR2Y0IGMmPR4qteh4McpXzMyYpFrEx"></script>
     <title>地图展示</title>
 </head>
-<body >
+<body>
     <div id="container"></div>
 </body>
 </html>
@@ -245,6 +245,7 @@
             block.setFillColor(getColor(block.avgValue, opt));
         });
     }
+
     function gridClear() {
         if (blockGrid.blocks) {
             blockGrid.blocks.forEach(function (o) {
