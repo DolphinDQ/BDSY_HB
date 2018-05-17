@@ -48,6 +48,7 @@
     <sys:String x:Key="T_SaveSamples">保存样本</sys:String>
     <sys:String x:Key="T_SaveSamplesFailed">保存样本失败。</sys:String>
     <sys:String x:Key="T_LoadSamples">加载样本</sys:String>
+    <sys:String x:Key="T_AnalysisSamples">分析样本</sys:String>
     <sys:String x:Key="T_LoadSamplesFailed">加载样本失败。</sys:String>
     <sys:String x:Key="T_LoadSamplesOverwriteWarning">是否要覆盖当前采样数据，否则将合并采样数据？</sys:String>
     <sys:String x:Key="T_LoadSamplesWarning">加载样本之前需要先停止采样！</sys:String>

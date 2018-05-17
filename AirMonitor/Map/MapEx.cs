@@ -10,6 +10,31 @@ namespace AirMonitor.Map
 {
     public static class MapEx
     {
+        #region 地图
+        /// <summary>
+        /// 地图坐标转换。转换结果通过EvtMapPointConverted事件回调。
+        /// </summary>
+        /// <param name="map"></param>
+        /// <param name="seq"></param>
+        /// <param name="points"></param>
+        public static void MapPointConvert(this IMapProvider map, int seq, MapPoint[] points)
+        {
+            map.Invoke("map.mapPointConvert", seq, JsonConvert.SerializeObject(points));
+        }
+
+        /// <summary>
+        /// 地图边界变更事件。
+        /// </summary>
+        /// <param name="map"></param>
+        /// <param name="subscribe"></param>
+        public static void MapBoundChangedEvent(this IMapProvider map, bool subscribe)
+        {
+            map.Invoke("map.mapPointConvert", subscribe);
+        }
+        #endregion
+        #region 网格
+
+
         /// <summary>
         /// 初始化网格。修改参数可以重新初始化。
         /// </summary>
@@ -35,6 +60,11 @@ namespace AirMonitor.Map
         {
             map.Invoke("map.gridRefresh");
         }
+
+        #endregion
+        #region 无人机
+
+
         /// <summary>
         /// 添加无人机。
         /// </summary>
@@ -87,16 +117,7 @@ namespace AirMonitor.Map
         {
             return map.Invoke("map.uavExist", o => bool.Parse(o.ToString()), name);
         }
-        /// <summary>
-        /// 地图坐标转换。转换结果通过EvtMapPointConverted事件回调。
-        /// </summary>
-        /// <param name="map"></param>
-        /// <param name="seq"></param>
-        /// <param name="points"></param>
-        public static void MapPointConvert(this IMapProvider map, int seq, MapPoint[] points)
-        {
-            map.Invoke("map.mapPointConvert", seq, JsonConvert.SerializeObject(points));
-        }
+
         /// <summary>
         /// 无人机跟踪。
         /// </summary>
@@ -106,5 +127,6 @@ namespace AirMonitor.Map
         {
             map.Invoke("map.uavFocus", name);
         }
+        #endregion
     }
 }

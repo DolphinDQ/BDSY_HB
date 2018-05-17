@@ -5,16 +5,18 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:AirMonitor.Views"
              mc:Ignorable="d" 
+             xmlns:cal="http://www.caliburnproject.org"
              xmlns:control="http://metro.mahapps.com/winfx/xaml/controls"
              d:DesignHeight="450" d:DesignWidth="800">
-    <UserControl.Resources>
-        <Style TargetType="Border">
-            <Setter Property="BorderBrush" Value="LightGray"/>
-            <Setter Property="BorderThickness" Value="1"/>
-            <Setter Property="Margin" Value="2"/>
-        </Style>
-    </UserControl.Resources>
-    <DockPanel>
+
+    <DockPanel >
+        <DockPanel.Resources>
+            <Style TargetType="Border">
+                <Setter Property="BorderBrush" Value="LightGray"/>
+                <Setter Property="BorderThickness" Value="1"/>
+                <Setter Property="Margin" Value="1"/>
+            </Style>
+        </DockPanel.Resources>
         <Border DockPanel.Dock="Top">
             <DockPanel>
                 <Label DockPanel.Dock="Left" Style="{StaticResource Lbl_Title}" Content="{StaticResource T_Visualization}"></Label>
@@ -29,6 +31,11 @@
                             <Setter Property="VerticalAlignment" Value="Bottom"/>
                             <Setter Property="Margin" Value="2"/>
                         </Style>
+                        <Style TargetType="ToggleButton" BasedOn="{StaticResource MetroToggleButton}">
+                            <Setter Property="Height" Value="20"/>
+                            <Setter Property="VerticalAlignment" Value="Bottom"/>
+                            <Setter Property="Margin" Value="2"/>
+                        </Style>
                     </StackPanel.Resources>
                     <Label Content="{StaticResource T_SamplingStatus}"></Label>
                     <Label Content="{Binding Sampling}"></Label>
@@ -39,6 +46,7 @@
                     <Button Name="ClearSamples" Content="{StaticResource T_ClearSamples}"></Button>
                     <Button Name="SaveSamples" Content="{StaticResource T_SaveSamples}"></Button>
                     <Button Name="LoadSamples" Content="{StaticResource T_LoadSamples}"></Button>
+                    <ToggleButton Visibility="Collapsed" Content="{StaticResource T_AnalysisSamples}" IsChecked="{Binding EnableAnalysis}"></ToggleButton>
                 </StackPanel>
             </DockPanel>
         </Border>
@@ -123,8 +131,11 @@
                 <Label Grid.ColumnSpan="2" Grid.Row="5" Content="{Binding MapGridOptions.ValueStep[0],Converter={StaticResource Round}}"></Label>
             </Grid>
         </Border>
-        <Border >
-            <WebBrowser  Name="Map" Tag="{Binding MapContainer,Mode=OneWayToSource}"/>
-        </Border>
+        <DockPanel>
+            <control:TransitioningContentControl DockPanel.Dock="Right" Visibility="{Binding EnableAnalysis}" cal:View.Model="{Binding PropertyPanel}"></control:TransitioningContentControl>
+            <Border>
+                <WebBrowser  Name="Map" Tag="{Binding MapContainer,Mode=OneWayToSource}"/>
+            </Border>
+        </DockPanel>
     </DockPanel>
 </UserControl>

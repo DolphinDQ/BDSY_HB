@@ -115,6 +115,7 @@
     <Compile Include="Core\SaveManager.cs" />
     <Compile Include="EventArgs\EvtAirSample.cs" />
     <Compile Include="Data\MqttDataManager.cs" />
+    <Compile Include="EventArgs\EvtMapBoundChanged.cs" />
     <Compile Include="EventArgs\EvtMapPointConverted.cs" />
     <Compile Include="EventArgs\EvtSampling.cs" />
     <Compile Include="EventArgs\EvtMapLoad.cs" />
@@ -140,8 +141,10 @@
     <Compile Include="Config\ConfigManager.cs" />
     <Compile Include="Interfaces\IConfigManager.cs" />
     <Compile Include="ViewModels\DataDisplayViewModel.cs" />
+    <Compile Include="Interfaces\IMapView.cs" />
     <Compile Include="ViewModels\MapViewModel.cs" />
     <Compile Include="ViewModels\PollutantSettingViewModel.cs" />
+    <Compile Include="ViewModels\SampleAnalysisViewModel.cs" />
     <Compile Include="Views\DataDisplayView.xaml.cs">
       <DependentUpon>DataDisplayView.xaml</DependentUpon>
     </Compile>
@@ -150,6 +153,9 @@
     </Compile>
     <Compile Include="Views\PollutantSettingView.xaml.cs">
       <DependentUpon>PollutantSettingView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\SampleAnalysisView.xaml.cs">
+      <DependentUpon>SampleAnalysisView.xaml</DependentUpon>
     </Compile>
     <Page Include="Resources\NamedStyles.xaml">
       <SubType>Designer</SubType>
@@ -172,6 +178,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\PollutantSettingView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\SampleAnalysisView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

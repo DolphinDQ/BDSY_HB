@@ -25,11 +25,31 @@ namespace AirMonitor.Map
             switch (name)
             {
                 case "pointConvert":
-                    m_eventAggregator.PublishOnBackgroundThread(JsonConvert.DeserializeObject<EvtMapPointConverted>(json));
+                    On<EvtMapPointConverted>(json);
+                    break;
+                case "load":
+                    On<EvtMapLoad>();
+                    break;
+                case "boundChanged":
+                    On<EvtMapBoundChanged>(json);
                     break;
                 default:
                     break;
             }
         }
+
+        private void On<T>(string json = null)
+           where T : new()
+        {
+            if (json == null)
+            {
+                m_eventAggregator.PublishOnBackgroundThread(new T());
+            }
+            else
+            {
+                m_eventAggregator.PublishOnBackgroundThread(JsonConvert.DeserializeObject<T>(json));
+            }
+        }
+
     }
 }

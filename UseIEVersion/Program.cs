@@ -12,6 +12,8 @@ namespace UseIEVersion
     {
         static void Main(string[] args)
         {
+            Console.WriteLine("Environment:{0}\n appdomain:{1}\n process:{2}", Environment.CurrentDirectory, AppDomain.CurrentDomain.BaseDirectory, Process.GetCurrentProcess().MainModule.FileName);
+            Console.Read();
             using (var i = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\WOW6432Node\Microsoft\Internet Explorer\Main\FeatureControl\FEATURE_BROWSER_EMULATION", true))
             {
                 Console.WriteLine(i.GetValue("prevhost.exe"));

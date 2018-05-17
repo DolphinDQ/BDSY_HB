@@ -8,6 +8,7 @@
              xmlns:controls="http://metro.mahapps.com/winfx/xaml/controls"
              mc:Ignorable="d" 
              d:DesignHeight="800" d:DesignWidth="350">
+
     <DockPanel IsEnabled="{Binding DataManager.IsConnected}">
         <DockPanel.Resources>
             <Style TargetType="DockPanel">
@@ -18,10 +19,9 @@
                 </Style.Resources>
             </Style>
             <Style TargetType="Border">
-                <Setter Property="BorderThickness" Value="1" />
                 <Setter Property="BorderBrush" Value="LightGray"/>
-                <Setter Property="Margin" Value="2"/>
-                <Setter Property="Padding" Value="2"/>
+                <Setter Property="BorderThickness" Value="1"/>
+                <Setter Property="Margin" Value="1"/>
             </Style>
         </DockPanel.Resources>
 

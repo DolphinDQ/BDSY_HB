@@ -14,7 +14,7 @@ using AirMonitor.Config;
 
 namespace AirMonitor.ViewModels
 {
-    public class MapViewModel : Screen, IHandle<EvtAirSample>, IHandle<EvtSampling>, IHandle<EvtMapLoad>, IHandle<EvtMapPointConverted>, IHandle<EvtSetting>
+    public class MapViewModel : Screen, IHandle<EvtAirSample>, IHandle<EvtSampling>, IHandle<EvtMapLoad>, IHandle<EvtMapPointConverted>, IHandle<EvtSetting>, IMapView
     {
         private IMapProvider m_mapProvider;
         private IEventAggregator m_eventAggregator;
@@ -40,7 +40,6 @@ namespace AirMonitor.ViewModels
         /// 地图网格参数。
         /// </summary>
         public MapGridOptions MapGridOptions { get; private set; }
-
         /// <summary>
         /// 显示无人机路径。
         /// </summary>
@@ -50,9 +49,17 @@ namespace AirMonitor.ViewModels
         /// </summary>
         public bool IsUavFocus { get; set; } = true;
         /// <summary>
+        /// 开始数据分析。
+        /// </summary>
+        public bool EnableAnalysis { get; set; } = false;
+        /// <summary>
         /// 污染物名称。
         /// </summary>
         public Tuple<string, string> DataName { get; set; }
+        /// <summary>
+        /// 地图提供者。
+        /// </summary>
+        public IMapProvider MapProvider => m_mapProvider;
 
         public MapViewModel(
             IEventAggregator eventAggregator,
@@ -91,6 +98,15 @@ namespace AirMonitor.ViewModels
         {
             m_mapProvider.LoadMap(MapContainer);
         }
+
+        public void OnMapLoadChanged()
+        {
+            if (Samples.Any())
+            {
+                LoadHistoryData(GetUavName(null));
+            }
+        }
+
         /// <summary>
         /// 接收环境检测数据。
         /// </summary>
@@ -135,10 +151,29 @@ namespace AirMonitor.ViewModels
             }
         }
 
-        public async void Handle(EvtMapLoad message)
+        public void Handle(EvtMapLoad message)
         {
-            await Task.Delay(1000);//地图加载延时一秒钟
             MapLoad = true;
+        }
+
+        public void Handle(EvtSetting message)
+        {
+            if (message.Command == SettingCommands.Changed && message.SettingObject is AirStandardSetting setting)
+            {
+                MapGridOptions.pollutants = setting.Pollutant;
+            }
+        }
+
+        public void Handle(EvtMapPointConverted message)
+        {
+            var sample = Samples.FirstOrDefault(o => o.GetHashCode() == message.Seq);
+            if (sample != null)
+            {
+                var point = message.Points.FirstOrDefault();
+                sample.ActualLat = point.lat;
+                sample.ActualLng = point.lng;
+                OnUpdateUavPosition(sample);
+            }
         }
 
         private void OnUpdateUavPosition(EvtAirSample sample)
@@ -174,6 +209,7 @@ namespace AirMonitor.ViewModels
                 m_mapProvider.UavMove(new Uav() { name = name, data = item, lat = item.ActualLat, lng = item.ActualLng });
             }
             m_mapProvider.GridInit(MapGridOptions);
+            m_mapProvider.UavFocus(name);
         }
 
         private string GetUavName(EvtAirSample sample) => "default";
@@ -208,25 +244,6 @@ namespace AirMonitor.ViewModels
             //m_mapProvider.Invoke("mapPointConvert", 1, JsonConvert.SerializeObject(new[] { new MapPoint() { lat = 23.016791666666666667, lng = 113.077023333333333333 } }));
         }
 
-        public void Handle(EvtMapPointConverted message)
-        {
-            var sample = Samples.FirstOrDefault(o => o.GetHashCode() == message.Seq);
-            if (sample != null)
-            {
-                var point = message.Points.FirstOrDefault();
-                sample.ActualLat = point.lat;
-                sample.ActualLng = point.lng;
-                OnUpdateUavPosition(sample);
-            }
-        }
-
-        public void OnMapLoadChanged()
-        {
-            if (Samples.Any())
-            {
-                LoadHistoryData(GetUavName(null));
-            }
-        }
         public void UavLocation()
         {
             if (MapLoad)
@@ -324,12 +341,5 @@ namespace AirMonitor.ViewModels
             m_mapProvider.UavPath(GetUavName(null), ShowUavPath);
         }
 
-        public void Handle(EvtSetting message)
-        {
-            if (message.Command == SettingCommands.Changed && message.SettingObject is AirStandardSetting setting)
-            {
-                MapGridOptions.pollutants = setting.Pollutant;
-            }
-        }
     }
 }

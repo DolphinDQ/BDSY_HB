@@ -62,7 +62,10 @@ var MapBase = /** @class */ (function () {
     };
     MapBase.prototype.on = function (eventName, arg) {
         try {
-            window.external.On("pointConvert", JSON.stringify(arg));
+            if (arg) {
+                arg = JSON.stringify(arg);
+            }
+            window.external.On(eventName, arg);
         }
         catch (e) {
             //ignore;
@@ -70,6 +73,12 @@ var MapBase = /** @class */ (function () {
     };
     return MapBase;
 }());
+var MapEvents;
+(function (MapEvents) {
+    MapEvents["load"] = "load";
+    MapEvents["pointConvert"] = "pointConvert";
+    MapEvents["boundChanged"] = "boundChanged";
+})(MapEvents || (MapEvents = {}));
 var BaiduMapProvider = /** @class */ (function (_super) {
     __extends(BaiduMapProvider, _super);
     function BaiduMapProvider() {
@@ -180,7 +189,12 @@ var BaiduMapProvider = /** @class */ (function (_super) {
             // alert(e.message);
         }
     };
-    BaiduMapProvider.prototype.load = function (container) {
+    BaiduMapProvider.prototype.onMapBoundChaned = function () {
+        if (this.callbackBoundChanged) {
+            this.on(MapEvents.boundChanged, this.map.getBounds());
+        }
+    };
+    BaiduMapProvider.prototype.mapInit = function (container) {
         var _this = this;
         this.loadJs("http://api.map.baidu.com/getscript?v=2.0&ak=TCgR2Y0IGMmPR4qteh4McpXzMyYpFrEx", function (e) {
             // 百度地图API功能
@@ -203,18 +217,29 @@ var BaiduMapProvider = /** @class */ (function (_super) {
             _this.blockGrid = new MapGrid();
             _this.blockGrid.blocks = new Array();
             _this.uavList = new Array();
-            if (_this.onLoad) {
-                _this.onLoad();
-            }
+            _this.on(MapEvents.load);
         });
     };
     BaiduMapProvider.prototype.mapPointConvert = function (seq, p) {
+        var _this = this;
         var points = this.parseJson(p);
         this.convertor.translate(points, 1, 5, function (o) {
             if (o.status == 0) {
-                this.on("pointConvert", { Seq: seq, Points: o.points });
+                _this.on(MapEvents.pointConvert, { Seq: seq, Points: o.points });
             }
         });
+    };
+    BaiduMapProvider.prototype.mapBoundChangedEvent = function (subscribe) {
+        var _this = this;
+        this.callbackBoundChanged = subscribe;
+        var mapBoundChangedEvents = ["moveend", "zoomend", "resize"];
+        if (subscribe) {
+            mapBoundChangedEvents.forEach(function (o) { return _this.map.addEventListener(o, _this.onMapBoundChaned); });
+            this.onMapBoundChaned();
+        }
+        else {
+            mapBoundChangedEvents.forEach(function (o) { return _this.map.removeEventListener(o, _this.onMapBoundChaned); });
+        }
     };
     BaiduMapProvider.prototype.gridInit = function (opt) {
         opt = this.parseJson(opt);
@@ -297,7 +322,7 @@ var BaiduMapProvider = /** @class */ (function (_super) {
                         }
                     }
                     content = content.replace("{{time}}", time);
-                    content += this.getInfoWindowContentTemplate({
+                    content += _this.getInfoWindowContentTemplate({
                         title: "采样类型",
                         min: "最小值",
                         max: "最大值",
@@ -307,10 +332,10 @@ var BaiduMapProvider = /** @class */ (function (_super) {
                         opacity: 1,
                     });
                     for (var i = 0; i < contentData.length; i++) {
-                        content += this.createInfoWindowContent(contentData[i], opt);
+                        content += _this.createInfoWindowContent(contentData[i], opt);
                     }
                     blockGrid.infoWindow.setContent(content);
-                    this.map.openInfoWindow(blockGrid.infoWindow, e.point);
+                    _this.map.openInfoWindow(blockGrid.infoWindow, e.point);
                 });
                 _this.map.addOverlay(block);
             }
@@ -426,7 +451,7 @@ var BaiduMapProvider = /** @class */ (function (_super) {
 }(MapBase));
 (function () {
     var map = new BaiduMapProvider();
-    map.load("container");
+    map.mapInit("container");
     window.map = map;
 })();
 //# sourceMappingURL=map.js.map

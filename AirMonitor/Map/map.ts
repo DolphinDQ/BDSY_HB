@@ -11,9 +11,9 @@
     }
 }
 interface IMapProvider {
-    onLoad: () => any;
-    load(container: string);
+    mapInit(container: string);
     mapPointConvert(seq: number, p: Point[]);
+    mapBoundChangedEvent(subscribe: boolean);
     gridInit(opt: MapGridOptions);
     gridRefresh();
     gridClear();
@@ -29,6 +29,10 @@ interface IMapProvider {
 interface Point {
     lat: number,
     lng: number;
+}
+interface Bound {
+    sw: Point,
+    ne: Point,
 }
 
 class Pollutant {
@@ -66,6 +70,7 @@ class Uav {
 }
 
 abstract class MapBase implements IMapProvider {
+    abstract mapBoundChangedEvent(subscribe: boolean);
     abstract mapPointConvert(seq: number, p: Point[]);
     abstract uavShowPath(name: string);
     abstract uavHidePath(name: string);
@@ -75,9 +80,8 @@ abstract class MapBase implements IMapProvider {
     abstract gridClear();
     abstract uavAdd(name: string, lng: number, lat: number, d: any);
     abstract uavMove(name: string, lng: number, lat: number, d: any);
-    onLoad: () => any;
     abstract gridInit(opt: MapGridOptions);
-    abstract load(container: string);
+    abstract mapInit(container: string);
     abstract gridRefresh();
     protected loadJs(url: string, onLoad: (e) => any) {
         try {
@@ -95,19 +99,29 @@ abstract class MapBase implements IMapProvider {
             obj = JSON.parse(obj)
         return obj;
     }
-    protected on(eventName: string, arg: any) {
+    protected on(eventName: MapEvents, arg?: any) {
         try {
-            window.external.On("pointConvert", JSON.stringify(arg));
+            if (arg) {
+                arg = JSON.stringify(arg);
+            }
+            window.external.On(eventName, arg);
         } catch (e) {
             //ignore;
         }
     }
 }
 
+enum MapEvents {
+    load = "load",
+    pointConvert = "pointConvert",
+    boundChanged = "boundChanged",
+}
+
 declare var BMap;
 declare var BMAP_NORMAL_MAP;
 declare var BMAP_HYBRID_MAP;
 class BaiduMapProvider extends MapBase {
+    private callbackBoundChanged
     private map: any;
     private convertor: any;
     private blockGrid: MapGrid;
@@ -215,7 +229,12 @@ class BaiduMapProvider extends MapBase {
             // alert(e.message);
         }
     }
-    load(container: string) {
+    private onMapBoundChaned() {
+        if (this.callbackBoundChanged) {
+            this.on(MapEvents.boundChanged, this.map.getBounds())
+        }
+    }
+    mapInit(container: string) {
         this.loadJs("http://api.map.baidu.com/getscript?v=2.0&ak=TCgR2Y0IGMmPR4qteh4McpXzMyYpFrEx", e => {
             // 百度地图API功能
             let map = new BMap.Map(container);    // 创建Map实例
@@ -237,18 +256,26 @@ class BaiduMapProvider extends MapBase {
             this.blockGrid = new MapGrid();
             this.blockGrid.blocks = new Array<any>();
             this.uavList = new Array<Uav>();
-            if (this.onLoad) {
-                this.onLoad();
-            }
+            this.on(MapEvents.load);
         });
     }
     mapPointConvert(seq: number, p: Point[]) {
         var points = this.parseJson(p);
-        this.convertor.translate(points, 1, 5, function (o) {
+        this.convertor.translate(points, 1, 5, o => {
             if (o.status == 0) {
-                this.on("pointConvert", { Seq: seq, Points: o.points })
+                this.on(MapEvents.pointConvert, { Seq: seq, Points: o.points })
             }
         });
+    }
+    mapBoundChangedEvent(subscribe: boolean) {
+        this.callbackBoundChanged = subscribe;
+        var mapBoundChangedEvents = ["moveend", "zoomend", "resize"];
+        if (subscribe) {
+            mapBoundChangedEvents.forEach(o => this.map.addEventListener(o, this.onMapBoundChaned));
+            this.onMapBoundChaned();
+        } else {
+            mapBoundChangedEvents.forEach(o => this.map.removeEventListener(o, this.onMapBoundChaned));
+        }
     }
     gridInit(opt: MapGridOptions) {
         opt = this.parseJson(opt);
@@ -278,7 +305,7 @@ class BaiduMapProvider extends MapBase {
             if (!block) {
                 block = this.createBlock(point, opt);
                 blockGrid.blocks.push(block);
-                block.addEventListener("click", function (e) {
+                block.addEventListener("click", e => {
                     console.dir(e);
                     if (!blockGrid.infoWindow) {
                         blockGrid.infoWindow = new BMap.InfoWindow("", {
@@ -433,10 +460,11 @@ class BaiduMapProvider extends MapBase {
             }
         }, null);
     }
+
 }
 
 (function () {
     let map = new BaiduMapProvider();
-    map.load("container");
+    map.mapInit("container");
     (<any>window).map = map;
 })();

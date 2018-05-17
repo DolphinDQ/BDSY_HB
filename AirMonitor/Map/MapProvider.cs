@@ -5,17 +5,18 @@ using Microsoft.Win32;
 using Newtonsoft.Json;
 using System;
 using System.Diagnostics;
+using System.Windows;
 using System.Windows.Controls;
 
 namespace AirMonitor.Map
 {
     class MapProvider : IMapProvider
     {
-        private IEventAggregator m_eventAggregator;
+        private readonly MapEventHandler m_eventHandler;
 
         public MapProvider(IEventAggregator eventAggregator)
         {
-            m_eventAggregator = eventAggregator;
+            m_eventHandler = new MapEventHandler(eventAggregator);
             UseIE10();
         }
 
@@ -33,6 +34,7 @@ namespace AirMonitor.Map
             {
                 this.Warn("user ie 10 failed.{0}", e);
                 this.Error(e);
+                MessageBox.Show("设置浏览器版本失败:" + e.Message, "错误", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
@@ -41,7 +43,6 @@ namespace AirMonitor.Map
             => Invoke(methodName, o => JsonConvert.DeserializeObject<T>(o.ToString()), args);
         public void Invoke(string methodName, params object[] args)
             => Invoke<object>(methodName, parse: null, args: args);
-
 
         public T Invoke<T>(string methodName, Func<object, T> parse, params object[] args)
         {
@@ -76,8 +77,6 @@ namespace AirMonitor.Map
 
         }
 
-
-
         public void LoadMap(object mapContainer)
         {
             if (mapContainer is WebBrowser)
@@ -85,22 +84,12 @@ namespace AirMonitor.Map
                 Browser = mapContainer as WebBrowser;
                 Browser.Dispatcher.Invoke(() =>
                 {
-                    Browser.ObjectForScripting = new MapEventHandler(m_eventAggregator);
+                    Browser.ObjectForScripting = m_eventHandler;
                     Browser.Source = new Uri($"file:///{AppDomain.CurrentDomain.BaseDirectory.Replace("\\", "/")}Map/map.html");
-                    Browser.LoadCompleted -= Browser_LoadCompleted;
-                    Browser.LoadCompleted += Browser_LoadCompleted;
                 });
-
             }
         }
 
-        private void Browser_LoadCompleted(object sender, System.Windows.Navigation.NavigationEventArgs e)
-        {
-            m_eventAggregator.PublishOnBackgroundThread(new EvtMapLoad()
-            {
-                Provider = this,
-                Url = e.Uri.ToString(),
-            });
-        }
+
     }
 }

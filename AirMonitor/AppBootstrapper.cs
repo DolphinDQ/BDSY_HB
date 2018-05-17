@@ -38,6 +38,7 @@ namespace AirMonitor
             container.PerRequest<DataDisplayViewModel>();
             container.PerRequest<MapViewModel>();
             container.PerRequest<PollutantSettingViewModel>();
+            container.PerRequest<SampleAnalysisViewModel>();
             
             LogManager.GetLog = o => container.GetInstance<ILog>();
             container.GetInstance<IDataManager>().Init();
