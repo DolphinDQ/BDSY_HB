@@ -8,10 +8,10 @@ var __extends = (this && this.__extends) || (function () {
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     };
 })();
-if (!Array.prototype.find) {
-    Array.prototype.find = function (query) {
+if (!Array.prototype.first) {
+    Array.prototype.first = function (query) {
         var arr = this;
-        if (query) {
+        if (query && arr) {
             for (var i = 0; i < arr.length; i++) {
                 if (query(arr[i])) {
                     return arr[i];
@@ -20,8 +20,70 @@ if (!Array.prototype.find) {
         }
     };
 }
+var BlockContext = /** @class */ (function () {
+    function BlockContext(center, pollutants) {
+        var _this = this;
+        this.points = [];
+        this.reports = [];
+        this.center = center;
+        pollutants.forEach(function (o) {
+            var report = new PollutantReport();
+            report.pollutant = o;
+            _this.reports.push(report);
+        });
+    }
+    BlockContext.prototype.addPoint = function (p) {
+        if (this.points.first(function (o) { return o == p; }))
+            return;
+        if (p.data) {
+            if (!this.time) {
+                this.time = p.data["time"];
+            }
+            this.reports.forEach(function (o) {
+                var val = p.data[o.pollutant.Name];
+                if (val) {
+                    o.avg = (o.avg * o.count + val) / (o.count + 1);
+                    if (o.count == 0) {
+                        o.max = val;
+                        o.min = val;
+                        o.sum = val;
+                    }
+                    else {
+                        o.max = val > o.max ? val : o.max;
+                        o.min = val < o.min ? val : o.min;
+                        o.sum += val;
+                    }
+                    o.count++;
+                }
+            });
+        }
+        this.points.push(p);
+    };
+    BlockContext.prototype.getPoints = function (query) {
+        return this.points.filter(query);
+    };
+    BlockContext.prototype.getReports = function (query) {
+        return this.reports.filter(query);
+    };
+    return BlockContext;
+}());
+var PollutantReport = /** @class */ (function () {
+    function PollutantReport() {
+        this.count = 0;
+        this.avg = 0;
+        this.sum = 0;
+        this.max = 0;
+        this.min = 0;
+    }
+    return PollutantReport;
+}());
 var Pollutant = /** @class */ (function () {
     function Pollutant() {
+        this.Name = "sample";
+        this.DisplayName = "样本";
+        this.MaxValue = 100;
+        this.MinValue = 1;
+        this.Unit = "mg/m3";
     }
     return Pollutant;
 }());
@@ -32,6 +94,7 @@ var MapGridOptions = /** @class */ (function () {
 }());
 var MapGrid = /** @class */ (function () {
     function MapGrid() {
+        this.selectedBlocks = [];
     }
     return MapGrid;
 }());
@@ -62,7 +125,10 @@ var MapBase = /** @class */ (function () {
     };
     MapBase.prototype.on = function (eventName, arg) {
         try {
-            window.external.On("pointConvert", JSON.stringify(arg));
+            if (arg) {
+                arg = JSON.stringify(arg);
+            }
+            window.external.On(eventName, arg);
         }
         catch (e) {
             //ignore;
@@ -70,12 +136,27 @@ var MapBase = /** @class */ (function () {
     };
     return MapBase;
 }());
+var MapEvents;
+(function (MapEvents) {
+    MapEvents["load"] = "load";
+    MapEvents["pointConvert"] = "pointConvert";
+    MapEvents["boundChanged"] = "boundChanged";
+})(MapEvents || (MapEvents = {}));
+var MapMenuItems;
+(function (MapMenuItems) {
+    MapMenuItems["compare"] = "\u5BF9\u6BD4\u6570\u636E";
+    MapMenuItems["horizontal"] = "\u6A2A\u5411\u5207\u9762";
+    MapMenuItems["vertical"] = "\u7EB5\u5411\u5207\u9762";
+})(MapMenuItems || (MapMenuItems = {}));
 var BaiduMapProvider = /** @class */ (function (_super) {
     __extends(BaiduMapProvider, _super);
     function BaiduMapProvider() {
         return _super !== null && _super.apply(this, arguments) || this;
     }
-    BaiduMapProvider.prototype.getColor = function (value, opt, min, max) {
+    BaiduMapProvider.prototype.getColor = function (value, min, max) {
+        if (min === void 0) { min = undefined; }
+        if (max === void 0) { max = undefined; }
+        var opt = this.blockGrid.options;
         if (!min)
             min = opt.minValue;
         if (!max)
@@ -95,7 +176,7 @@ var BaiduMapProvider = /** @class */ (function (_super) {
     };
     BaiduMapProvider.prototype.getColorValue = function (percent, begin, end) {
         var flag = end > begin ? 1 : -1;
-        var result = parseInt(Math.abs(end - begin) * percent * flag + begin).toString(16);
+        var result = Math.round(Math.abs(end - begin) * percent * flag + begin).toString(16);
         return result.length < 2 ? "0" + result : result;
     };
     BaiduMapProvider.prototype.getInfoWindowContentTemplate = function (opt) {
@@ -109,28 +190,25 @@ var BaiduMapProvider = /** @class */ (function (_super) {
         template = template.replace("{{opacity}}", opt.opacity);
         return template;
     };
-    BaiduMapProvider.prototype.createInfoWindowContent = function (contentData, opt) {
-        var pollutant = opt.pollutants.find(function (p) { return p.Name == contentData.title; });
-        if (!pollutant)
-            return "";
+    BaiduMapProvider.prototype.createInfoWindowContent = function (report) {
         return this.getInfoWindowContentTemplate({
-            title: pollutant.DisplayName,
-            min: Math.round(contentData.min * 100) / 100,
-            max: Math.round(contentData.max * 100) / 100,
-            avg: Math.round(contentData.avg * 100) / 100,
-            unit: pollutant.Unit,
-            background: this.getColor(contentData.avg, opt, pollutant.MinValue, pollutant.MaxValue),
-            opacity: opt.opacity,
+            title: report.pollutant.DisplayName,
+            min: Math.round(report.min * 100) / 100,
+            max: Math.round(report.max * 100) / 100,
+            avg: Math.round(report.avg * 100) / 100,
+            unit: report.pollutant.Unit,
+            background: this.getColor(report.avg, report.pollutant.MinValue, report.pollutant.MaxValue),
+            opacity: this.blockGrid.options.opacity,
         });
     };
     BaiduMapProvider.prototype.createBlock = function (point, opt) {
-        var center = opt.firstPoint;
+        var _this = this;
+        var center = this.blockGrid.firstPoint;
         var sideLength = opt.sideLength * 0.00001;
         var opacity = opt.opacity;
         var offset = sideLength / 2; //计算偏移经纬度。
         var lng = center.lng + sideLength * Math.round((point.lng - center.lng) / sideLength);
         var lat = center.lat + sideLength * Math.round((point.lat - center.lat) / sideLength);
-        var center = new BMap.Point(lng, lat);
         var polygon = new BMap.Polygon([
             new BMap.Point(lng + offset, lat + offset),
             new BMap.Point(lng - offset, lat + offset),
@@ -142,8 +220,36 @@ var BaiduMapProvider = /** @class */ (function (_super) {
             strokeOpacity: 0.5,
             strokeColor: "white"
         });
-        polygon.center = center;
-        polygon.points = [point];
+        var context = new BlockContext(new BMap.Point(lng, lat), opt.pollutants);
+        context.addPoint(point);
+        polygon.context = context;
+        polygon.addEventListener("click", function (o) { return _this.onShowBlockReport(o.target); });
+        polygon.addEventListener("rightclick", function (o) {
+            var index = null;
+            var block = null;
+            for (var i = 0; i < _this.blockGrid.selectedBlocks.length; i++) {
+                block = _this.blockGrid.selectedBlocks[i];
+                if (block == o.target) {
+                    index = i;
+                    break;
+                }
+            }
+            if (index === null) {
+                block = o.target;
+                block.setStrokeColor("blue");
+                block.setStrokeOpacity(1);
+                block.setStrokeWeight(2);
+                block.setStrokeStyle("dashed");
+                _this.blockGrid.selectedBlocks.push(block);
+            }
+            else {
+                block.setStrokeColor("white");
+                block.setStrokeOpacity(0.5);
+                block.setStrokeWeight(1);
+                block.setStrokeStyle("solid");
+                _this.blockGrid.selectedBlocks.splice(i, 1);
+            }
+        });
         return polygon;
     };
     BaiduMapProvider.prototype.isInBlock = function (center, sideLength, point) {
@@ -156,7 +262,7 @@ var BaiduMapProvider = /** @class */ (function (_super) {
     };
     BaiduMapProvider.prototype.uav = function (name, exist, notExist) {
         try {
-            var uav = this.uavList.find(function (o) { return o.name == name; });
+            var uav = this.uavList.first(function (o) { return o.name == name; });
             if (uav) {
                 if (exist) {
                     exist(uav);
@@ -178,7 +284,70 @@ var BaiduMapProvider = /** @class */ (function (_super) {
             // alert(e.message);
         }
     };
-    BaiduMapProvider.prototype.load = function (container) {
+    BaiduMapProvider.prototype.onMapBoundChaned = function () {
+        if (this.callbackBoundChanged) {
+            this.on(MapEvents.boundChanged, this.map.getBounds());
+        }
+    };
+    BaiduMapProvider.prototype.onCheckContextMenu = function () {
+        var _this = this;
+        var blocks = this.blockGrid.selectedBlocks;
+        if (!blocks) {
+            this.menuItems.forEach(function (o) { return o.disable(); });
+        }
+        else {
+            var setEnable = function (name, enable) {
+                var i = _this.menuItems.first(function (o) { return o.name == name; });
+                if (i) {
+                    if (enable) {
+                        i.enable();
+                    }
+                    else {
+                        i.disable();
+                    }
+                }
+            };
+            //setEnable(MapMenuItems.compare, blocks.length > 0 && blocks.length <= 2);
+            setEnable(MapMenuItems.horizontal, blocks.length > 0);
+            setEnable(MapMenuItems.vertical, blocks.length > 0);
+        }
+    };
+    //private onShowReport(): any {
+    //    var blocks = this.blockGrid.selectedBlocks
+    //    debugger;
+    //    blocks.forEach(o => this.onShowBlockReport(o));
+    //}
+    BaiduMapProvider.prototype.onShowVerticalAspect = function () {
+    };
+    BaiduMapProvider.prototype.onShowHorizontalAspect = function () {
+    };
+    BaiduMapProvider.prototype.onShowBlockReport = function (block) {
+        var _this = this;
+        var blockGrid = this.blockGrid;
+        var opt = blockGrid.options;
+        if (!blockGrid.infoWindow) {
+            blockGrid.infoWindow = new BMap.InfoWindow("", {
+                width: 450,
+                height: 300
+            });
+        }
+        var content = '<div><span>实时采样数据：</span><span>({{time}})</span></div>';
+        content = content.replace("{{time}}", block.context.time);
+        content += this.getInfoWindowContentTemplate({
+            title: "采样类型",
+            min: "最小值",
+            max: "最大值",
+            avg: "平均值",
+            unit: "单位",
+            background: "white",
+            opacity: 1,
+        });
+        var reports = block.context.getReports(function (o) { return true; });
+        reports.forEach(function (o) { return content += _this.createInfoWindowContent(o); });
+        blockGrid.infoWindow.setContent(content);
+        this.map.openInfoWindow(blockGrid.infoWindow, block.context.center);
+    };
+    BaiduMapProvider.prototype.mapInit = function (container) {
         var _this = this;
         this.loadJs("http://api.map.baidu.com/getscript?v=2.0&ak=TCgR2Y0IGMmPR4qteh4McpXzMyYpFrEx", function (e) {
             // 百度地图API功能
@@ -197,21 +366,47 @@ var BaiduMapProvider = /** @class */ (function (_super) {
             map.addControl(new BMap.OverviewMapControl());
             //map.addControl(new BMap.GeolocationControl());
             map.enableScrollWheelZoom(true); //开启鼠标滚轮缩放
+            var menu = new BMap.ContextMenu();
+            var createItem = function (name, func) {
+                var i = new BMap.MenuItem(name, func);
+                i.name = name;
+                return i;
+            };
+            _this.menuItems = [
+                //createItem(MapMenuItems.compare, o => this.onShowReport()),
+                createItem(MapMenuItems.horizontal, function (o) { return _this.onShowHorizontalAspect(); }),
+                createItem(MapMenuItems.vertical, function (o) { return _this.onShowVerticalAspect(); })
+            ];
+            _this.menuItems.forEach(function (o) { return menu.addItem(o); });
+            menu.addEventListener("open", function (o) { return _this.onCheckContextMenu(); });
+            map.addContextMenu(menu);
             _this.map = map;
             _this.blockGrid = new MapGrid();
+            _this.blockGrid.blocks = new Array();
             _this.uavList = new Array();
-            if (_this.onLoad) {
-                _this.onLoad();
-            }
+            _this.on(MapEvents.load);
         });
     };
     BaiduMapProvider.prototype.mapPointConvert = function (seq, p) {
+        var _this = this;
         var points = this.parseJson(p);
         this.convertor.translate(points, 1, 5, function (o) {
             if (o.status == 0) {
-                this.on("pointConvert", { Seq: seq, Points: o.points });
+                _this.on(MapEvents.pointConvert, { Seq: seq, Points: o.points });
             }
         });
+    };
+    BaiduMapProvider.prototype.mapBoundChangedEvent = function (subscribe) {
+        var _this = this;
+        this.callbackBoundChanged = subscribe;
+        var mapBoundChangedEvents = ["moveend", "zoomend", "resize"];
+        if (subscribe) {
+            mapBoundChangedEvents.forEach(function (o) { return _this.map.addEventListener(o, _this.onMapBoundChaned); });
+            this.onMapBoundChaned();
+        }
+        else {
+            mapBoundChangedEvents.forEach(function (o) { return _this.map.removeEventListener(o, _this.onMapBoundChaned); });
+        }
     };
     BaiduMapProvider.prototype.gridInit = function (opt) {
         opt = this.parseJson(opt);
@@ -228,109 +423,46 @@ var BaiduMapProvider = /** @class */ (function (_super) {
         if (!opt.opacity)
             opt.opacity = 0.5;
         if (!opt.dataName)
-            opt.dataName = "";
+            opt.dataName = "sample";
         if (!opt.maxValue)
             opt.maxValue = 100;
         if (!opt.minValue)
             opt.minValue = 0;
         if (!opt.pollutants)
-            opt.pollutants = []; //格式：{Name:"",DisplayName:"",MaxValue:0,MinValue:0,Unit:""}
+            opt.pollutants = [new Pollutant()]; //格式：{Name:"",DisplayName:"",MaxValue:0,MinValue:0,Unit:""}
         this.blockGrid.options = opt;
     };
     BaiduMapProvider.prototype.gridRefresh = function () {
+        var _this = this;
         var points = [];
-        for (var i = 0; i < this.uavList.length; i++) {
-            points = points.concat(this.uavList[i].pathPoint);
-        }
         var blockGrid = this.blockGrid;
         var opt = blockGrid.options;
+        this.uavList.forEach(function (uav) { return points = points.concat(uav.pathPoint); });
         //填充点数据到格子里
         points.forEach(function (point) {
-            var _this = this;
             if (!blockGrid.firstPoint)
                 blockGrid.firstPoint = point;
-            var block = blockGrid.blocks.find(function (block) { return _this.isInBlock(block.center, opt.sideLength, point); });
+            var block = blockGrid.blocks.first(function (block) { return _this.isInBlock(block.context.center, opt.sideLength, point); });
             if (!block) {
-                block = this.createBlock(point, opt);
+                block = _this.createBlock(point, opt);
                 blockGrid.blocks.push(block);
-                block.addEventListener("click", function (e) {
-                    console.dir(e);
-                    if (!blockGrid.infoWindow) {
-                        blockGrid.infoWindow = new BMap.InfoWindow("", {
-                            width: 500,
-                            height: 300
-                        });
-                    }
-                    var pointsInBlock = e.target.points; //方块里的点。
-                    var content = '<div><span>实时采样数据：</span><span>({{time}})</span></div>';
-                    var contentData = [];
-                    /* {
-                        title: "",
-                        sum: 0,
-                        len: pointsInBlock.length
-                    }*/
-                    var time = null;
-                    for (var i = 0; i < pointsInBlock.length; i++) {
-                        var blockData = pointsInBlock[i].data;
-                        if (!time)
-                            time = blockData.time;
-                        for (var title in blockData) {
-                            var val = blockData[title];
-                            var tmp = contentData.find(function (d) { return d.title == title; });
-                            if (!tmp) {
-                                tmp = {
-                                    title: title,
-                                    avg: 0,
-                                    min: val,
-                                    max: val
-                                };
-                                contentData.push(tmp);
-                            }
-                            if (tmp.min > val)
-                                tmp.min = val;
-                            if (tmp.max < val)
-                                tmp.max = val;
-                            tmp.avg = (tmp.avg * i + val) / (i + 1);
-                        }
-                    }
-                    content = content.replace("{{time}}", time);
-                    content += this.getInfoWindowContentTemplate({
-                        title: "采样类型",
-                        min: "最小值",
-                        max: "最大值",
-                        avg: "平均值",
-                        unit: "单位",
-                        background: "white",
-                        opacity: 1,
-                    });
-                    for (var i = 0; i < contentData.length; i++) {
-                        content += this.createInfoWindowContent(contentData[i], opt);
-                    }
-                    blockGrid.infoWindow.setContent(content);
-                    this.map.openInfoWindow(blockGrid.infoWindow, e.point);
-                });
-                this.map.addOverlay(block);
+                _this.map.addOverlay(block);
             }
             else {
-                block.points.push(point);
+                block.context.addPoint(point);
             }
         });
         blockGrid.blocks.forEach(function (block) {
-            var sum = 0;
-            for (var i = 0; i < block.points.length; i++) {
-                if (block.points[i].data) {
-                    sum += block.points[i].data[opt.dataName];
-                }
+            var report = block.context.getReports(function (o) { return o.pollutant.Name == opt.dataName; }).first(function (o) { return true; });
+            if (report) {
+                block.setFillColor(_this.getColor(report.avg));
             }
-            block.avgValue = sum / block.points.length;
-            block.setFillColor(this.getColor(block.avgValue, opt));
         });
     };
     BaiduMapProvider.prototype.gridClear = function () {
+        var _this = this;
         if (this.blockGrid.blocks) {
-            this.blockGrid.blocks.forEach(function (o) {
-                this.map.removeOverlay(o);
-            });
+            this.blockGrid.blocks.forEach(function (o) { return _this.map.removeOverlay(o); });
         }
         delete this.blockGrid.blocks;
         this.blockGrid.blocks = [];
@@ -372,8 +504,8 @@ var BaiduMapProvider = /** @class */ (function (_super) {
             }
             else {
                 _this.map.removeOverlay(o.pathMarker);
-                o.pathMarker.setPath(o.pathPoint);
             }
+            o.pathMarker.setPath(o.pathPoint);
             _this.map.addOverlay(o.pathMarker);
             o.pathMarker.show();
         }, null);
@@ -386,12 +518,13 @@ var BaiduMapProvider = /** @class */ (function (_super) {
         }, null);
     };
     BaiduMapProvider.prototype.uavRemove = function (name) {
+        var _this = this;
         var i = -1;
         this.uavList.forEach(function (o, index) {
             if (o.name == name) {
-                this.map.removeOverlay(o.marker);
-                this.uavHidePath(name);
-                this.map.removeOverlay(o.pathMarker);
+                _this.map.removeOverlay(o.marker);
+                _this.uavHidePath(name);
+                _this.map.removeOverlay(o.pathMarker);
                 i = index;
                 delete o.marker;
                 delete o.pathMarker;
@@ -402,7 +535,7 @@ var BaiduMapProvider = /** @class */ (function (_super) {
         }
     };
     BaiduMapProvider.prototype.uavExist = function (name) {
-        var obj = this.uavList.find(function (o) { return o.name == name; });
+        var obj = this.uavList.first(function (o) { return o.name == name; });
         return obj ? true : false;
     };
     BaiduMapProvider.prototype.uavFocus = function (name) {
@@ -417,11 +550,20 @@ var BaiduMapProvider = /** @class */ (function (_super) {
             }
         }, null);
     };
+    BaiduMapProvider.prototype.testGrid = function () {
+        this.gridInit(new MapGridOptions());
+        var p = this.map.getCenter();
+        this.uavAdd("default", p.lng, p.lat, { sample: Math.random() * 100, time: (new Date).toLocaleDateString() });
+        for (var i = 0; i < 10; i++) {
+            this.uavMove("default", p.lng + (i / 10000), p.lat, { sample: Math.random() * 100, time: (new Date).toLocaleDateString() });
+        }
+        this.gridRefresh();
+    };
     return BaiduMapProvider;
 }(MapBase));
 (function () {
     var map = new BaiduMapProvider();
-    map.load("container");
+    map.mapInit("container");
     window.map = map;
 })();
 //# sourceMappingURL=map.js.map
