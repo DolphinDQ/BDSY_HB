@@ -20,6 +20,82 @@ if (!Array.prototype.first) {
         }
     };
 }
+if (!Array.prototype.avg) {
+    Array.prototype.avg = function (query) {
+        var arr = this;
+        if (query && arr) {
+            var result = null;
+            for (var i = 0; i < arr.length; i++) {
+                var val = query(arr[i]);
+                if (result === null) {
+                    result = val;
+                }
+                else {
+                    result = (result * i + val) / (i + 1);
+                }
+            }
+            return result;
+        }
+    };
+}
+if (!Array.prototype.max) {
+    Array.prototype.max = function (query) {
+        var arr = this;
+        if (query && arr) {
+            var result = null;
+            for (var i = 0; i < arr.length; i++) {
+                var val = query(arr[i]);
+                if (result === null) {
+                    result = arr[i];
+                }
+                else {
+                    result = query(result) < val ? arr[i] : result;
+                }
+            }
+            return result;
+        }
+    };
+}
+if (!Array.prototype.min) {
+    Array.prototype.min = function (query) {
+        var arr = this;
+        if (query && arr) {
+            var result = null;
+            for (var i = 0; i < arr.length; i++) {
+                var val = query(arr[i]);
+                if (result === null) {
+                    result = arr[i];
+                }
+                else {
+                    result = query(result) > val ? arr[i] : result;
+                }
+            }
+            return result;
+        }
+    };
+}
+if (!Array.prototype.select) {
+    Array.prototype.select = function (query) {
+        var arr = this;
+        if (query && arr) {
+            var tmp = [];
+            arr.forEach(function (o) { return tmp.push(query(o)); });
+            arr = tmp;
+        }
+        return arr;
+    };
+}
+if (!Array.prototype.selectMany) {
+    Array.prototype.selectMany = function (query) {
+        var arr = this;
+        if (query && arr) {
+            var tmp = [];
+            arr.forEach(function (o) { return tmp = tmp.concat(query(o)); });
+            arr = tmp;
+        }
+        return arr;
+    };
+}
 var BlockContext = /** @class */ (function () {
     function BlockContext(center, pollutants) {
         var _this = this;
@@ -95,6 +171,7 @@ var MapGridOptions = /** @class */ (function () {
 var MapGrid = /** @class */ (function () {
     function MapGrid() {
         this.selectedBlocks = [];
+        this.selectedBlockLine = [];
     }
     return MapGrid;
 }());
@@ -132,6 +209,8 @@ var MapBase = /** @class */ (function () {
         }
         catch (e) {
             //ignore;
+            console.log("triger event [%s] arguments is :", eventName);
+            console.dir(arg);
         }
     };
     return MapBase;
@@ -141,12 +220,15 @@ var MapEvents;
     MapEvents["load"] = "load";
     MapEvents["pointConvert"] = "pointConvert";
     MapEvents["boundChanged"] = "boundChanged";
+    MapEvents["horizontalAspect"] = "horizontalAspect";
+    MapEvents["verticalAspect"] = "verticalAspect";
 })(MapEvents || (MapEvents = {}));
 var MapMenuItems;
 (function (MapMenuItems) {
     MapMenuItems["compare"] = "\u5BF9\u6BD4\u6570\u636E";
     MapMenuItems["horizontal"] = "\u6A2A\u5411\u5207\u9762";
     MapMenuItems["vertical"] = "\u7EB5\u5411\u5207\u9762";
+    MapMenuItems["clear"] = "\u6E05\u9664";
 })(MapMenuItems || (MapMenuItems = {}));
 var BaiduMapProvider = /** @class */ (function (_super) {
     __extends(BaiduMapProvider, _super);
@@ -224,33 +306,34 @@ var BaiduMapProvider = /** @class */ (function (_super) {
         context.addPoint(point);
         polygon.context = context;
         polygon.addEventListener("click", function (o) { return _this.onShowBlockReport(o.target); });
-        polygon.addEventListener("rightclick", function (o) {
-            var index = null;
-            var block = null;
-            for (var i = 0; i < _this.blockGrid.selectedBlocks.length; i++) {
-                block = _this.blockGrid.selectedBlocks[i];
-                if (block == o.target) {
-                    index = i;
-                    break;
-                }
-            }
-            if (index === null) {
-                block = o.target;
-                block.setStrokeColor("blue");
-                block.setStrokeOpacity(1);
-                block.setStrokeWeight(2);
-                block.setStrokeStyle("dashed");
-                _this.blockGrid.selectedBlocks.push(block);
-            }
-            else {
-                block.setStrokeColor("white");
-                block.setStrokeOpacity(0.5);
-                block.setStrokeWeight(1);
-                block.setStrokeStyle("solid");
-                _this.blockGrid.selectedBlocks.splice(i, 1);
-            }
-        });
+        polygon.addEventListener("rightclick", function (o) { return _this.onSelectBlock(o.target); });
         return polygon;
+    };
+    BaiduMapProvider.prototype.onSelectBlock = function (b) {
+        var index = null;
+        var block = null;
+        for (var i = 0; i < this.blockGrid.selectedBlocks.length; i++) {
+            block = this.blockGrid.selectedBlocks[i];
+            if (block == b) {
+                index = i;
+                break;
+            }
+        }
+        if (index === null) {
+            block = b;
+            block.setStrokeColor("blue");
+            block.setStrokeOpacity(1);
+            block.setStrokeWeight(2);
+            block.setStrokeStyle("dashed");
+            this.blockGrid.selectedBlocks.push(block);
+        }
+        else {
+            block.setStrokeColor("white");
+            block.setStrokeOpacity(0.5);
+            block.setStrokeWeight(1);
+            block.setStrokeStyle("solid");
+            this.blockGrid.selectedBlocks.splice(i, 1);
+        }
     };
     BaiduMapProvider.prototype.isInBlock = function (center, sideLength, point) {
         //块中心点，块边长，当前点是否在块里面。
@@ -307,19 +390,50 @@ var BaiduMapProvider = /** @class */ (function (_super) {
                     }
                 }
             };
-            //setEnable(MapMenuItems.compare, blocks.length > 0 && blocks.length <= 2);
             setEnable(MapMenuItems.horizontal, blocks.length > 0);
             setEnable(MapMenuItems.vertical, blocks.length > 0);
         }
     };
-    //private onShowReport(): any {
-    //    var blocks = this.blockGrid.selectedBlocks
-    //    debugger;
-    //    blocks.forEach(o => this.onShowBlockReport(o));
-    //}
+    BaiduMapProvider.prototype.addLine = function (point, horizontalLen, verticalLen) {
+        var line = new BMap.Polyline([
+            new BMap.Point(point.lng - (horizontalLen / (2 * 10000)), point.lat - (verticalLen / (2 * 10000))),
+            new BMap.Point(point.lng + (horizontalLen / (2 * 10000)), point.lat + (verticalLen / (2 * 10000))),
+        ], {
+            strokeStyle: "dashed",
+            strokeWeight: 1,
+            strokeOpacity: 0.8
+        });
+        this.map.addOverlay(line);
+        this.blockGrid.selectedBlockLine.push(line);
+    };
     BaiduMapProvider.prototype.onShowVerticalAspect = function () {
+        var _this = this;
+        var blocks = this.blockGrid.selectedBlocks;
+        if (blocks) {
+            var min = blocks.min(function (o) { return o.context.center.lng; });
+            var max = blocks.max(function (o) { return o.context.center.lng; });
+            this.blockGrid.selectedBlockLine.forEach(function (o) { return _this.map.removeOverlay(o); });
+            this.addLine(min.getBounds().getSouthWest(), 0, 10000);
+            this.addLine(max.getBounds().getNorthEast(), 0, 10000);
+            this.on(MapEvents.verticalAspect, blocks.selectMany(function (o) { return o.context.getPoints(function (i) { return true; }).select(function (c) { return c.data; }); }));
+        }
+    };
+    BaiduMapProvider.prototype.onClearSelectedBlock = function () {
+        var _this = this;
+        this.blockGrid.selectedBlockLine.forEach(function (o) { return _this.map.removeOverlay(o); });
+        this.blockGrid.selectedBlocks.filter(function (o) { return true; }).forEach(function (o) { return _this.onSelectBlock(o); });
     };
     BaiduMapProvider.prototype.onShowHorizontalAspect = function () {
+        var _this = this;
+        var blocks = this.blockGrid.selectedBlocks;
+        if (blocks) {
+            var min = blocks.min(function (o) { return o.context.center.lng; });
+            var max = blocks.max(function (o) { return o.context.center.lng; });
+            this.blockGrid.selectedBlockLine.forEach(function (o) { return _this.map.removeOverlay(o); });
+            this.addLine(min.getBounds().getSouthWest(), 10000, 0);
+            this.addLine(max.getBounds().getNorthEast(), 10000, 0);
+            this.on(MapEvents.horizontalAspect, blocks.selectMany(function (o) { return o.context.getPoints(function (i) { return true; }).select(function (c) { return c.data; }); }));
+        }
     };
     BaiduMapProvider.prototype.onShowBlockReport = function (block) {
         var _this = this;
@@ -375,7 +489,8 @@ var BaiduMapProvider = /** @class */ (function (_super) {
             _this.menuItems = [
                 //createItem(MapMenuItems.compare, o => this.onShowReport()),
                 createItem(MapMenuItems.horizontal, function (o) { return _this.onShowHorizontalAspect(); }),
-                createItem(MapMenuItems.vertical, function (o) { return _this.onShowVerticalAspect(); })
+                createItem(MapMenuItems.vertical, function (o) { return _this.onShowVerticalAspect(); }),
+                createItem(MapMenuItems.clear, function (o) { return _this.onClearSelectedBlock(); })
             ];
             _this.menuItems.forEach(function (o) { return menu.addItem(o); });
             menu.addEventListener("open", function (o) { return _this.onCheckContextMenu(); });
@@ -442,7 +557,7 @@ var BaiduMapProvider = /** @class */ (function (_super) {
         points.forEach(function (point) {
             if (!blockGrid.firstPoint)
                 blockGrid.firstPoint = point;
-            var block = blockGrid.blocks.first(function (block) { return _this.isInBlock(block.context.center, opt.sideLength, point); });
+            var block = blockGrid.blocks.first(function (block) { return block.getBounds().containsPoint(point); });
             if (!block) {
                 block = _this.createBlock(point, opt);
                 blockGrid.blocks.push(block);
@@ -554,8 +669,13 @@ var BaiduMapProvider = /** @class */ (function (_super) {
         this.gridInit(new MapGridOptions());
         var p = this.map.getCenter();
         this.uavAdd("default", p.lng, p.lat, { sample: Math.random() * 100, time: (new Date).toLocaleDateString() });
-        for (var i = 0; i < 10; i++) {
-            this.uavMove("default", p.lng + (i / 10000), p.lat, { sample: Math.random() * 100, time: (new Date).toLocaleDateString() });
+        for (var i = 0; i < 20; i++) {
+            if (i > 10) {
+                this.uavMove("default", p.lng + (i / 10000), p.lat + ((i - 10) / 10000), { sample: Math.random() * 100, time: (new Date).toLocaleDateString() });
+            }
+            else {
+                this.uavMove("default", p.lng + (i / 10000), p.lat, { sample: Math.random() * 100, time: (new Date).toLocaleDateString() });
+            }
         }
         this.gridRefresh();
     };

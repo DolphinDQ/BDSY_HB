@@ -1,7 +1,6 @@
 ﻿if (!Array.prototype.first) {
     Array.prototype.first = function (query) {
         var arr = this;
-
         if (query && arr) {
             for (var i = 0; i < arr.length; i++) {
                 if (query(arr[i])) {
@@ -9,6 +8,79 @@
                 }
             }
         }
+    }
+}
+if (!Array.prototype.avg) {
+    Array.prototype.avg = function (query) {
+        var arr = this;
+        if (query && arr) {
+            var result = null;
+            for (var i = 0; i < arr.length; i++) {
+                var val = query(arr[i]);
+                if (result === null) {
+                    result = val;
+                } else {
+                    result = (result * i + val) / (i + 1);
+                }
+            }
+            return result;
+        }
+    }
+}
+if (!Array.prototype.max) {
+    Array.prototype.max = function (query) {
+        var arr = this;
+        if (query && arr) {
+            var result = null;
+            for (var i = 0; i < arr.length; i++) {
+                var val = query(arr[i]);
+                if (result === null) {
+                    result = arr[i];
+                } else {
+                    result = query(result) < val ? arr[i] : result;
+                }
+            }
+            return result;
+        }
+    }
+}
+if (!Array.prototype.min) {
+    Array.prototype.min = function (query) {
+        var arr = this;
+        if (query && arr) {
+            var result = null;
+            for (var i = 0; i < arr.length; i++) {
+                var val = query(arr[i]);
+                if (result === null) {
+                    result = arr[i];
+                } else {
+                    result = query(result) > val ? arr[i] : result;
+                }
+            }
+            return result;
+        }
+    }
+}
+if (!Array.prototype.select) {
+    Array.prototype.select = function (query) {
+        var arr = this;
+        if (query && arr) {
+            var tmp = [];
+            arr.forEach(o => tmp.push(query(o)));
+            arr = tmp;
+        }
+        return arr;
+    }
+}
+if (!Array.prototype.selectMany) {
+    Array.prototype.selectMany = function (query) {
+        var arr = this;
+        if (query && arr) {
+            var tmp = [];
+            arr.forEach(o => tmp = tmp.concat(query(o)));
+            arr = tmp;
+        }
+        return arr;
     }
 }
 interface IMapProvider {
@@ -45,12 +117,15 @@ interface Point {
     data: any;//采样数据
 }
 interface Bound {
-    sw: Point;
-    ne: Point;
+    getSouthWest(): Point;
+    getNorthEast(): Point;
+    containsPoint(point: Point): boolean;
 }
 
 interface InfoWindow {
     setContent(text: string);
+    setWidth(width: Number);
+    setHeight(height: Number);
 }
 //方块
 interface Block {
@@ -145,6 +220,7 @@ class MapGrid {
     firstPoint: Point;
     infoWindow: InfoWindow;
     selectedBlocks: Block[] = [];
+    selectedBlockLine: any[] = [];
 }
 
 class Uav {
@@ -192,6 +268,8 @@ abstract class MapBase implements IMapProvider {
             window.external.On(eventName, arg);
         } catch (e) {
             //ignore;
+            console.log("triger event [%s] arguments is :", eventName);
+            console.dir(arg);
         }
     }
 }
@@ -200,12 +278,15 @@ enum MapEvents {
     load = "load",
     pointConvert = "pointConvert",
     boundChanged = "boundChanged",
+    horizontalAspect = "horizontalAspect",
+    verticalAspect = "verticalAspect",
 }
 
 enum MapMenuItems {
     compare = "对比数据",
     horizontal = "横向切面",
-    vertical = "纵向切面"
+    vertical = "纵向切面",
+    clear = "清除",
 }
 
 declare var BMap;
@@ -257,7 +338,6 @@ class BaiduMapProvider extends MapBase {
         return template;
     }
     private createInfoWindowContent(report: PollutantReport) {
-
         return this.getInfoWindowContentTemplate({
             title: report.pollutant.DisplayName,
             min: Math.round(report.min * 100) / 100,
@@ -268,6 +348,7 @@ class BaiduMapProvider extends MapBase {
             opacity: this.blockGrid.options.opacity,
         });
     }
+
     private createBlock(point: Point, opt: MapGridOptions): Block {
         var center = this.blockGrid.firstPoint;
         var sideLength = opt.sideLength * 0.00001;
@@ -293,33 +374,36 @@ class BaiduMapProvider extends MapBase {
         context.addPoint(point);
         polygon.context = context;
         polygon.addEventListener("click", o => this.onShowBlockReport(o.target));
-        polygon.addEventListener("rightclick", o => {
-            var index = null;
-            var block = null;
-            for (var i = 0; i < this.blockGrid.selectedBlocks.length; i++) {
-                block = this.blockGrid.selectedBlocks[i]
-                if (block == o.target) {
-                    index = i;
-                    break;
-                }
-            }
-            if (index === null) {
-                block = o.target;
-                block.setStrokeColor("blue");
-                block.setStrokeOpacity(1);
-                block.setStrokeWeight(2);
-                block.setStrokeStyle("dashed");
-                this.blockGrid.selectedBlocks.push(block);
-            } else {
-                block.setStrokeColor("white");
-                block.setStrokeOpacity(0.5);
-                block.setStrokeWeight(1);
-                block.setStrokeStyle("solid");
-                this.blockGrid.selectedBlocks.splice(i, 1);
-            }
-        })
+        polygon.addEventListener("rightclick", o => this.onSelectBlock(o.target))
         return polygon;
     }
+
+    private onSelectBlock(b: Block) {
+        var index = null;
+        var block = null;
+        for (var i = 0; i < this.blockGrid.selectedBlocks.length; i++) {
+            block = this.blockGrid.selectedBlocks[i]
+            if (block == b) {
+                index = i;
+                break;
+            }
+        }
+        if (index === null) {
+            block = b;
+            block.setStrokeColor("blue");
+            block.setStrokeOpacity(1);
+            block.setStrokeWeight(2);
+            block.setStrokeStyle("dashed");
+            this.blockGrid.selectedBlocks.push(block);
+        } else {
+            block.setStrokeColor("white");
+            block.setStrokeOpacity(0.5);
+            block.setStrokeWeight(1);
+            block.setStrokeStyle("solid");
+            this.blockGrid.selectedBlocks.splice(i, 1);
+        }
+    }
+
     private isInBlock(center: Point, sideLength: number, point: Point) {
         //块中心点，块边长，当前点是否在块里面。
         var offset = sideLength / 2 * 0.00001;//计算偏移经纬度。
@@ -368,22 +452,48 @@ class BaiduMapProvider extends MapBase {
                     }
                 }
             }
-            //setEnable(MapMenuItems.compare, blocks.length > 0 && blocks.length <= 2);
             setEnable(MapMenuItems.horizontal, blocks.length > 0);
             setEnable(MapMenuItems.vertical, blocks.length > 0);
         }
     }
-    //private onShowReport(): any {
-    //    var blocks = this.blockGrid.selectedBlocks
-    //    debugger;
-    //    blocks.forEach(o => this.onShowBlockReport(o));
-    //}
 
+    private addLine(point: Point, horizontalLen: number, verticalLen: number) {
+        var line = new BMap.Polyline([
+            new BMap.Point(point.lng - (horizontalLen / (2 * 10000)), point.lat - (verticalLen / (2 * 10000))),
+            new BMap.Point(point.lng + (horizontalLen / (2 * 10000)), point.lat + (verticalLen / (2 * 10000))),
+        ], {
+                strokeStyle: "dashed",
+                strokeWeight: 1,
+                strokeOpacity: 0.8
+            });
+        this.map.addOverlay(line);
+        this.blockGrid.selectedBlockLine.push(line);
+    }
     private onShowVerticalAspect(): any {
-       
+        var blocks = this.blockGrid.selectedBlocks;
+        if (blocks) {
+            var min = blocks.min(o => o.context.center.lng);
+            var max = blocks.max(o => o.context.center.lng);
+            this.blockGrid.selectedBlockLine.forEach(o => this.map.removeOverlay(o));
+            this.addLine(min.getBounds().getSouthWest(), 0, 10000);
+            this.addLine(max.getBounds().getNorthEast(), 0, 10000);
+            this.on(MapEvents.verticalAspect, blocks.selectMany(o => o.context.getPoints(i => true).select(c => c.data)))
+        }
+    }
+    private onClearSelectedBlock() {
+        this.blockGrid.selectedBlockLine.forEach(o => this.map.removeOverlay(o));
+        this.blockGrid.selectedBlocks.filter(o => true).forEach(o => this.onSelectBlock(o));
     }
     private onShowHorizontalAspect(): any {
-        
+        var blocks = this.blockGrid.selectedBlocks;
+        if (blocks) {
+            var min = blocks.min(o => o.context.center.lng);
+            var max = blocks.max(o => o.context.center.lng);
+            this.blockGrid.selectedBlockLine.forEach(o => this.map.removeOverlay(o));
+            this.addLine(min.getBounds().getSouthWest(), 10000, 0);
+            this.addLine(max.getBounds().getNorthEast(), 10000, 0);
+            this.on(MapEvents.horizontalAspect, blocks.selectMany(o => o.context.getPoints(i => true).select(c => c.data)))
+        }
     }
     private onShowBlockReport(block: Block) {
         var blockGrid = this.blockGrid;
@@ -438,7 +548,8 @@ class BaiduMapProvider extends MapBase {
             this.menuItems = [
                 //createItem(MapMenuItems.compare, o => this.onShowReport()),
                 createItem(MapMenuItems.horizontal, o => this.onShowHorizontalAspect()),
-                createItem(MapMenuItems.vertical, o => this.onShowVerticalAspect())
+                createItem(MapMenuItems.vertical, o => this.onShowVerticalAspect()),
+                createItem(MapMenuItems.clear, o => this.onClearSelectedBlock())
             ];
             this.menuItems.forEach(o => menu.addItem(o));
             menu.addEventListener("open", o => this.onCheckContextMenu());
@@ -491,7 +602,7 @@ class BaiduMapProvider extends MapBase {
         //填充点数据到格子里
         points.forEach(point => {
             if (!blockGrid.firstPoint) blockGrid.firstPoint = point;
-            var block = blockGrid.blocks.first(block => this.isInBlock(block.context.center, opt.sideLength, point));
+            var block = blockGrid.blocks.first(block => block.getBounds().containsPoint(point));
             if (!block) {
                 block = this.createBlock(point, opt);
                 blockGrid.blocks.push(block);
@@ -595,8 +706,12 @@ class BaiduMapProvider extends MapBase {
         this.gridInit(new MapGridOptions());
         var p = this.map.getCenter();
         this.uavAdd("default", p.lng, p.lat, { sample: Math.random() * 100, time: (new Date).toLocaleDateString() })
-        for (var i = 0; i < 10; i++) {
-            this.uavMove("default", p.lng + (i / 10000), p.lat, { sample: Math.random() * 100, time: (new Date).toLocaleDateString() })
+        for (var i = 0; i < 20; i++) {
+            if (i > 10) {
+                this.uavMove("default", p.lng + (i / 10000), p.lat + ((i - 10) / 10000), { sample: Math.random() * 100, time: (new Date).toLocaleDateString() })
+            } else {
+                this.uavMove("default", p.lng + (i / 10000), p.lat, { sample: Math.random() * 100, time: (new Date).toLocaleDateString() })
+            }
         }
         this.gridRefresh();
     }
