@@ -39,15 +39,32 @@ namespace AirMonitor.Map
         private WebBrowser Browser { get; set; }
         public T Invoke<T>(string methodName, params object[] args)
             => Invoke(methodName, o => JsonConvert.DeserializeObject<T>(o.ToString()), args);
+        public void Invoke(string methodName, params object[] args)
+            => Invoke<object>(methodName, parse: null, args: args);
+
 
         public T Invoke<T>(string methodName, Func<object, T> parse, params object[] args)
         {
             try
             {
+                if (methodName.Contains("."))
+                {
+
+                    for (int i = 0; i < args.Length; i++)
+                    {
+                        if (args[i] is string)
+                        {
+                            args[i] = $"'{args[i]}'";
+                        }
+                    }
+                    var tmpArg = $"{methodName}({string.Join(",", args)})";
+                    args = new[] { tmpArg };
+                    methodName = "eval";
+                }
                 return Browser.Dispatcher.Invoke(() =>
                  {
                      var obj = Browser.InvokeScript(methodName, args);
-                     return obj == null ? default(T) : parse(obj);
+                     return obj == null || parse == null ? default(T) : parse(obj);
                  });
             }
             catch (Exception e)
@@ -59,18 +76,7 @@ namespace AirMonitor.Map
 
         }
 
-        public void Invoke(string methodName, params object[] args)
-        {
-            try
-            {
-                Browser.Dispatcher.Invoke(() => Browser.InvokeScript(methodName, args));
-            }
-            catch (Exception e)
-            {
-                this.Warn("invoke js [{0}] error.", methodName);
-                this.Error(e);
-            }
-        }
+
 
         public void LoadMap(object mapContainer)
         {
@@ -84,7 +90,7 @@ namespace AirMonitor.Map
                     Browser.LoadCompleted -= Browser_LoadCompleted;
                     Browser.LoadCompleted += Browser_LoadCompleted;
                 });
-              
+
             }
         }
 

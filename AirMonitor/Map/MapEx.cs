@@ -17,7 +17,7 @@ namespace AirMonitor.Map
         /// <param name="options"></param>
         public static void GridInit(this IMapProvider map, MapGridOptions options)
         {
-            map.Invoke("gridInit", JsonConvert.SerializeObject(options));
+            map.Invoke("map.gridInit", JsonConvert.SerializeObject(options));
         }
         /// <summary>
         /// 清除当前已经绘制的网格。
@@ -25,7 +25,7 @@ namespace AirMonitor.Map
         /// <param name="map"></param>
         public static void GridClear(this IMapProvider map)
         {
-            map.Invoke("gridClear");
+            map.Invoke("map.gridClear");
         }
         /// <summary>
         /// 刷新或重新加载网格。
@@ -33,7 +33,7 @@ namespace AirMonitor.Map
         /// <param name="map"></param>
         public static void GridRefresh(this IMapProvider map)
         {
-            map.Invoke("gridRefresh");
+            map.Invoke("map.gridRefresh");
         }
         /// <summary>
         /// 添加无人机。
@@ -42,7 +42,7 @@ namespace AirMonitor.Map
         /// <param name="uav"></param>
         public static void UavAdd(this IMapProvider map, Uav uav)
         {
-            map.Invoke("uavAdd", uav.name, uav.lng, uav.lat, JsonConvert.SerializeObject(uav.data));
+            map.Invoke("map.uavAdd", uav.name, uav.lng, uav.lat, JsonConvert.SerializeObject(uav.data));
         }
         /// <summary>
         /// 移动无人机。
@@ -51,7 +51,7 @@ namespace AirMonitor.Map
         /// <param name="uav"></param>
         public static void UavMove(this IMapProvider map, Uav uav)
         {
-            map.Invoke("uavMove", uav.name, uav.lng, uav.lat, JsonConvert.SerializeObject(uav.data));
+            map.Invoke("map.uavMove", uav.name, uav.lng, uav.lat, JsonConvert.SerializeObject(uav.data));
         }
         /// <summary>
         /// 显示/刷新路径，隐藏路径。
@@ -62,11 +62,11 @@ namespace AirMonitor.Map
         {
             if (show)
             {
-                map.Invoke("uavShowPath", name);
+                map.Invoke("map.uavShowPath", name);
             }
             else
             {
-                map.Invoke("uavHidePath", name);
+                map.Invoke("map.uavHidePath", name);
             }
         }
         /// <summary>
@@ -76,7 +76,7 @@ namespace AirMonitor.Map
         /// <param name="name"></param>
         public static void UavRemove(this IMapProvider map, string name)
         {
-            map.Invoke("uavRemove", name);
+            map.Invoke("map.uavRemove", name);
         }
         /// <summary>
         /// 是否存在无人机。
@@ -85,7 +85,7 @@ namespace AirMonitor.Map
         /// <param name="name"></param>
         public static bool UavExist(this IMapProvider map, string name)
         {
-            return map.Invoke("uavExist", o => bool.Parse(o.ToString()), name);
+            return map.Invoke("map.uavExist", o => bool.Parse(o.ToString()), name);
         }
         /// <summary>
         /// 地图坐标转换。转换结果通过EvtMapPointConverted事件回调。
@@ -95,7 +95,7 @@ namespace AirMonitor.Map
         /// <param name="points"></param>
         public static void MapPointConvert(this IMapProvider map, int seq, MapPoint[] points)
         {
-            map.Invoke("mapPointConvert", seq, JsonConvert.SerializeObject(points));
+            map.Invoke("map.mapPointConvert", seq, JsonConvert.SerializeObject(points));
         }
         /// <summary>
         /// 无人机跟踪。
@@ -104,7 +104,7 @@ namespace AirMonitor.Map
         /// <param name="name"></param>
         public static void UavFocus(this IMapProvider map, string name)
         {
-            map.Invoke("uavFocus", name);
+            map.Invoke("map.uavFocus", name);
         }
     }
 }
