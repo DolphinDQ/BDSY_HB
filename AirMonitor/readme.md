@@ -6,6 +6,7 @@
 2. ViewModel的NotifyPropertyChange接口使用了[Fody](https://github.com/Fody/PropertyChanged)
 3. 数据接入为目前是用MQTT，接入框架为：[MQTTnet](https://github.com/chkr1011/MQTTnet)
 4. 界面UI使用了框架：[MahApps.Metro](https://github.com/MahApps/MahApps.Metro)
+5. 地图脚本开发使用了TypeScript语法，VS需要安装对应的扩展程序，直接编辑ts文件保存后会自动生成js文件。[TypeScript](http://www.typescriptlang.org/#download-links)
 
 ###目录结构
 --------
@@ -15,7 +16,7 @@
 >Core:主要是项目基础类，核心类的实现。
 >Data:主要是项目数据采集管理，以及数据结构。
 >Interface:主要是定义项目接口。
->Map:地图模块的实现。
+>Map:地图模块的实现。ts脚本的语法,可以在[GitHub](https://github.com/Microsoft/TypeScript/blob/master/doc/spec.md)上面找到
 >EventArgs:IEventAggregator回调的事件类型，可以通过IHandler<T>处理事件。
 >ViewModels:视图模型。
 >Views:视图
