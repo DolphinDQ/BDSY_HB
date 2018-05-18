@@ -132,7 +132,7 @@
             </Grid>
         </Border>
         <DockPanel>
-            <control:TransitioningContentControl DockPanel.Dock="Right" Visibility="{Binding EnableAnalysis,Converter={StaticResource IsVisible}}" cal:View.Model="{Binding PropertyPanel}"></control:TransitioningContentControl>
+            <control:TransitioningContentControl DockPanel.Dock="Bottom" Visibility="{Binding EnableAnalysis,Converter={StaticResource IsVisible}}" cal:View.Model="{Binding PropertyPanel}"></control:TransitioningContentControl>
             <Border>
                 <WebBrowser  Name="Map" Tag="{Binding MapContainer,Mode=OneWayToSource}"/>
             </Border>

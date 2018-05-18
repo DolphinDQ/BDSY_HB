@@ -14,6 +14,7 @@ using System.Windows;
 using System.ComponentModel;
 using AirMonitor.Config;
 using PropertyChanged;
+using AirMonitor.Chart;
 
 namespace AirMonitor.ViewModels
 {
@@ -27,7 +28,7 @@ namespace AirMonitor.ViewModels
             public SampleChart(IChartManager chart, double max = double.NaN, double min = double.NaN)
             {
                 Collection = new ObservableCollection<Tuple<DateTime, double>>();
-                ChartModel = chart.CreatLiner(Collection, max, min);
+                ChartModel = chart.CreateLiner(Collection, new LinerOptions() { MaxVaule = max, MinValue = min });
                 Collection.CollectionChanged += Collection_CollectionChanged;
                 m_chart = chart;
             }

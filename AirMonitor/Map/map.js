@@ -583,6 +583,7 @@ var BaiduMapProvider = /** @class */ (function (_super) {
         if (this.blockGrid.blocks) {
             this.blockGrid.blocks.forEach(function (o) { return _this.map.removeOverlay(o); });
         }
+        this.onClearSelectedBlock();
         delete this.blockGrid.blocks;
         this.blockGrid.blocks = [];
     };

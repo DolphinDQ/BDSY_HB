@@ -278,7 +278,7 @@ enum MapEvents {
     boundChanged = "boundChanged",
     horizontalAspect = "horizontalAspect",
     verticalAspect = "verticalAspect",
-    clearAspect ="clearAspect"
+    clearAspect = "clearAspect"
 }
 
 enum MapMenuItems {
@@ -626,6 +626,7 @@ class BaiduMapProvider extends MapBase {
         if (this.blockGrid.blocks) {
             this.blockGrid.blocks.forEach(o => this.map.removeOverlay(o));
         }
+        this.onClearSelectedBlock();
         delete this.blockGrid.blocks;
         this.blockGrid.blocks = [];
     }

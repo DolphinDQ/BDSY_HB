@@ -12,6 +12,5 @@
     </Window.DataContext>
     <Grid>
         <oxy:PlotView  Name="Plot" Model="{Binding Model}"  />
-        <Button Margin="654,368,0,0" Click="Button_Click" ></Button>
     </Grid>
 </Window>

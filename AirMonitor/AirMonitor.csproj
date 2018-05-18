@@ -102,13 +102,17 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="AppBootstrapper.cs" />
+    <Compile Include="Chart\ChartOptions.cs" />
+    <Compile Include="Chart\LinerOptions.cs" />
+    <Compile Include="Chart\ScatterData.cs" />
+    <Compile Include="Chart\ScatterOptions.cs" />
     <Compile Include="Config\AirPollutant.cs" />
     <Compile Include="Config\AirStandardSetting.cs" />
     <Compile Include="Config\MqttSetting.cs" />
     <Compile Include="Converter\IsNullConverter.cs" />
     <Compile Include="Converter\IsVisibleConverter.cs" />
     <Compile Include="Converter\WarningConverter.cs" />
-    <Compile Include="Core\ChartManager.cs" />
+    <Compile Include="Chart\ChartManager.cs" />
     <Compile Include="Core\Logger.cs" />
     <Compile Include="Core\LoggerListener.cs" />
     <Compile Include="Core\ResourcesManager.cs" />

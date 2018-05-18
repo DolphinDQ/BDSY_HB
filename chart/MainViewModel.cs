@@ -17,7 +17,6 @@ namespace chart
     /// </summary>
     public class MainViewModel
     {
-        private LineSeries m_series1;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="MainViewModel" /> class.
@@ -25,11 +24,10 @@ namespace chart
         public MainViewModel()
         {
             // Create the plot model
-            var tmp = new PlotModel { IsLegendVisible = false, Padding = new OxyThickness(0), PlotAreaBorderThickness = new OxyThickness(0) };
+            var model = new PlotModel { IsLegendVisible = false };
             // Create two line series (markers are hidden by default)
-
-            m_series1 = new LineSeries { Title = "Series 1", Smooth = true, MarkerType = MarkerType.None };
-            //m_series1.Points.Add(new DataPoint(0, 0));
+            var series1 = new ScatterSeries() { MarkerType = MarkerType.Circle };
+            //m_series1 = new LineSeries { Title = "Series 1", Smooth = true, MarkerType = MarkerType.None };
             //m_series1.Points.Add(new DataPoint(1, 18));
             //series1.Points.Add(new DataPoint(10, 14));
             //series1.Points.Add(new DataPoint(15, 50));
@@ -40,25 +38,35 @@ namespace chart
             //series1.Points.Add(new DataPoint(40, 15));
             //series1.Points.Add(new DataPoint(45, 5));
 
+            series1.Points.Add(new ScatterPoint(10, 14, 20, 1000));
+            series1.Points.Add(new ScatterPoint(15, 50, 30, 500));
+            series1.Points.Add(new ScatterPoint(20, 12));
+            series1.Points.Add(new ScatterPoint(25, 65));
+            series1.Points.Add(new ScatterPoint(30, 8));
+            series1.Points.Add(new ScatterPoint(35, 18));
+            series1.Points.Add(new ScatterPoint(40, 15));
+            series1.Points.Add(new ScatterPoint(45, 5));
+
             // Add the series to the plot model
-            tmp.Series.Add(m_series1);
+            model.Series.Add(series1);
 
             // Axes are created automatically if they are not defined
-            tmp.Axes.Add(new LinearAxis() { });
-            tmp.Axes.Add(new DateTimeAxis() {  Position = AxisPosition.Bottom,Minimum=DateTimeAxis.ToDouble(DateTime.Now), Maximum= DateTimeAxis.ToDouble(DateTime.Now.AddSeconds(6)), });
+            //tmp.Axes.Add(new LinearAxis() { });
+            //tmp.Axes.Add(new DateTimeAxis() { Position = AxisPosition.Bottom, Minimum = DateTimeAxis.ToDouble(DateTime.Now), Maximum = DateTimeAxis.ToDouble(DateTime.Now.AddSeconds(6)), });
+            model.Axes.Add(new LinearColorAxis { Position = AxisPosition.Right, Palette = OxyPalettes.Jet(200)  });
             // Set the Model property, the INotifyPropertyChanged event will make the WPF Plot control update its content
-            this.Model = tmp;
-            var i = 2;
-            Task.Factory.StartNew(() =>
-            {
-                do
-                {
-                    m_series1.Points.Add(new DataPoint(DateTimeAxis.ToDouble(DateTime.Now), new Random().Next() % 10));
-                    Model.InvalidatePlot(true);
-                    Task.Delay(1000).Wait();
-                } while (true);
+            this.Model = model;
+            //var i = 2;
+            //Task.Factory.StartNew(() =>
+            //{
+            //    do
+            //    {
+            //        m_series1.Points.Add(new DataPoint(DateTimeAxis.ToDouble(DateTime.Now), new Random().Next() % 10));
+            //        Model.InvalidatePlot(true);
+            //        Task.Delay(1000).Wait();
+            //    } while (true);
 
-            });
+            //});
         }
 
         /// <summary>

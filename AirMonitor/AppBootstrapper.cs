@@ -3,6 +3,7 @@ namespace AirMonitor
     using System;
     using System.Collections.Generic;
     using System.Windows.Threading;
+    using AirMonitor.Chart;
     using AirMonitor.Config;
     using AirMonitor.Core;
     using AirMonitor.Data;

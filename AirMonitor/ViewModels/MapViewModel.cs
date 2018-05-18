@@ -208,9 +208,9 @@ namespace AirMonitor.ViewModels
             {
                 view = m_factory.Create<SampleAnalysisViewModel>();
             }
+            view.Mode = mode;
             view.MapView = this;
             view.MapBlocks = blocks;
-            view.Mode = mode;
             PropertyPanel = view;
             EnableAnalysis = true;
         }
@@ -249,6 +249,7 @@ namespace AirMonitor.ViewModels
             }
             m_mapProvider.GridInit(MapGridOptions);
             m_mapProvider.UavFocus(name);
+            m_mapProvider.GridRefresh();
         }
 
         private string GetUavName(EvtAirSample sample) => "default";
@@ -362,7 +363,6 @@ namespace AirMonitor.ViewModels
                     Samples.AddRange(samples);
                     NotifyOfPropertyChange(nameof(Samples));
                     RefreshMap();
-
                 }
 
             }
@@ -376,6 +376,7 @@ namespace AirMonitor.ViewModels
         public void RefreshBlock()
         {
             m_mapProvider.GridInit(MapGridOptions);
+            m_mapProvider.GridClear();
             m_mapProvider.GridRefresh();
             m_mapProvider.UavPath(GetUavName(null), ShowUavPath);
         }
