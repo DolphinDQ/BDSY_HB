@@ -7,6 +7,6 @@
              mc:Ignorable="d" 
              d:DesignHeight="550" d:DesignWidth="400">
     <Grid>
-            
+        <TextBlock>234</TextBlock>
     </Grid>
 </UserControl>

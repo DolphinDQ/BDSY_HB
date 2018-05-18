@@ -219,7 +219,7 @@ var MapEvents;
 (function (MapEvents) {
     MapEvents["load"] = "load";
     MapEvents["pointConvert"] = "pointConvert";
-    MapEvents["boundChanged"] = "boundChanged";
+    //boundChanged = "boundChanged",
     MapEvents["horizontalAspect"] = "horizontalAspect";
     MapEvents["verticalAspect"] = "verticalAspect";
 })(MapEvents || (MapEvents = {}));
@@ -335,14 +335,14 @@ var BaiduMapProvider = /** @class */ (function (_super) {
             this.blockGrid.selectedBlocks.splice(i, 1);
         }
     };
-    BaiduMapProvider.prototype.isInBlock = function (center, sideLength, point) {
-        //块中心点，块边长，当前点是否在块里面。
-        var offset = sideLength / 2 * 0.00001; //计算偏移经纬度。
-        return point.lng > (center.lng - offset) &&
-            point.lng < (center.lng + offset) &&
-            point.lat > (center.lat - offset) &&
-            point.lat < (center.lat + offset);
-    };
+    //private isInBlock(center: Point, sideLength: number, point: Point) {
+    //    //块中心点，块边长，当前点是否在块里面。
+    //    var offset = sideLength / 2 * 0.00001;//计算偏移经纬度。
+    //    return point.lng > (center.lng - offset) &&
+    //        point.lng < (center.lng + offset) &&
+    //        point.lat > (center.lat - offset) &&
+    //        point.lat < (center.lat + offset);
+    //}
     BaiduMapProvider.prototype.uav = function (name, exist, notExist) {
         try {
             var uav = this.uavList.first(function (o) { return o.name == name; });
@@ -367,11 +367,11 @@ var BaiduMapProvider = /** @class */ (function (_super) {
             // alert(e.message);
         }
     };
-    BaiduMapProvider.prototype.onMapBoundChaned = function () {
-        if (this.callbackBoundChanged) {
-            this.on(MapEvents.boundChanged, this.map.getBounds());
-        }
-    };
+    //private onMapBoundChaned() {
+    //    if (this.callbackBoundChanged) {
+    //        this.on(MapEvents.boundChanged, this.map.getBounds())
+    //    }
+    //}
     BaiduMapProvider.prototype.onCheckContextMenu = function () {
         var _this = this;
         var blocks = this.blockGrid.selectedBlocks;
@@ -415,7 +415,8 @@ var BaiduMapProvider = /** @class */ (function (_super) {
             this.blockGrid.selectedBlockLine.forEach(function (o) { return _this.map.removeOverlay(o); });
             this.addLine(min.getBounds().getSouthWest(), 0, 10000);
             this.addLine(max.getBounds().getNorthEast(), 0, 10000);
-            this.on(MapEvents.verticalAspect, blocks.selectMany(function (o) { return o.context.getPoints(function (i) { return true; }).select(function (c) { return c.data; }); }));
+            //this.on(MapEvents.verticalAspect, blocks.selectMany(o => o.context.getPoints(i => true).select(c => c.data)))
+            this.on(MapEvents.verticalAspect, { blocks: blocks.select(function (o) { return o.context.center; }), max: max.context.center, min: min.context.center, data: blocks.selectMany(function (o) { return o.context.getPoints(function (i) { return true; }).select(function (c) { return c.data; }); }) });
         }
     };
     BaiduMapProvider.prototype.onClearSelectedBlock = function () {
@@ -511,18 +512,16 @@ var BaiduMapProvider = /** @class */ (function (_super) {
             }
         });
     };
-    BaiduMapProvider.prototype.mapBoundChangedEvent = function (subscribe) {
-        var _this = this;
-        this.callbackBoundChanged = subscribe;
-        var mapBoundChangedEvents = ["moveend", "zoomend", "resize"];
-        if (subscribe) {
-            mapBoundChangedEvents.forEach(function (o) { return _this.map.addEventListener(o, _this.onMapBoundChaned); });
-            this.onMapBoundChaned();
-        }
-        else {
-            mapBoundChangedEvents.forEach(function (o) { return _this.map.removeEventListener(o, _this.onMapBoundChaned); });
-        }
-    };
+    //mapBoundChangedEvent(subscribe: boolean) {
+    //    this.callbackBoundChanged = subscribe;
+    //    var mapBoundChangedEvents = ["moveend", "zoomend", "resize"];
+    //    if (subscribe) {
+    //        mapBoundChangedEvents.forEach(o => this.map.addEventListener(o, this.onMapBoundChaned));
+    //        this.onMapBoundChaned();
+    //    } else {
+    //        mapBoundChangedEvents.forEach(o => this.map.removeEventListener(o, this.onMapBoundChaned));
+    //    }
+    //}
     BaiduMapProvider.prototype.gridInit = function (opt) {
         opt = this.parseJson(opt);
         if (!opt)

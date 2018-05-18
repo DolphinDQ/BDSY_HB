@@ -86,7 +86,7 @@ if (!Array.prototype.selectMany) {
 interface IMapProvider {
     mapInit(container: string);
     mapPointConvert(seq: number, p: Point[]);
-    mapBoundChangedEvent(subscribe: boolean);
+    //mapBoundChangedEvent(subscribe: boolean);
     gridInit(opt: MapGridOptions);
     gridRefresh();
     gridClear();
@@ -231,7 +231,7 @@ class Uav {
 }
 
 abstract class MapBase implements IMapProvider {
-    abstract mapBoundChangedEvent(subscribe: boolean);
+    //abstract mapBoundChangedEvent(subscribe: boolean);
     abstract mapPointConvert(seq: number, p: Point[]);
     abstract uavShowPath(name: string);
     abstract uavHidePath(name: string);
@@ -277,7 +277,7 @@ abstract class MapBase implements IMapProvider {
 enum MapEvents {
     load = "load",
     pointConvert = "pointConvert",
-    boundChanged = "boundChanged",
+    //boundChanged = "boundChanged",
     horizontalAspect = "horizontalAspect",
     verticalAspect = "verticalAspect",
 }
@@ -404,14 +404,14 @@ class BaiduMapProvider extends MapBase {
         }
     }
 
-    private isInBlock(center: Point, sideLength: number, point: Point) {
-        //块中心点，块边长，当前点是否在块里面。
-        var offset = sideLength / 2 * 0.00001;//计算偏移经纬度。
-        return point.lng > (center.lng - offset) &&
-            point.lng < (center.lng + offset) &&
-            point.lat > (center.lat - offset) &&
-            point.lat < (center.lat + offset);
-    }
+    //private isInBlock(center: Point, sideLength: number, point: Point) {
+    //    //块中心点，块边长，当前点是否在块里面。
+    //    var offset = sideLength / 2 * 0.00001;//计算偏移经纬度。
+    //    return point.lng > (center.lng - offset) &&
+    //        point.lng < (center.lng + offset) &&
+    //        point.lat > (center.lat - offset) &&
+    //        point.lat < (center.lat + offset);
+    //}
     private uav(name: string, exist: (o: Uav) => any, notExist: () => any) {
         try {
             var uav = this.uavList.first(o => o.name == name);
@@ -432,11 +432,11 @@ class BaiduMapProvider extends MapBase {
             // alert(e.message);
         }
     }
-    private onMapBoundChaned() {
-        if (this.callbackBoundChanged) {
-            this.on(MapEvents.boundChanged, this.map.getBounds())
-        }
-    }
+    //private onMapBoundChaned() {
+    //    if (this.callbackBoundChanged) {
+    //        this.on(MapEvents.boundChanged, this.map.getBounds())
+    //    }
+    //}
     private onCheckContextMenu() {
         var blocks = this.blockGrid.selectedBlocks
         if (!blocks) {
@@ -477,7 +477,8 @@ class BaiduMapProvider extends MapBase {
             this.blockGrid.selectedBlockLine.forEach(o => this.map.removeOverlay(o));
             this.addLine(min.getBounds().getSouthWest(), 0, 10000);
             this.addLine(max.getBounds().getNorthEast(), 0, 10000);
-            this.on(MapEvents.verticalAspect, blocks.selectMany(o => o.context.getPoints(i => true).select(c => c.data)))
+            //this.on(MapEvents.verticalAspect, blocks.selectMany(o => o.context.getPoints(i => true).select(c => c.data)))
+            this.on(MapEvents.verticalAspect, { blocks: blocks.select(o => o.context.center), max: max.context.center, min: min.context.center, data: blocks.selectMany(o => o.context.getPoints(i => true).select(c => c.data)) })
         }
     }
     private onClearSelectedBlock() {
@@ -569,16 +570,16 @@ class BaiduMapProvider extends MapBase {
             }
         });
     }
-    mapBoundChangedEvent(subscribe: boolean) {
-        this.callbackBoundChanged = subscribe;
-        var mapBoundChangedEvents = ["moveend", "zoomend", "resize"];
-        if (subscribe) {
-            mapBoundChangedEvents.forEach(o => this.map.addEventListener(o, this.onMapBoundChaned));
-            this.onMapBoundChaned();
-        } else {
-            mapBoundChangedEvents.forEach(o => this.map.removeEventListener(o, this.onMapBoundChaned));
-        }
-    }
+    //mapBoundChangedEvent(subscribe: boolean) {
+    //    this.callbackBoundChanged = subscribe;
+    //    var mapBoundChangedEvents = ["moveend", "zoomend", "resize"];
+    //    if (subscribe) {
+    //        mapBoundChangedEvents.forEach(o => this.map.addEventListener(o, this.onMapBoundChaned));
+    //        this.onMapBoundChaned();
+    //    } else {
+    //        mapBoundChangedEvents.forEach(o => this.map.removeEventListener(o, this.onMapBoundChaned));
+    //    }
+    //}
     gridInit(opt: MapGridOptions) {
         opt = this.parseJson(opt);
         if (!opt) opt = new MapGridOptions();

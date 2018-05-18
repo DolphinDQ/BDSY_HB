@@ -106,6 +106,7 @@
     <Compile Include="Config\AirStandardSetting.cs" />
     <Compile Include="Config\MqttSetting.cs" />
     <Compile Include="Converter\IsNullConverter.cs" />
+    <Compile Include="Converter\IsVisibleConverter.cs" />
     <Compile Include="Converter\WarningConverter.cs" />
     <Compile Include="Core\ChartManager.cs" />
     <Compile Include="Core\Logger.cs" />
@@ -115,8 +116,10 @@
     <Compile Include="Core\SaveManager.cs" />
     <Compile Include="EventArgs\EvtAirSample.cs" />
     <Compile Include="Data\MqttDataManager.cs" />
-    <Compile Include="EventArgs\EvtMapBoundChanged.cs" />
+    <Compile Include="EventArgs\EvtMapClearAspect.cs" />
+    <Compile Include="EventArgs\EvtMapHorizontalAspect.cs" />
     <Compile Include="EventArgs\EvtMapPointConverted.cs" />
+    <Compile Include="EventArgs\EvtMapVerticalAspect.cs" />
     <Compile Include="EventArgs\EvtSampling.cs" />
     <Compile Include="EventArgs\EvtMapLoad.cs" />
     <Compile Include="EventArgs\EvtSetting.cs" />
@@ -127,10 +130,12 @@
     <Compile Include="Interfaces\IResourceManager.cs" />
     <Compile Include="Interfaces\ISaveManager.cs" />
     <Compile Include="IShell.cs" />
+    <Compile Include="Map\MapBlock.cs" />
     <Compile Include="Map\MapEventHandler.cs" />
     <Compile Include="Map\MapEx.cs" />
     <Compile Include="Map\MapGridOptions.cs" />
     <Compile Include="Map\MapPoint.cs" />
+    <Compile Include="Map\MapPointData.cs" />
     <Compile Include="Map\MapProvider.cs" />
     <Compile Include="Map\Uav.cs" />
     <Compile Include="ShellViewModel.cs" />

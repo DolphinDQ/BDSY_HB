@@ -22,18 +22,17 @@ namespace AirMonitor.Map
             map.Invoke("map.mapPointConvert", seq, JsonConvert.SerializeObject(points));
         }
 
-        /// <summary>
-        /// 地图边界变更事件。
-        /// </summary>
-        /// <param name="map"></param>
-        /// <param name="subscribe"></param>
-        public static void MapBoundChangedEvent(this IMapProvider map, bool subscribe)
-        {
-            map.Invoke("map.mapPointConvert", subscribe);
-        }
+        ///// <summary>
+        ///// 地图边界变更事件。
+        ///// </summary>
+        ///// <param name="map"></param>
+        ///// <param name="subscribe"></param>
+        //public static void MapBoundChangedEvent(this IMapProvider map, bool subscribe)
+        //{
+        //    map.Invoke("map.mapPointConvert", subscribe);
+        //}
         #endregion
         #region 网格
-
 
         /// <summary>
         /// 初始化网格。修改参数可以重新初始化。

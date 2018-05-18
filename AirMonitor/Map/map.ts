@@ -1,7 +1,7 @@
-﻿if (!Array.prototype.find) {
-    Array.prototype.find = function (query) {
+﻿if (!Array.prototype.first) {
+    Array.prototype.first = function (query) {
         var arr = this;
-        if (query) {
+        if (query && arr) {
             for (var i = 0; i < arr.length; i++) {
                 if (query(arr[i])) {
                     return arr[i];
@@ -10,10 +10,82 @@
         }
     }
 }
+if (!Array.prototype.avg) {
+    Array.prototype.avg = function (query) {
+        var arr = this;
+        if (query && arr) {
+            var result = null;
+            for (var i = 0; i < arr.length; i++) {
+                var val = query(arr[i]);
+                if (result === null) {
+                    result = val;
+                } else {
+                    result = (result * i + val) / (i + 1);
+                }
+            }
+            return result;
+        }
+    }
+}
+if (!Array.prototype.max) {
+    Array.prototype.max = function (query) {
+        var arr = this;
+        if (query && arr) {
+            var result = null;
+            for (var i = 0; i < arr.length; i++) {
+                var val = query(arr[i]);
+                if (result === null) {
+                    result = arr[i];
+                } else {
+                    result = query(result) < val ? arr[i] : result;
+                }
+            }
+            return result;
+        }
+    }
+}
+if (!Array.prototype.min) {
+    Array.prototype.min = function (query) {
+        var arr = this;
+        if (query && arr) {
+            var result = null;
+            for (var i = 0; i < arr.length; i++) {
+                var val = query(arr[i]);
+                if (result === null) {
+                    result = arr[i];
+                } else {
+                    result = query(result) > val ? arr[i] : result;
+                }
+            }
+            return result;
+        }
+    }
+}
+if (!Array.prototype.select) {
+    Array.prototype.select = function (query) {
+        var arr = this;
+        if (query && arr) {
+            var tmp = [];
+            arr.forEach(o => tmp.push(query(o)));
+            arr = tmp;
+        }
+        return arr;
+    }
+}
+if (!Array.prototype.selectMany) {
+    Array.prototype.selectMany = function (query) {
+        var arr = this;
+        if (query && arr) {
+            var tmp = [];
+            arr.forEach(o => tmp = tmp.concat(query(o)));
+            arr = tmp;
+        }
+        return arr;
+    }
+}
 interface IMapProvider {
     mapInit(container: string);
     mapPointConvert(seq: number, p: Point[]);
-    mapBoundChangedEvent(subscribe: boolean);
     gridInit(opt: MapGridOptions);
     gridRefresh();
     gridClear();
@@ -25,22 +97,108 @@ interface IMapProvider {
     uavExist(name: string): boolean;
     uavFocus(name: string);
 }
+interface MenuItem {
+    setText(text: String);
+    enable();
+    disable();
+    name: MapMenuItems;
+}
+interface ContextMenu {
+    addItem(item: MenuItem);
+    getItem(index: Number): MenuItem
+    removeItem(item: MenuItem);
+    addEventListener(name, call);
+}
 
 interface Point {
-    lat: number,
+    lat: number;
     lng: number;
+    data: any;//采样数据
 }
 interface Bound {
-    sw: Point,
-    ne: Point,
+    getSouthWest(): Point;
+    getNorthEast(): Point;
+    containsPoint(point: Point): boolean;
+}
+
+interface InfoWindow {
+    setContent(text: string);
+    setWidth(width: Number);
+    setHeight(height: Number);
+}
+//方块
+interface Block {
+    context: BlockContext;
+    getBounds(): Bound;
+    setFillColor(color: String);
+    setStrokeColor(color: String);
+    setStrokeStyle(style: String);
+    setStrokeWeight(weight: Number);
+    setStrokeOpacity(opacity: Number);
+}
+
+
+class BlockContext {
+    constructor(center: Point, pollutants: Pollutant[]) {
+        this.center = center;
+        pollutants.forEach(o => {
+            var report = new PollutantReport();
+            report.pollutant = o;
+            this.reports.push(report);
+        })
+    }
+    readonly center: Point;
+    time: string;
+    private points: Point[] = [];
+    private reports: PollutantReport[] = [];
+    addPoint(p: Point) {
+        if (this.points.first(o => o == p)) return;
+        if (p.data) {
+            if (!this.time) {
+                this.time = p.data["time"];
+            }
+            this.reports.forEach(o => {
+                var val = p.data[o.pollutant.Name];
+                if (val) {
+                    o.avg = (o.avg * o.count + val) / (o.count + 1);
+                    if (o.count == 0) {
+                        o.max = val;
+                        o.min = val;
+                        o.sum = val;
+                    } else {
+                        o.max = val > o.max ? val : o.max;
+                        o.min = val < o.min ? val : o.min;
+                        o.sum += val;
+                    }
+                    o.count++;
+                }
+            });
+        }
+        this.points.push(p);
+    }
+    getPoints(query: (o: Point) => boolean): Array<Point> {
+        return this.points.filter(query);
+    }
+    getReports(query: (o: PollutantReport) => boolean): Array<PollutantReport> {
+        return this.reports.filter(query);
+    }
+}
+
+class PollutantReport {
+    pollutant: Pollutant;//污染物;
+    count: number = 0;
+    avg: number = 0;
+    sum: number = 0;
+    max: number = 0;
+    min: number = 0;
 }
 
 class Pollutant {
-    Name: string;
-    DisplayName: string;
-    MaxValue: number;
-    MinValue: number;
-    Unit: string;
+    Name: string = "sample";
+    DisplayName: string = "样本";
+    MaxValue: number = 100;
+    MinValue: number = 1;
+    Unit: string = "mg/m3";
 }
 
 class MapGridOptions {
@@ -57,9 +215,11 @@ class MapGridOptions {
 
 class MapGrid {
     options: MapGridOptions;
-    blocks: any[];
+    blocks: Block[];
     firstPoint: Point;
-    infoWindow: any;
+    infoWindow: InfoWindow;
+    selectedBlocks: Block[] = [];
+    selectedBlockLine: any[] = [];
 }
 
 class Uav {
@@ -70,7 +230,6 @@ class Uav {
 }
 
 abstract class MapBase implements IMapProvider {
-    abstract mapBoundChangedEvent(subscribe: boolean);
     abstract mapPointConvert(seq: number, p: Point[]);
     abstract uavShowPath(name: string);
     abstract uavHidePath(name: string);
@@ -107,6 +266,8 @@ abstract class MapBase implements IMapProvider {
             window.external.On(eventName, arg);
         } catch (e) {
             //ignore;
+            console.log("triger event [%s] arguments is :", eventName);
+            console.dir(arg);
         }
     }
 }
@@ -115,18 +276,31 @@ enum MapEvents {
     load = "load",
     pointConvert = "pointConvert",
     boundChanged = "boundChanged",
+    horizontalAspect = "horizontalAspect",
+    verticalAspect = "verticalAspect",
+    clearAspect ="clearAspect"
+}
+
+enum MapMenuItems {
+    compare = "对比数据",
+    horizontal = "横向切面",
+    vertical = "纵向切面",
+    clear = "清除",
 }
 
 declare var BMap;
 declare var BMAP_NORMAL_MAP;
 declare var BMAP_HYBRID_MAP;
 class BaiduMapProvider extends MapBase {
+
     private callbackBoundChanged
     private map: any;
+    private menuItems: MenuItem[];
     private convertor: any;
     private blockGrid: MapGrid;
     private uavList: Uav[];
-    private getColor(value, opt: MapGridOptions, min: number = undefined, max: number = undefined) {
+    private getColor(value: number, min: number = undefined, max: number = undefined): string {
+        var opt = this.blockGrid.options;
         if (!min) min = opt.minValue
         if (!max) max = opt.maxValue
 
@@ -146,9 +320,9 @@ class BaiduMapProvider extends MapBase {
             this.getColorValue(percent, bg, eg) +
             this.getColorValue(percent, bb, eb);
     }
-    private getColorValue(percent, begin, end) {
+    private getColorValue(percent: number, begin: number, end: number) {
         var flag = end > begin ? 1 : -1;
-        var result = parseInt(Math.abs(end - begin) * percent * flag + begin).toString(16);
+        var result = Math.round(Math.abs(end - begin) * percent * flag + begin).toString(16);
         return result.length < 2 ? "0" + result : result;
     }
     private getInfoWindowContentTemplate(opt) {
@@ -162,27 +336,25 @@ class BaiduMapProvider extends MapBase {
         template = template.replace("{{opacity}}", opt.opacity);
         return template;
     }
-    private createInfoWindowContent(contentData, opt: MapGridOptions) {
-        var pollutant = opt.pollutants.find(p => p.Name == contentData.title);
-        if (!pollutant) return "";
+    private createInfoWindowContent(report: PollutantReport) {
         return this.getInfoWindowContentTemplate({
-            title: pollutant.DisplayName,
-            min: Math.round(contentData.min * 100) / 100,
-            max: Math.round(contentData.max * 100) / 100,
-            avg: Math.round(contentData.avg * 100) / 100,
-            unit: pollutant.Unit,
-            background: this.getColor(contentData.avg, opt, pollutant.MinValue, pollutant.MaxValue),
-            opacity: opt.opacity,
+            title: report.pollutant.DisplayName,
+            min: Math.round(report.min * 100) / 100,
+            max: Math.round(report.max * 100) / 100,
+            avg: Math.round(report.avg * 100) / 100,
+            unit: report.pollutant.Unit,
+            background: this.getColor(report.avg, report.pollutant.MinValue, report.pollutant.MaxValue),
+            opacity: this.blockGrid.options.opacity,
         });
     }
-    private createBlock(point, opt) {
+
+    private createBlock(point: Point, opt: MapGridOptions): Block {
         var center = this.blockGrid.firstPoint;
         var sideLength = opt.sideLength * 0.00001;
         var opacity = opt.opacity;
         var offset = sideLength / 2;//计算偏移经纬度。
         var lng = center.lng + sideLength * Math.round((point.lng - center.lng) / sideLength);
         var lat = center.lat + sideLength * Math.round((point.lat - center.lat) / sideLength)
-        var pcenter = new BMap.Point(lng, lat);
         var polygon = new BMap.Polygon(
             [
                 new BMap.Point(lng + offset, lat + offset),
@@ -197,21 +369,51 @@ class BaiduMapProvider extends MapBase {
                 strokeColor: "white"
             }
         );
-        polygon.center = pcenter;
-        polygon.points = [point]
+        var context = new BlockContext(new BMap.Point(lng, lat), opt.pollutants);
+        context.addPoint(point);
+        polygon.context = context;
+        polygon.addEventListener("click", o => this.onShowBlockReport(o.target));
+        polygon.addEventListener("rightclick", o => this.onSelectBlock(o.target))
         return polygon;
     }
-    private isInBlock(center, sideLength, point) {
-        //块中心点，块边长，当前点是否在块里面。
-        var offset = sideLength / 2 * 0.00001;//计算偏移经纬度。
-        return point.lng > (center.lng - offset) &&
-            point.lng < (center.lng + offset) &&
-            point.lat > (center.lat - offset) &&
-            point.lat < (center.lat + offset);
+
+    private onSelectBlock(b: Block) {
+        var index = null;
+        var block = null;
+        for (var i = 0; i < this.blockGrid.selectedBlocks.length; i++) {
+            block = this.blockGrid.selectedBlocks[i]
+            if (block == b) {
+                index = i;
+                break;
+            }
+        }
+        if (index === null) {
+            block = b;
+            block.setStrokeColor("blue");
+            block.setStrokeOpacity(1);
+            block.setStrokeWeight(2);
+            block.setStrokeStyle("dashed");
+            this.blockGrid.selectedBlocks.push(block);
+        } else {
+            block.setStrokeColor("white");
+            block.setStrokeOpacity(0.5);
+            block.setStrokeWeight(1);
+            block.setStrokeStyle("solid");
+            this.blockGrid.selectedBlocks.splice(i, 1);
+        }
     }
+
+    //private isInBlock(center: Point, sideLength: number, point: Point) {
+    //    //块中心点，块边长，当前点是否在块里面。
+    //    var offset = sideLength / 2 * 0.00001;//计算偏移经纬度。
+    //    return point.lng > (center.lng - offset) &&
+    //        point.lng < (center.lng + offset) &&
+    //        point.lat > (center.lat - offset) &&
+    //        point.lat < (center.lat + offset);
+    //}
     private uav(name: string, exist: (o: Uav) => any, notExist: () => any) {
         try {
-            var uav = this.uavList.find(o => o.name == name);
+            var uav = this.uavList.first(o => o.name == name);
             if (uav) {
                 if (exist) {
                     exist(uav);
@@ -234,6 +436,105 @@ class BaiduMapProvider extends MapBase {
             this.on(MapEvents.boundChanged, this.map.getBounds())
         }
     }
+    private onCheckContextMenu() {
+        var blocks = this.blockGrid.selectedBlocks
+        if (!blocks) {
+            this.menuItems.forEach(o => o.disable());
+        } else {
+            var setEnable = (name: MapMenuItems, enable) => {
+                var i = this.menuItems.first(o => o.name == name);
+                if (i) {
+                    if (enable) {
+                        i.enable();
+                    } else {
+                        i.disable();
+                    }
+                }
+            }
+            setEnable(MapMenuItems.horizontal, blocks.length > 0);
+            setEnable(MapMenuItems.vertical, blocks.length > 0);
+        }
+    }
+
+    private addLine(point: Point, horizontalLen: number, verticalLen: number) {
+        var line = new BMap.Polyline([
+            new BMap.Point(point.lng - (horizontalLen / (2 * 10000)), point.lat - (verticalLen / (2 * 10000))),
+            new BMap.Point(point.lng + (horizontalLen / (2 * 10000)), point.lat + (verticalLen / (2 * 10000))),
+        ], {
+                strokeStyle: "dashed",
+                strokeWeight: 1,
+                strokeOpacity: 0.8
+            });
+        this.map.addOverlay(line);
+        this.blockGrid.selectedBlockLine.push(line);
+    }
+    private onShowVerticalAspect(): any {
+        var blocks = this.blockGrid.selectedBlocks;
+        if (blocks) {
+            var min = blocks.min(o => o.context.center.lng);
+            var max = blocks.max(o => o.context.center.lng);
+            this.blockGrid.selectedBlockLine.forEach(o => this.map.removeOverlay(o));
+            this.addLine(min.getBounds().getSouthWest(), 0, 10000);
+            this.addLine(max.getBounds().getNorthEast(), 0, 10000);
+            this.on(MapEvents.verticalAspect, {
+                blocks: blocks.select(o => {
+                    return {
+                        center: o.context.center,
+                        points: o.context.getPoints(i => true).select(i => i.data),
+                    }
+                })
+            });
+        }
+    }
+    private onClearSelectedBlock() {
+        this.blockGrid.selectedBlockLine.forEach(o => this.map.removeOverlay(o));
+        this.blockGrid.selectedBlocks.filter(o => true).forEach(o => this.onSelectBlock(o));
+        this.on(MapEvents.clearAspect);
+    }
+    private onShowHorizontalAspect(): any {
+        var blocks = this.blockGrid.selectedBlocks;
+        if (blocks) {
+            var min = blocks.min(o => o.context.center.lat);
+            var max = blocks.max(o => o.context.center.lat);
+            this.blockGrid.selectedBlockLine.forEach(o => this.map.removeOverlay(o));
+            this.addLine(min.getBounds().getSouthWest(), 10000, 0);
+            this.addLine(max.getBounds().getNorthEast(), 10000, 0);
+            this.on(MapEvents.horizontalAspect, {
+                blocks: blocks.select(o => {
+                    return {
+                        center: o.context.center,
+                        points: o.context.getPoints(i => true).select(i => i.data),
+                    }
+                })
+            });
+        }
+    }
+    private onShowBlockReport(block: Block) {
+        var blockGrid = this.blockGrid;
+        var opt = blockGrid.options;
+        if (!blockGrid.infoWindow) {
+            blockGrid.infoWindow = new BMap.InfoWindow("", {
+                width: 450,
+                height: 300
+            });
+        }
+        var content = '<div><span>实时采样数据：</span><span>({{time}})</span></div>';
+        content = content.replace("{{time}}", block.context.time);
+        content += this.getInfoWindowContentTemplate({
+            title: "采样类型",
+            min: "最小值",
+            max: "最大值",
+            avg: "平均值",
+            unit: "单位",
+            background: "white",
+            opacity: 1,
+        });
+        var reports = block.context.getReports(o => true);
+        reports.forEach(o => content += this.createInfoWindowContent(o));
+        blockGrid.infoWindow.setContent(content);
+        this.map.openInfoWindow(blockGrid.infoWindow, block.context.center)
+    }
+
     mapInit(container: string) {
         this.loadJs("http://api.map.baidu.com/getscript?v=2.0&ak=TCgR2Y0IGMmPR4qteh4McpXzMyYpFrEx", e => {
             // 百度地图API功能
@@ -252,6 +553,21 @@ class BaiduMapProvider extends MapBase {
             map.addControl(new BMap.OverviewMapControl());
             //map.addControl(new BMap.GeolocationControl());
             map.enableScrollWheelZoom(true);     //开启鼠标滚轮缩放
+            var menu: ContextMenu = new BMap.ContextMenu();
+            var createItem = (name: MapMenuItems, func) => {
+                var i = new BMap.MenuItem(name, func);
+                i.name = name;
+                return i;
+            };
+            this.menuItems = [
+                //createItem(MapMenuItems.compare, o => this.onShowReport()),
+                createItem(MapMenuItems.horizontal, o => this.onShowHorizontalAspect()),
+                createItem(MapMenuItems.vertical, o => this.onShowVerticalAspect()),
+                createItem(MapMenuItems.clear, o => this.onClearSelectedBlock())
+            ];
+            this.menuItems.forEach(o => menu.addItem(o));
+            menu.addEventListener("open", o => this.onCheckContextMenu());
+            map.addContextMenu(menu);
             this.map = map;
             this.blockGrid = new MapGrid();
             this.blockGrid.blocks = new Array<any>();
@@ -267,16 +583,6 @@ class BaiduMapProvider extends MapBase {
             }
         });
     }
-    mapBoundChangedEvent(subscribe: boolean) {
-        this.callbackBoundChanged = subscribe;
-        var mapBoundChangedEvents = ["moveend", "zoomend", "resize"];
-        if (subscribe) {
-            mapBoundChangedEvents.forEach(o => this.map.addEventListener(o, this.onMapBoundChaned));
-            this.onMapBoundChaned();
-        } else {
-            mapBoundChangedEvents.forEach(o => this.map.removeEventListener(o, this.onMapBoundChaned));
-        }
-    }
     gridInit(opt: MapGridOptions) {
         opt = this.parseJson(opt);
         if (!opt) opt = new MapGridOptions();
@@ -285,100 +591,40 @@ class BaiduMapProvider extends MapBase {
         if (!opt.colorBegin) opt.colorBegin = "#FF0000";
         if (!opt.colorEnd) opt.colorEnd = "#00FF00";
         if (!opt.opacity) opt.opacity = 0.5;
-        if (!opt.dataName) opt.dataName = "";
+        if (!opt.dataName) opt.dataName = "sample";
         if (!opt.maxValue) opt.maxValue = 100;
         if (!opt.minValue) opt.minValue = 0;
-        if (!opt.pollutants) opt.pollutants = [];//格式：{Name:"",DisplayName:"",MaxValue:0,MinValue:0,Unit:""}
+        if (!opt.pollutants) opt.pollutants = [new Pollutant()];//格式：{Name:"",DisplayName:"",MaxValue:0,MinValue:0,Unit:""}
         this.blockGrid.options = opt;
     }
     gridRefresh() {
-        var points = [];
-        for (var i = 0; i < this.uavList.length; i++) {
-            points = points.concat(this.uavList[i].pathPoint);
-        }
+        var points: Point[] = [];
         var blockGrid = this.blockGrid;
         var opt = blockGrid.options;
+        this.uavList.forEach(uav => points = points.concat(uav.pathPoint));
+
         //填充点数据到格子里
         points.forEach(point => {
             if (!blockGrid.firstPoint) blockGrid.firstPoint = point;
-            var block = blockGrid.blocks.find(block => this.isInBlock(block.center, opt.sideLength, point));
+            var block = blockGrid.blocks.first(block => block.getBounds().containsPoint(point));
             if (!block) {
                 block = this.createBlock(point, opt);
                 blockGrid.blocks.push(block);
-                block.addEventListener("click", e => {
-                    console.dir(e);
-                    if (!blockGrid.infoWindow) {
-                        blockGrid.infoWindow = new BMap.InfoWindow("", {
-                            width: 500,
-                            height: 300
-                        });
-                    }
-                    var pointsInBlock = e.target.points;//方块里的点。
-                    var content = '<div><span>实时采样数据：</span><span>({{time}})</span></div>';
-                    var contentData = [];
-                    /* {
-                        title: "",
-                        sum: 0,
-                        len: pointsInBlock.length
-                    }*/
-                    var time = null;
-                    for (var i = 0; i < pointsInBlock.length; i++) {
-                        var blockData = pointsInBlock[i].data;
-                        if (!time) time = blockData.time;
-                        for (var title in blockData) {
-                            var val = blockData[title];
-                            var tmp = contentData.find(d => d.title == title);
-                            if (!tmp) {
-                                tmp = {
-                                    title: title,
-                                    avg: 0,
-                                    min: val,
-                                    max: val
-                                };
-                                contentData.push(tmp);
-                            }
-                            if (tmp.min > val) tmp.min = val;
-                            if (tmp.max < val) tmp.max = val;
-                            tmp.avg = (tmp.avg * i + val) / (i + 1);
-                        }
-                    }
-                    content = content.replace("{{time}}", time);
-                    content += this.getInfoWindowContentTemplate({
-                        title: "采样类型",
-                        min: "最小值",
-                        max: "最大值",
-                        avg: "平均值",
-                        unit: "单位",
-                        background: "white",
-                        opacity: 1,
-                    });
-                    for (var i = 0; i < contentData.length; i++) {
-                        content += this.createInfoWindowContent(contentData[i], opt)
-                    }
-                    blockGrid.infoWindow.setContent(content);
-                    this.map.openInfoWindow(blockGrid.infoWindow, e.point)
-                })
                 this.map.addOverlay(block);
             } else {
-                block.points.push(point);
+                block.context.addPoint(point);
             }
         });
         blockGrid.blocks.forEach(block => {
-            var sum = 0;
-            for (var i = 0; i < block.points.length; i++) {
-                if (block.points[i].data) {
-                    sum += block.points[i].data[opt.dataName]
-                }
+            var report = block.context.getReports(o => o.pollutant.Name == opt.dataName).first(o => true);
+            if (report) {
+                block.setFillColor(this.getColor(report.avg));
             }
-            block.avgValue = sum / block.points.length;
-            block.setFillColor(this.getColor(block.avgValue, opt));
         });
     }
     gridClear() {
         if (this.blockGrid.blocks) {
-            this.blockGrid.blocks.forEach(o => {
-                this.map.removeOverlay(o);
-            });
+            this.blockGrid.blocks.forEach(o => this.map.removeOverlay(o));
         }
         delete this.blockGrid.blocks;
         this.blockGrid.blocks = [];
@@ -417,8 +663,8 @@ class BaiduMapProvider extends MapBase {
                 });
             } else {
                 this.map.removeOverlay(o.pathMarker);
-                o.pathMarker.setPath(o.pathPoint);
             }
+            o.pathMarker.setPath(o.pathPoint);
             this.map.addOverlay(o.pathMarker);
             o.pathMarker.show();
         }, null);
@@ -447,7 +693,7 @@ class BaiduMapProvider extends MapBase {
         }
     }
     uavExist(name: string): boolean {
-        var obj = this.uavList.find((o) => o.name == name);
+        var obj = this.uavList.first((o) => o.name == name);
         return obj ? true : false;
     }
     uavFocus(name: string) {
@@ -460,7 +706,19 @@ class BaiduMapProvider extends MapBase {
             }
         }, null);
     }
-
+    testGrid() {
+        this.gridInit(new MapGridOptions());
+        var p = this.map.getCenter();
+        this.uavAdd("default", p.lng, p.lat, { sample: Math.random() * 100, time: (new Date).toLocaleDateString() })
+        for (var i = 0; i < 20; i++) {
+            if (i > 10) {
+                this.uavMove("default", p.lng + (i / 10000), p.lat + ((i - 10) / 10000), { sample: Math.random() * 100, time: (new Date).toLocaleDateString() })
+            } else {
+                this.uavMove("default", p.lng + (i / 10000), p.lat, { sample: Math.random() * 100, time: (new Date).toLocaleDateString() })
+            }
+        }
+        this.gridRefresh();
+    }
 }
 
 (function () {

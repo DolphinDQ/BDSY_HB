@@ -30,9 +30,18 @@ namespace AirMonitor.Map
                 case "load":
                     On<EvtMapLoad>();
                     break;
-                case "boundChanged":
-                    On<EvtMapBoundChanged>(json);
+                case "horizontalAspect":
+                    On<EvtMapHorizontalAspect>(json);
                     break;
+                case "verticalAspect":
+                    On<EvtMapVerticalAspect>(json);
+                    break;
+                case "clearAspect":
+                    On<EvtMapClearAspect>();
+                    break;
+                //case "boundChanged":
+                //    On<EvtMapBoundChanged>(json);
+                //    break;
                 default:
                     break;
             }

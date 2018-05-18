@@ -14,11 +14,20 @@ using AirMonitor.Config;
 
 namespace AirMonitor.ViewModels
 {
-    public class MapViewModel : Screen, IHandle<EvtAirSample>, IHandle<EvtSampling>, IHandle<EvtMapLoad>, IHandle<EvtMapPointConverted>, IHandle<EvtSetting>, IMapView
+    public class MapViewModel : Screen, IMapView,
+        IHandle<EvtAirSample>,
+        IHandle<EvtSampling>,
+        IHandle<EvtMapLoad>,
+        IHandle<EvtMapPointConverted>,
+        IHandle<EvtSetting>,
+        IHandle<EvtMapHorizontalAspect>,
+        IHandle<EvtMapVerticalAspect>,
+        IHandle<EvtMapClearAspect>
     {
         private IMapProvider m_mapProvider;
         private IEventAggregator m_eventAggregator;
         private IResourceManager m_res;
+        private IFactory m_factory;
         private ISaveManager m_saveManager;
 
         public object MapContainer { get; set; }
@@ -60,17 +69,23 @@ namespace AirMonitor.ViewModels
         /// 地图提供者。
         /// </summary>
         public IMapProvider MapProvider => m_mapProvider;
+        /// <summary>
+        /// 属性框。
+        /// </summary>
+        public object PropertyPanel { get; set; }
 
         public MapViewModel(
             IEventAggregator eventAggregator,
             IMapProvider mapProvider,
             ISaveManager saveManager,
             IConfigManager configManager,
+            IFactory factory,
             IResourceManager res)
         {
             m_mapProvider = mapProvider;
             m_eventAggregator = eventAggregator;
             m_res = res;
+            m_factory = factory;
             m_saveManager = saveManager;
             m_eventAggregator.Subscribe(this);
             var setting = configManager.GetConfig<AirStandardSetting>();
@@ -174,6 +189,30 @@ namespace AirMonitor.ViewModels
                 sample.ActualLng = point.lng;
                 OnUpdateUavPosition(sample);
             }
+        }
+
+        public void Handle(EvtMapHorizontalAspect message)
+            => OnShowAnalysisPanel(message.blocks, SampleAnalysisViewModel.AnalysisMode.Horizontal);
+
+        public void Handle(EvtMapVerticalAspect message)
+            => OnShowAnalysisPanel(message.blocks, SampleAnalysisViewModel.AnalysisMode.Vertical);
+
+        public void Handle(EvtMapClearAspect message)
+        {
+            EnableAnalysis = false;
+        }
+
+        private void OnShowAnalysisPanel(MapBlock[] blocks, SampleAnalysisViewModel.AnalysisMode mode)
+        {
+            if (!(PropertyPanel is SampleAnalysisViewModel view))
+            {
+                view = m_factory.Create<SampleAnalysisViewModel>();
+            }
+            view.MapView = this;
+            view.MapBlocks = blocks;
+            view.Mode = mode;
+            PropertyPanel = view;
+            EnableAnalysis = true;
         }
 
         private void OnUpdateUavPosition(EvtAirSample sample)
@@ -340,6 +379,7 @@ namespace AirMonitor.ViewModels
             m_mapProvider.GridRefresh();
             m_mapProvider.UavPath(GetUavName(null), ShowUavPath);
         }
+
 
     }
 }
