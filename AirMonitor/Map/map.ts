@@ -107,6 +107,7 @@ interface ContextMenu {
     addItem(item: MenuItem);
     getItem(index: Number): MenuItem
     removeItem(item: MenuItem);
+    addSeparator();
     addEventListener(name, call);
 }
 
@@ -232,7 +233,11 @@ class Uav {
     pathMarker: any;
 }
 
-abstract class MapBase implements IMapProvider {
+interface IEventAggregator {
+    on(eventName: MapEvents, arg?: any);
+}
+
+abstract class MapBase implements IMapProvider, IEventAggregator {
     abstract mapPointConvert(seq: number, p: Point[]);
     abstract uavShowPath(name: string);
     abstract uavHidePath(name: string);
@@ -261,7 +266,7 @@ abstract class MapBase implements IMapProvider {
             obj = JSON.parse(obj)
         return obj;
     }
-    protected on(eventName: MapEvents, arg?: any) {
+    on(eventName: MapEvents, arg?: any) {
         try {
             if (arg) {
                 arg = JSON.stringify(arg);
@@ -281,7 +286,9 @@ enum MapEvents {
     boundChanged = "boundChanged",
     horizontalAspect = "horizontalAspect",
     verticalAspect = "verticalAspect",
-    clearAspect = "clearAspect"
+    clearAspect = "clearAspect",
+    selectAnalysisArea = "selectAnalysisArea",
+    clearAnalysisArea = "clearAnalysisArea"
 }
 
 enum MapMenuItems {
@@ -289,6 +296,8 @@ enum MapMenuItems {
     reports = "统计报表",
     horizontal = "横向切面",
     vertical = "纵向切面",
+    selectAnalysisArea = "选择分析区域",
+    clearAnalysisArea = "清除分析区域",
     clear = "清除",
 }
 /**地图方块选择动作 */
@@ -329,10 +338,10 @@ class BaiduMapSelector {
                 if (!selector) {
                     selector = this.selector = new BMap.Polygon([], {
                         strokeColor: "blue",
-                        strokeWeight: 1
+                        strokeWeight: 1,
+                        fillColor: "blue",
+                        fillOpacity: 0.1,
                     });
-                    selector.setFillColor("white");
-                    selector.setFillOpacity(0.5);
                 }
                 var point: Point = this.pointOne = o.point;
                 var mixOffset = 0.000001;
@@ -377,15 +386,79 @@ class BaiduMapSelector {
 
     getEnable() { return this.enable; }
 }
+/**数据分析区域。 */
+class BaiduMapAnalysisArea {
+    private evt: IEventAggregator;
+    private map: any;
+    private selectingArea: boolean;
+    private border: any;
+    private bound: Bound;
+
+    constructor(map, evt: IEventAggregator) {
+        this.map = map;
+        this.evt = evt;
+    }
+
+    isEnabled(): boolean {
+        return this.selectingArea || this.border;
+    }
+
+    setBounds(bound: Bound) {
+        if (bound) {
+            this.bound = bound;
+            var p1 = bound.getSouthWest();
+            var p2 = bound.getNorthEast();
+            this.border = new BMap.Polygon([
+                p1,
+                new BMap.Point(p1.lng, p2.lat),
+                p2,
+                new BMap.Point(p2.lng, p1.lat),
+            ], {
+                    strokeColor: "green",
+                    strokeStyle: "dashed",
+                    strokeWeight: 1,
+                    strokeOpacity: 1,
+                    enableClicking: false,
+                    fillColor: "transparent"
+                });
+            this.map.addOverlay(this.border);
+            this.evt.on(MapEvents.selectAnalysisArea, { sw: bound.getSouthWest(), ne: bound.getNorthEast() });
+            this.selectingArea = false;
+        }
+    }
+
+    getBounds(): Bound {
+        return this.bound;
+    }
+
+    enable() {
+        this.disable();
+        this.selectingArea = true;
+    }
+
+    disable() {
+        this.selectingArea = false;
+        if (this.border) {
+            this.map.removeOverlay(this.border);
+            delete this.bound;
+            delete this.border;
+            this.evt.on(MapEvents.clearAnalysisArea);
+        }
+
+    }
+
+}
+
+
 
 class BaiduMapProvider extends MapBase {
 
-    private callbackBoundChanged
     private map: any;
     private menuItems: MenuItem[];
     private convertor: any;
     private blockGrid: MapGrid;
     private uavList: Uav[];
+    private analysisArea: BaiduMapAnalysisArea;
     private getColor(value: number, min: number = undefined, max: number = undefined): string {
         var opt = this.blockGrid.options;
         if (!min) min = opt.minValue
@@ -525,31 +598,29 @@ class BaiduMapProvider extends MapBase {
             // alert(e.message);
         }
     }
-    private onMapBoundChaned() {
-        if (this.callbackBoundChanged) {
-            this.on(MapEvents.boundChanged, this.map.getBounds())
-        }
-    }
+
     private onCheckContextMenu() {
         var blocks = this.blockGrid.selectedBlocks
-        if (!blocks) {
-            this.menuItems.forEach(o => o.disable());
-        } else {
-            var setEnable = (name: MapMenuItems, enable) => {
-                var i = this.menuItems.first(o => o.name == name);
-                if (i) {
-                    if (enable) {
-                        i.enable();
-                    } else {
-                        i.disable();
-                    }
+        var setEnable = (name: MapMenuItems, enable) => {
+            var i = this.menuItems.first(o => o.name == name);
+            if (i) {
+                if (enable) {
+                    i.enable();
+                } else {
+                    i.disable();
                 }
             }
-
+        }
+        if (!blocks) {
+            this.menuItems.forEach(o => { if (o) o.disable() });
+        } else {
             setEnable(MapMenuItems.reports, blocks.length > 0);
             setEnable(MapMenuItems.horizontal, blocks.length > 0);
             setEnable(MapMenuItems.vertical, blocks.length > 0);
+            setEnable(MapMenuItems.clear, blocks.length > 0);
         }
+        setEnable(MapMenuItems.selectAnalysisArea, !this.analysisArea.isEnabled())
+        setEnable(MapMenuItems.clearAnalysisArea, this.analysisArea.isEnabled())
     }
     private addLine(point: Point, horizontalLen: number, verticalLen: number) {
         var line = new BMap.Polyline([
@@ -704,6 +775,7 @@ class BaiduMapProvider extends MapBase {
             // 百度地图API功能
             var map = new BMap.Map(container);    // 创建Map实例
             this.convertor = new BMap.Convertor();
+            this.analysisArea = new BaiduMapAnalysisArea(map, this);
             map.centerAndZoom(new BMap.Point(113.140761, 23.033974), 17);  // 初始化地图,设置中心点坐标和地图级别
             //添加地图类型控件
             map.addControl(new BMap.MapTypeControl({
@@ -725,26 +797,34 @@ class BaiduMapProvider extends MapBase {
             };
             this.menuItems = [
                 //createItem(MapMenuItems.compare, o => this.onShowReport()),
+                createItem(MapMenuItems.selectAnalysisArea, o => this.analysisArea.enable()),
+                createItem(MapMenuItems.clearAnalysisArea, o => this.analysisArea.disable()),
+                false,
                 createItem(MapMenuItems.reports, o => this.onShowSelectedBlockReport()),
                 createItem(MapMenuItems.horizontal, o => this.onShowHorizontalAspect()),
                 createItem(MapMenuItems.vertical, o => this.onShowVerticalAspect()),
                 createItem(MapMenuItems.clear, o => this.onClearSelectedBlock())
             ];
-            this.menuItems.forEach(o => menu.addItem(o));
+
+            this.menuItems.forEach(o => o ? menu.addItem(o) : menu.addSeparator());
             menu.addEventListener("open", o => this.onCheckContextMenu());
             map.addContextMenu(menu);
             new BaiduMapSelector(map, o => {
-                this.blockGrid.blocks.forEach(b => {
-                    if (o.bound.containsPoint(b.context.center)) {
-                        if (o.event.shiftKey) {
-                            this.onSelectBlock(b, MapBlockSelectAction.focusUnselect);
-                        } else if (o.event.ctrlKey) {
-                            this.onSelectBlock(b, MapBlockSelectAction.focusSelect);
-                        } else {
-                            this.onSelectBlock(b);
+                if (this.analysisArea.isEnabled() && !this.analysisArea.getBounds()) {
+                    this.analysisArea.setBounds(o.bound);
+                } else {
+                    this.blockGrid.blocks.forEach(b => {
+                        if (o.bound.containsPoint(b.context.center)) {
+                            if (o.event.shiftKey) {
+                                this.onSelectBlock(b, MapBlockSelectAction.focusUnselect);
+                            } else if (o.event.ctrlKey) {
+                                this.onSelectBlock(b, MapBlockSelectAction.focusSelect);
+                            } else {
+                                this.onSelectBlock(b);
+                            }
                         }
-                    }
-                })
+                    })
+                }
             });
             this.map = map;
             this.blockGrid = new MapGrid();

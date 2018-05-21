@@ -223,6 +223,8 @@ var MapEvents;
     MapEvents["horizontalAspect"] = "horizontalAspect";
     MapEvents["verticalAspect"] = "verticalAspect";
     MapEvents["clearAspect"] = "clearAspect";
+    MapEvents["selectAnalysisArea"] = "selectAnalysisArea";
+    MapEvents["clearAnalysisArea"] = "clearAnalysisArea";
 })(MapEvents || (MapEvents = {}));
 var MapMenuItems;
 (function (MapMenuItems) {
@@ -230,6 +232,8 @@ var MapMenuItems;
     MapMenuItems["reports"] = "\u7EDF\u8BA1\u62A5\u8868";
     MapMenuItems["horizontal"] = "\u6A2A\u5411\u5207\u9762";
     MapMenuItems["vertical"] = "\u7EB5\u5411\u5207\u9762";
+    MapMenuItems["selectAnalysisArea"] = "\u9009\u62E9\u5206\u6790\u533A\u57DF";
+    MapMenuItems["clearAnalysisArea"] = "\u6E05\u9664\u5206\u6790\u533A\u57DF";
     MapMenuItems["clear"] = "\u6E05\u9664";
 })(MapMenuItems || (MapMenuItems = {}));
 /**地图方块选择动作 */
@@ -264,10 +268,10 @@ var BaiduMapSelector = /** @class */ (function () {
                 if (!selector) {
                     selector = _this.selector = new BMap.Polygon([], {
                         strokeColor: "blue",
-                        strokeWeight: 1
+                        strokeWeight: 1,
+                        fillColor: "blue",
+                        fillOpacity: 0.1,
                     });
-                    selector.setFillColor("white");
-                    selector.setFillOpacity(0.5);
                 }
                 var point = _this.pointOne = o.point;
                 var mixOffset = 0.000001;
@@ -310,6 +314,56 @@ var BaiduMapSelector = /** @class */ (function () {
     };
     BaiduMapSelector.prototype.getEnable = function () { return this.enable; };
     return BaiduMapSelector;
+}());
+/**数据分析区域。 */
+var BaiduMapAnalysisArea = /** @class */ (function () {
+    function BaiduMapAnalysisArea(map, evt) {
+        this.map = map;
+        this.evt = evt;
+    }
+    BaiduMapAnalysisArea.prototype.isEnabled = function () {
+        return this.selectingArea || this.border;
+    };
+    BaiduMapAnalysisArea.prototype.setBounds = function (bound) {
+        if (bound) {
+            this.bound = bound;
+            var p1 = bound.getSouthWest();
+            var p2 = bound.getNorthEast();
+            this.border = new BMap.Polygon([
+                p1,
+                new BMap.Point(p1.lng, p2.lat),
+                p2,
+                new BMap.Point(p2.lng, p1.lat),
+            ], {
+                strokeColor: "green",
+                strokeStyle: "dashed",
+                strokeWeight: 1,
+                strokeOpacity: 1,
+                enableClicking: false,
+                fillColor: "transparent"
+            });
+            this.map.addOverlay(this.border);
+            this.evt.on(MapEvents.selectAnalysisArea, { sw: bound.getSouthWest(), ne: bound.getNorthEast() });
+            this.selectingArea = false;
+        }
+    };
+    BaiduMapAnalysisArea.prototype.getBounds = function () {
+        return this.bound;
+    };
+    BaiduMapAnalysisArea.prototype.enable = function () {
+        this.disable();
+        this.selectingArea = true;
+    };
+    BaiduMapAnalysisArea.prototype.disable = function () {
+        this.selectingArea = false;
+        if (this.border) {
+            this.map.removeOverlay(this.border);
+            delete this.bound;
+            delete this.border;
+            this.evt.on(MapEvents.clearAnalysisArea);
+        }
+    };
+    return BaiduMapAnalysisArea;
 }());
 var BaiduMapProvider = /** @class */ (function (_super) {
     __extends(BaiduMapProvider, _super);
@@ -461,33 +515,32 @@ var BaiduMapProvider = /** @class */ (function (_super) {
             // alert(e.message);
         }
     };
-    BaiduMapProvider.prototype.onMapBoundChaned = function () {
-        if (this.callbackBoundChanged) {
-            this.on(MapEvents.boundChanged, this.map.getBounds());
-        }
-    };
     BaiduMapProvider.prototype.onCheckContextMenu = function () {
         var _this = this;
         var blocks = this.blockGrid.selectedBlocks;
+        var setEnable = function (name, enable) {
+            var i = _this.menuItems.first(function (o) { return o.name == name; });
+            if (i) {
+                if (enable) {
+                    i.enable();
+                }
+                else {
+                    i.disable();
+                }
+            }
+        };
         if (!blocks) {
-            this.menuItems.forEach(function (o) { return o.disable(); });
+            this.menuItems.forEach(function (o) { if (o)
+                o.disable(); });
         }
         else {
-            var setEnable = function (name, enable) {
-                var i = _this.menuItems.first(function (o) { return o.name == name; });
-                if (i) {
-                    if (enable) {
-                        i.enable();
-                    }
-                    else {
-                        i.disable();
-                    }
-                }
-            };
             setEnable(MapMenuItems.reports, blocks.length > 0);
             setEnable(MapMenuItems.horizontal, blocks.length > 0);
             setEnable(MapMenuItems.vertical, blocks.length > 0);
+            setEnable(MapMenuItems.clear, blocks.length > 0);
         }
+        setEnable(MapMenuItems.selectAnalysisArea, !this.analysisArea.isEnabled());
+        setEnable(MapMenuItems.clearAnalysisArea, this.analysisArea.isEnabled());
     };
     BaiduMapProvider.prototype.addLine = function (point, horizontalLen, verticalLen) {
         var line = new BMap.Polyline([
@@ -641,6 +694,7 @@ var BaiduMapProvider = /** @class */ (function (_super) {
             // 百度地图API功能
             var map = new BMap.Map(container); // 创建Map实例
             _this.convertor = new BMap.Convertor();
+            _this.analysisArea = new BaiduMapAnalysisArea(map, _this);
             map.centerAndZoom(new BMap.Point(113.140761, 23.033974), 17); // 初始化地图,设置中心点坐标和地图级别
             //添加地图类型控件
             map.addControl(new BMap.MapTypeControl({
@@ -662,28 +716,36 @@ var BaiduMapProvider = /** @class */ (function (_super) {
             };
             _this.menuItems = [
                 //createItem(MapMenuItems.compare, o => this.onShowReport()),
+                createItem(MapMenuItems.selectAnalysisArea, function (o) { return _this.analysisArea.enable(); }),
+                createItem(MapMenuItems.clearAnalysisArea, function (o) { return _this.analysisArea.disable(); }),
+                false,
                 createItem(MapMenuItems.reports, function (o) { return _this.onShowSelectedBlockReport(); }),
                 createItem(MapMenuItems.horizontal, function (o) { return _this.onShowHorizontalAspect(); }),
                 createItem(MapMenuItems.vertical, function (o) { return _this.onShowVerticalAspect(); }),
                 createItem(MapMenuItems.clear, function (o) { return _this.onClearSelectedBlock(); })
             ];
-            _this.menuItems.forEach(function (o) { return menu.addItem(o); });
+            _this.menuItems.forEach(function (o) { return o ? menu.addItem(o) : menu.addSeparator(); });
             menu.addEventListener("open", function (o) { return _this.onCheckContextMenu(); });
             map.addContextMenu(menu);
             new BaiduMapSelector(map, function (o) {
-                _this.blockGrid.blocks.forEach(function (b) {
-                    if (o.bound.containsPoint(b.context.center)) {
-                        if (o.event.shiftKey) {
-                            _this.onSelectBlock(b, MapBlockSelectAction.focusUnselect);
+                if (_this.analysisArea.isEnabled() && !_this.analysisArea.getBounds()) {
+                    _this.analysisArea.setBounds(o.bound);
+                }
+                else {
+                    _this.blockGrid.blocks.forEach(function (b) {
+                        if (o.bound.containsPoint(b.context.center)) {
+                            if (o.event.shiftKey) {
+                                _this.onSelectBlock(b, MapBlockSelectAction.focusUnselect);
+                            }
+                            else if (o.event.ctrlKey) {
+                                _this.onSelectBlock(b, MapBlockSelectAction.focusSelect);
+                            }
+                            else {
+                                _this.onSelectBlock(b);
+                            }
                         }
-                        else if (o.event.ctrlKey) {
-                            _this.onSelectBlock(b, MapBlockSelectAction.focusSelect);
-                        }
-                        else {
-                            _this.onSelectBlock(b);
-                        }
-                    }
-                });
+                    });
+                }
             });
             _this.map = map;
             _this.blockGrid = new MapGrid();
