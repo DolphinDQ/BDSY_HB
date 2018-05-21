@@ -281,7 +281,7 @@ var BaiduMapProvider = /** @class */ (function (_super) {
             avg: Math.round(report.avg * 100) / 100,
             unit: report.pollutant.Unit,
             background: this.getColor(report.avg, report.pollutant.MinValue, report.pollutant.MaxValue),
-            opacity: this.blockGrid.options.opacity,
+            opacity: this.blockGrid.options.opacity
         });
     };
     BaiduMapProvider.prototype.createBlock = function (point, opt) {
@@ -420,7 +420,7 @@ var BaiduMapProvider = /** @class */ (function (_super) {
                 blocks: blocks.select(function (o) {
                     return {
                         center: o.context.center,
-                        points: o.context.getPoints(function (i) { return true; }).select(function (i) { return i.data; }),
+                        points: o.context.getPoints(function (i) { return true; }).select(function (i) { return i.data; })
                     };
                 })
             });
@@ -445,7 +445,7 @@ var BaiduMapProvider = /** @class */ (function (_super) {
                 blocks: blocks.select(function (o) {
                     return {
                         center: o.context.center,
-                        points: o.context.getPoints(function (i) { return true; }).select(function (i) { return i.data; }),
+                        points: o.context.getPoints(function (i) { return true; }).select(function (i) { return i.data; })
                     };
                 })
             });
@@ -470,7 +470,7 @@ var BaiduMapProvider = /** @class */ (function (_super) {
             avg: "平均值",
             unit: "单位",
             background: "white",
-            opacity: 1,
+            opacity: 1
         });
         var reports = block.context.getReports(function (o) { return true; });
         reports.forEach(function (o) { return content += _this.createInfoWindowContent(o); });
@@ -691,4 +691,3 @@ var BaiduMapProvider = /** @class */ (function (_super) {
     map.mapInit("container");
     window.map = map;
 })();
-//# sourceMappingURL=map.js.map

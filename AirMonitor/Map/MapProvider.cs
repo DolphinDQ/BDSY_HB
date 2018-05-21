@@ -24,10 +24,16 @@ namespace AirMonitor.Map
         {
             try
             {
-                using (var reg = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\WOW6432Node\Microsoft\Internet Explorer\Main\FeatureControl\FEATURE_BROWSER_EMULATION", true))
+                using (var reg = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\WOW6432Node\Microsoft\Internet Explorer\Main\FeatureControl\FEATURE_BROWSER_EMULATION", false))
                 {
                     var name = Process.GetCurrentProcess().ProcessName + ".exe";
-                    reg.SetValue(name, 10000, RegistryValueKind.DWord);
+                    var version = reg.GetValue(name);
+                    if (version == null)
+                    {
+                        Process.Start(new ProcessStartInfo("useie", $"{name} 10000") { CreateNoWindow = false, Verb = "runas" });
+                        Process.Start(name);
+                        Process.GetCurrentProcess().Kill();
+                    }
                 }
             }
             catch (Exception e)
