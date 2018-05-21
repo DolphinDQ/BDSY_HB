@@ -119,12 +119,15 @@ interface Bound {
     getSouthWest(): Point;
     getNorthEast(): Point;
     containsPoint(point: Point): boolean;
+    getCenter(): Point;
 }
 
 interface InfoWindow {
     setContent(text: string);
     setWidth(width: Number);
     setHeight(height: Number);
+    addEventListener(name: string, callFn: Function);
+    targetBorder: any;
 }
 //方块
 interface Block {
@@ -283,14 +286,98 @@ enum MapEvents {
 
 enum MapMenuItems {
     compare = "对比数据",
+    reports = "统计报表",
     horizontal = "横向切面",
     vertical = "纵向切面",
     clear = "清除",
 }
+/**地图方块选择动作 */
+enum MapBlockSelectAction {
+    //开关
+    switch,
+    //强制选择
+    focusSelect,
+    //强制反选
+    focusUnselect,
+}
+
 
 declare var BMap;
 declare var BMAP_NORMAL_MAP;
 declare var BMAP_HYBRID_MAP;
+/**
+ *百度地图选择器。用于界面元素框选。 
+ */
+class BaiduMapSelector {
+    private map;
+    private callback;
+    private selector;
+    private pointOne: Point;
+    private enable: boolean = true;
+    /**
+     * 创建百度地图选择器，默认使用右键进行框选。
+     * @param map 百度地图对象。
+     * @param callbackFn 选择后回调框选区域。
+     */
+    constructor(map, callbackFn: (b) => any) {
+        this.map = map;
+        this.callback = callbackFn;
+        map.addEventListener("mousedown", o => {
+            if (!this.enable) return;
+            if (o.domEvent.which == 3) {
+                var selector = this.selector;
+                if (!selector) {
+                    selector = this.selector = new BMap.Polygon([], {
+                        strokeColor: "blue",
+                        strokeWeight: 1
+                    });
+                    selector.setFillColor("white");
+                    selector.setFillOpacity(0.5);
+                }
+                var point: Point = this.pointOne = o.point;
+                var mixOffset = 0.000001;
+                selector.setPath([
+                    point,
+                    new BMap.Point(point.lng + mixOffset, point.lat),
+                    new BMap.Point(point.lng + mixOffset, point.lat + mixOffset),
+                    new BMap.Point(point.lng, point.lat + mixOffset),
+                ]);
+                map.addOverlay(selector);
+            }
+        });
+        map.addEventListener("mousemove", o => {
+            var selector = this.selector;
+            var p1 = this.pointOne;
+            if (o.domEvent.which == 3 && selector && p1) {
+                var p2: Point = o.point;
+                selector.setPath([
+                    new BMap.Point(p1.lng, p1.lat),
+                    new BMap.Point(p1.lng, p2.lat),
+                    new BMap.Point(p2.lng, p2.lat),
+                    new BMap.Point(p2.lng, p1.lat),
+                ]);
+            }
+        });
+        map.addEventListener("mouseup", o => {
+            var selector = this.selector;
+            if (selector) {
+                if (this.callback) {
+                    this.callback({ bound: selector.getBounds(), event: o });
+                }
+                this.map.removeOverlay(selector);
+                delete this.pointOne;
+                delete this.selector;
+            }
+        });
+    }
+
+    setEnable(enable: boolean) {
+        this.enable = enable;
+    }
+
+    getEnable() { return this.enable; }
+}
+
 class BaiduMapProvider extends MapBase {
 
     private callbackBoundChanged
@@ -347,7 +434,11 @@ class BaiduMapProvider extends MapBase {
             opacity: this.blockGrid.options.opacity,
         });
     }
-
+    /**
+     * 创建方块。
+     * @param point 中心点。
+     * @param opt 选项。
+     */
     private createBlock(point: Point, opt: MapGridOptions): Block {
         var center = this.blockGrid.firstPoint;
         var sideLength = opt.sideLength * 0.00001;
@@ -376,8 +467,12 @@ class BaiduMapProvider extends MapBase {
         polygon.addEventListener("rightclick", o => this.onSelectBlock(o.target))
         return polygon;
     }
-
-    private onSelectBlock(b: Block) {
+    /**
+     * 选中方块。
+     * @param b 方块对象。
+     * @param act 强制选中或者不选中。
+     */
+    private onSelectBlock(b: Block, act: MapBlockSelectAction = MapBlockSelectAction.switch) {
         var index = null;
         var block = null;
         for (var i = 0; i < this.blockGrid.selectedBlocks.length; i++) {
@@ -388,13 +483,15 @@ class BaiduMapProvider extends MapBase {
             }
         }
         if (index === null) {
+            if (act == MapBlockSelectAction.focusUnselect) return;
             block = b;
-            block.setStrokeColor("blue");
+            block.setStrokeColor("red");
             block.setStrokeOpacity(1);
-            block.setStrokeWeight(2);
-            block.setStrokeStyle("dashed");
+            block.setStrokeWeight(1);
+            block.setStrokeStyle("solid");
             this.blockGrid.selectedBlocks.push(block);
         } else {
+            if (act == MapBlockSelectAction.focusSelect) return;
             block.setStrokeColor("white");
             block.setStrokeOpacity(0.5);
             block.setStrokeWeight(1);
@@ -402,15 +499,12 @@ class BaiduMapProvider extends MapBase {
             this.blockGrid.selectedBlocks.splice(i, 1);
         }
     }
-
-    //private isInBlock(center: Point, sideLength: number, point: Point) {
-    //    //块中心点，块边长，当前点是否在块里面。
-    //    var offset = sideLength / 2 * 0.00001;//计算偏移经纬度。
-    //    return point.lng > (center.lng - offset) &&
-    //        point.lng < (center.lng + offset) &&
-    //        point.lat > (center.lat - offset) &&
-    //        point.lat < (center.lat + offset);
-    //}
+    /**
+     * 查找当前加载的无人机。
+     * @param name 无人机名称、标识
+     * @param exist 如果存在执行操作。
+     * @param notExist 如果不存在执行操作。
+     */
     private uav(name: string, exist: (o: Uav) => any, notExist: () => any) {
         try {
             var uav = this.uavList.first(o => o.name == name);
@@ -451,11 +545,12 @@ class BaiduMapProvider extends MapBase {
                     }
                 }
             }
+
+            setEnable(MapMenuItems.reports, blocks.length > 0);
             setEnable(MapMenuItems.horizontal, blocks.length > 0);
             setEnable(MapMenuItems.vertical, blocks.length > 0);
         }
     }
-
     private addLine(point: Point, horizontalLen: number, verticalLen: number) {
         var line = new BMap.Polyline([
             new BMap.Point(point.lng - (horizontalLen / (2 * 10000)), point.lat - (verticalLen / (2 * 10000))),
@@ -509,7 +604,50 @@ class BaiduMapProvider extends MapBase {
             });
         }
     }
+    private onShowSelectedBlockReport() {
+        var blocks = this.blockGrid.selectedBlocks;
+        if (blocks) {
+            var minLat = blocks.min(o => o.context.center.lat).getBounds().getSouthWest().lat;
+            var maxLat = blocks.max(o => o.context.center.lat).getBounds().getNorthEast().lat;
+            var minLng = blocks.min(o => o.context.center.lng).getBounds().getSouthWest().lng;
+            var maxLng = blocks.max(o => o.context.center.lng).getBounds().getNorthEast().lng;
+            var bound = new BMap.Bounds(
+                new BMap.Point(minLng, minLat),
+                new BMap.Point(maxLng, maxLat)
+            );
+            var reports: PollutantReport[] = [];
+            var time;
+            blocks.forEach(block => {
+                if (!time) {
+                    time = block.context.time;
+                }
+                var rp = block.context.getReports(i => true);
+                rp.forEach(report => {
+                    var tmp = reports.first(o => o.pollutant.Name == report.pollutant.Name)
+                    if (!tmp) {
+                        tmp = new PollutantReport();
+                        tmp.max = report.max;
+                        tmp.min = report.min;
+                        tmp.avg = report.avg;
+                        tmp.count = 0;
+                        tmp.pollutant = report.pollutant;
+                        reports.push(tmp);
+                    }
+                    tmp.avg = (tmp.avg * tmp.count + report.avg) / (tmp.count + 1);
+                    tmp.max = report.max > tmp.max ? report.max : tmp.max;
+                    tmp.min = report.min < tmp.min ? report.min : tmp.min;
+                    tmp.sum += report.sum;
+                    tmp.count++;
+
+                });
+            });
+            this.onShowReport(bound, reports, time);
+        }
+    }
     private onShowBlockReport(block: Block) {
+        this.onShowReport(block.getBounds(), block.context.getReports(o => true), block.context.time);
+    }
+    private onShowReport(bound: Bound, reports: PollutantReport[], time: string) {
         var blockGrid = this.blockGrid;
         var opt = blockGrid.options;
         if (!blockGrid.infoWindow) {
@@ -517,9 +655,31 @@ class BaiduMapProvider extends MapBase {
                 width: 450,
                 height: 300
             });
+
+            blockGrid.infoWindow.targetBorder = new BMap.Polygon([], {
+                strokeColor: "blue",
+                strokeWeight: 1,
+                fillOpacity: 0.2,
+                fillColor: "blue",
+            });
+            blockGrid.infoWindow.addEventListener("close", o => {
+                var win: InfoWindow = o.target;
+                //console.dir(win);
+                if (win.targetBorder) {
+                    this.map.removeOverlay(win.targetBorder);
+                }
+            });
         }
+        var p1 = bound.getNorthEast();
+        var p2 = bound.getSouthWest();
+        blockGrid.infoWindow.targetBorder.setPath([
+            p1,
+            new BMap.Point(p1.lng, p2.lat),
+            p2,
+            new BMap.Point(p2.lng, p1.lat),
+        ]);
         var content = '<div><span>实时采样数据：</span><span>({{time}})</span></div>';
-        content = content.replace("{{time}}", block.context.time);
+        content = content.replace("{{time}}", time);
         content += this.getInfoWindowContentTemplate({
             title: "采样类型",
             min: "最小值",
@@ -529,16 +689,20 @@ class BaiduMapProvider extends MapBase {
             background: "white",
             opacity: 1,
         });
-        var reports = block.context.getReports(o => true);
         reports.forEach(o => content += this.createInfoWindowContent(o));
         blockGrid.infoWindow.setContent(content);
-        this.map.openInfoWindow(blockGrid.infoWindow, block.context.center)
+        this.map.openInfoWindow(blockGrid.infoWindow, bound.getNorthEast())
+        this.map.addOverlay(blockGrid.infoWindow.targetBorder);
     }
 
+    /**
+     * 初始化地图。
+     * @param container 地图容器id
+     */
     mapInit(container: string) {
         this.loadJs("http://api.map.baidu.com/getscript?v=2.0&ak=TCgR2Y0IGMmPR4qteh4McpXzMyYpFrEx", e => {
             // 百度地图API功能
-            let map = new BMap.Map(container);    // 创建Map实例
+            var map = new BMap.Map(container);    // 创建Map实例
             this.convertor = new BMap.Convertor();
             map.centerAndZoom(new BMap.Point(113.140761, 23.033974), 17);  // 初始化地图,设置中心点坐标和地图级别
             //添加地图类型控件
@@ -561,6 +725,7 @@ class BaiduMapProvider extends MapBase {
             };
             this.menuItems = [
                 //createItem(MapMenuItems.compare, o => this.onShowReport()),
+                createItem(MapMenuItems.reports, o => this.onShowSelectedBlockReport()),
                 createItem(MapMenuItems.horizontal, o => this.onShowHorizontalAspect()),
                 createItem(MapMenuItems.vertical, o => this.onShowVerticalAspect()),
                 createItem(MapMenuItems.clear, o => this.onClearSelectedBlock())
@@ -568,6 +733,19 @@ class BaiduMapProvider extends MapBase {
             this.menuItems.forEach(o => menu.addItem(o));
             menu.addEventListener("open", o => this.onCheckContextMenu());
             map.addContextMenu(menu);
+            new BaiduMapSelector(map, o => {
+                this.blockGrid.blocks.forEach(b => {
+                    if (o.bound.containsPoint(b.context.center)) {
+                        if (o.event.shiftKey) {
+                            this.onSelectBlock(b, MapBlockSelectAction.focusUnselect);
+                        } else if (o.event.ctrlKey) {
+                            this.onSelectBlock(b, MapBlockSelectAction.focusSelect);
+                        } else {
+                            this.onSelectBlock(b);
+                        }
+                    }
+                })
+            });
             this.map = map;
             this.blockGrid = new MapGrid();
             this.blockGrid.blocks = new Array<any>();
