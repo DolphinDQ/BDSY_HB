@@ -15,11 +15,7 @@ namespace AirMonitor.ViewModels
     {
         private IChartManager m_chartManager;
 
-        public enum AnalysisMode
-        {
-            Vertical,
-            Horizontal,
-        }
+
 
         public SampleAnalysisViewModel(IChartManager chartManager)
         {

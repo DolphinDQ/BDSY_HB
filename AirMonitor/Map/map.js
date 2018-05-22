@@ -263,7 +263,7 @@ var BaiduMapSelector = /** @class */ (function () {
         map.addEventListener("mousedown", function (o) {
             if (!_this.enable)
                 return;
-            if (o.domEvent.which == 3) {
+            if (o.domEvent.which == 3 || o.domEvent.button == 2) {
                 var selector = _this.selector;
                 if (!selector) {
                     selector = _this.selector = new BMap.Polygon([], {
@@ -287,7 +287,7 @@ var BaiduMapSelector = /** @class */ (function () {
         map.addEventListener("mousemove", function (o) {
             var selector = _this.selector;
             var p1 = _this.pointOne;
-            if (o.domEvent.which == 3 && selector && p1) {
+            if (selector && p1) {
                 var p2 = o.point;
                 selector.setPath([
                     new BMap.Point(p1.lng, p1.lat),

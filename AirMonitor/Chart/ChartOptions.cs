@@ -8,8 +8,12 @@ namespace AirMonitor.Chart
 {
     public class ChartOptions
     {
-        public double? MaxVaule { get; set; }
+        public double? MaxX { get; set; }
 
-        public double? MinValue { get; set; }
+        public double? MinX { get; set; }
+
+        public double? MaxY { get; set; }
+
+        public double? MinY { get; set; }
     }
 }

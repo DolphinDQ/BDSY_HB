@@ -20,8 +20,8 @@ namespace AirMonitor.Chart
             plot.Axes.Add(new LinearAxis()
             {
                 IsAxisVisible = false,
-                Maximum = options?.MaxVaule ?? double.NaN,
-                Minimum = options?.MinValue ?? double.NaN
+                Maximum = options?.MaxY ?? double.NaN,
+                Minimum = options?.MaxY ?? double.NaN
             });
             plot.Axes.Add(new DateTimeAxis()
             {
@@ -66,6 +66,7 @@ namespace AirMonitor.Chart
             series.Points.AddRange(data.Select(o => new ScatterPoint(o.X, o.Y, o.Size, o.Value, o.Tag)));
             plot.Series.Add(series);
             plot.Axes.Add(new LinearColorAxis() { Position = AxisPosition.Right });
+            plot.Axes.Add(new LinearAxis() { Position = AxisPosition.Bottom });
             SetScatter(plot, options);
             data.CollectionChanged += (s, e) =>
             {
@@ -91,28 +92,19 @@ namespace AirMonitor.Chart
         {
             if (scatter is PlotModel plot)
             {
-                var axis = plot.Axes.First(o => o.Position == AxisPosition.Right) as LinearColorAxis;
-                if (options.MaxVaule != null)
-                {
-                    axis.Maximum = options.MaxVaule.Value;
-                }
-                if (options.MinValue != null)
-                {
-                    axis.Minimum = options.MinValue.Value;
-                }
+                var right = plot.Axes.First(o => o.Position == AxisPosition.Right) as LinearColorAxis;
+                right.Maximum = options.MaxVaule ?? double.NaN;
+                right.Minimum = options.MinValue ?? double.NaN;
                 if (options.MaxColor != null && options.MinColor != null)
                 {
-                    axis.Palette = OxyPalette.Interpolate(300, OxyColor.Parse(options.MinColor), OxyColor.Parse(options.MaxColor));
+                    right.Palette = OxyPalette.Interpolate(300, OxyColor.Parse(options.MinColor), OxyColor.Parse(options.MaxColor));
                 }
-                //if (options.MaxColor != null)
-                //{
-                //    axis.HighColor = ;
-                //}
-                //if (options.MinColor != null)
-                //{
-                //    axis.LowColor = ;
-                //}
+
+                var bottom = plot.Axes.First(o => o.Position == AxisPosition.Bottom) as LinearAxis;
+                bottom.Maximum = options.MaxX ?? double.NaN;
+                bottom.Minimum = options.MinX ?? double.NaN;
             }
+
         }
 
 

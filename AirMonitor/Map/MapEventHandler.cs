@@ -39,6 +39,12 @@ namespace AirMonitor.Map
                 case "clearAspect":
                     On<EvtMapClearAspect>();
                     break;
+                case "selectAnalysisArea":
+                    On<EvtMapSelectAnalysisArea>(json);
+                    break;
+                case "clearAnalysisArea":
+                    On<EvtMapClearAnalysisArea>();
+                    break;
                 //case "boundChanged":
                 //    On<EvtMapBoundChanged>(json);
                 //    break;

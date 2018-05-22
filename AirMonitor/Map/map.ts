@@ -333,7 +333,7 @@ class BaiduMapSelector {
         this.callback = callbackFn;
         map.addEventListener("mousedown", o => {
             if (!this.enable) return;
-            if (o.domEvent.which == 3) {
+            if (o.domEvent.which == 3 || o.domEvent.button == 2) {
                 var selector = this.selector;
                 if (!selector) {
                     selector = this.selector = new BMap.Polygon([], {
@@ -357,7 +357,7 @@ class BaiduMapSelector {
         map.addEventListener("mousemove", o => {
             var selector = this.selector;
             var p1 = this.pointOne;
-            if (o.domEvent.which == 3 && selector && p1) {
+            if (selector && p1) {
                 var p2: Point = o.point;
                 selector.setPath([
                     new BMap.Point(p1.lng, p1.lat),

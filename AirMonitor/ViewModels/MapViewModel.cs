@@ -22,6 +22,8 @@ namespace AirMonitor.ViewModels
         IHandle<EvtSetting>,
         IHandle<EvtMapHorizontalAspect>,
         IHandle<EvtMapVerticalAspect>,
+        IHandle<EvtMapSelectAnalysisArea>,
+        IHandle<EvtMapClearAnalysisArea>,
         IHandle<EvtMapClearAspect>
     {
         private IMapProvider m_mapProvider;
@@ -192,27 +194,59 @@ namespace AirMonitor.ViewModels
         }
 
         public void Handle(EvtMapHorizontalAspect message)
-            => OnShowAnalysisPanel(message.blocks, SampleAnalysisViewModel.AnalysisMode.Horizontal);
+            => OnShowAnalysisPanel(message.blocks, AnalysisMode.Horizontal);
 
         public void Handle(EvtMapVerticalAspect message)
-            => OnShowAnalysisPanel(message.blocks, SampleAnalysisViewModel.AnalysisMode.Vertical);
+            => OnShowAnalysisPanel(message.blocks, AnalysisMode.Vertical);
 
         public void Handle(EvtMapClearAspect message)
         {
-            EnableAnalysis = false;
+            if (PropertyPanel is SampleAnalysisViewModel)
+            {
+                EnableAnalysis = false;
+            }
         }
 
-        private void OnShowAnalysisPanel(MapBlock[] blocks, SampleAnalysisViewModel.AnalysisMode mode)
+        public void Handle(EvtMapSelectAnalysisArea message)
+        {
+            if (!(PropertyPanel is DynamicAnalysisViewModel view))
+            {
+                view = m_factory.Create<DynamicAnalysisViewModel>();
+            }
+            view.MapView = this;
+            view.Bounds = message;
+            PropertyPanel = view;
+            EnableAnalysis = true;
+        }
+
+        public void Handle(EvtMapClearAnalysisArea message)
+        {
+            if (PropertyPanel is DynamicAnalysisViewModel)
+            {
+                EnableAnalysis = false;
+            }
+        }
+
+        private void OnShowAnalysisPanel(MapBlock[] blocks, AnalysisMode mode)
         {
             if (!(PropertyPanel is SampleAnalysisViewModel view))
             {
                 view = m_factory.Create<SampleAnalysisViewModel>();
             }
-            view.Mode = mode;
             view.MapView = this;
+            view.Mode = mode;
             view.MapBlocks = blocks;
             PropertyPanel = view;
             EnableAnalysis = true;
+        }
+
+        public void OnEnableAnalysisChanged()
+        {
+            if (!EnableAnalysis && PropertyPanel is Screen s)
+            {
+                s.TryClose();
+                PropertyPanel = null;
+            }
         }
 
         private void OnUpdateUavPosition(EvtAirSample sample)
@@ -380,7 +414,6 @@ namespace AirMonitor.ViewModels
             m_mapProvider.GridRefresh();
             m_mapProvider.UavPath(GetUavName(null), ShowUavPath);
         }
-
 
     }
 }

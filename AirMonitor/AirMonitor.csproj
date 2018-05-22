@@ -120,9 +120,11 @@
     <Compile Include="Core\SaveManager.cs" />
     <Compile Include="EventArgs\EvtAirSample.cs" />
     <Compile Include="Data\MqttDataManager.cs" />
+    <Compile Include="EventArgs\EvtMapClearAnalysisArea.cs" />
     <Compile Include="EventArgs\EvtMapClearAspect.cs" />
     <Compile Include="EventArgs\EvtMapHorizontalAspect.cs" />
     <Compile Include="EventArgs\EvtMapPointConverted.cs" />
+    <Compile Include="EventArgs\EvtMapSelectAnalysisArea.cs" />
     <Compile Include="EventArgs\EvtMapVerticalAspect.cs" />
     <Compile Include="EventArgs\EvtSampling.cs" />
     <Compile Include="EventArgs\EvtMapLoad.cs" />
@@ -149,11 +151,16 @@
     </Compile>
     <Compile Include="Config\ConfigManager.cs" />
     <Compile Include="Interfaces\IConfigManager.cs" />
+    <Compile Include="ViewModels\AnalysisMode.cs" />
+    <Compile Include="ViewModels\DynamicAnalysisViewModel.cs" />
     <Compile Include="ViewModels\DataDisplayViewModel.cs" />
     <Compile Include="Interfaces\IMapView.cs" />
     <Compile Include="ViewModels\MapViewModel.cs" />
     <Compile Include="ViewModels\PollutantSettingViewModel.cs" />
     <Compile Include="ViewModels\SampleAnalysisViewModel.cs" />
+    <Compile Include="Views\DynamicAnalysisView.xaml.cs">
+      <DependentUpon>DynamicAnalysisView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\DataDisplayView.xaml.cs">
       <DependentUpon>DataDisplayView.xaml</DependentUpon>
     </Compile>
@@ -177,6 +184,10 @@
     <Page Include="ShellView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\DynamicAnalysisView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\DataDisplayView.xaml">
       <SubType>Designer</SubType>

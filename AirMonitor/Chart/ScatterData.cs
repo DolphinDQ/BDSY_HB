@@ -8,6 +8,7 @@ namespace AirMonitor.Chart
 {
     public class ScatterData
     {
+   
         public double X { get; set; }
 
         public double Y { get; set; }
