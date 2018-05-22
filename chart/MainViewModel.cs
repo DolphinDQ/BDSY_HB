@@ -37,7 +37,7 @@ namespace chart
             //series1.Points.Add(new DataPoint(35, 18));
             //series1.Points.Add(new DataPoint(40, 15));
             //series1.Points.Add(new DataPoint(45, 5));
-
+            series1.SelectionChanged += Series1_SelectionChanged;
             series1.Points.Add(new ScatterPoint(10, 14, 20, 1000));
             series1.Points.Add(new ScatterPoint(15, 50, 30, 500));
             series1.Points.Add(new ScatterPoint(20, 12));
@@ -46,16 +46,17 @@ namespace chart
             series1.Points.Add(new ScatterPoint(35, 18));
             series1.Points.Add(new ScatterPoint(40, 15));
             series1.Points.Add(new ScatterPoint(45, 5));
-
+            series1.Selectable = true;
+            series1.SelectionMode = SelectionMode.Multiple;
             // Add the series to the plot model
             model.Series.Add(series1);
-
             // Axes are created automatically if they are not defined
             //tmp.Axes.Add(new LinearAxis() { });
             //tmp.Axes.Add(new DateTimeAxis() { Position = AxisPosition.Bottom, Minimum = DateTimeAxis.ToDouble(DateTime.Now), Maximum = DateTimeAxis.ToDouble(DateTime.Now.AddSeconds(6)), });
             model.Axes.Add(new LinearColorAxis { Position = AxisPosition.Right, Palette = OxyPalettes.Jet(200)  });
             // Set the Model property, the INotifyPropertyChanged event will make the WPF Plot control update its content
             this.Model = model;
+
             //var i = 2;
             //Task.Factory.StartNew(() =>
             //{
@@ -67,6 +68,12 @@ namespace chart
             //    } while (true);
 
             //});
+
+
+        }
+
+        private void Series1_SelectionChanged(object sender, EventArgs e)
+        {
         }
 
         /// <summary>
