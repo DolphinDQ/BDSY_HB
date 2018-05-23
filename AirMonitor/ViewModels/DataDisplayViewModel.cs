@@ -18,7 +18,7 @@ using AirMonitor.Chart;
 
 namespace AirMonitor.ViewModels
 {
-    class DataDisplayViewModel : Screen, IHandle<EvtAirSample>, IHandle<EvtSetting>
+    class DataDisplayViewModel : Screen, IHandle<EvtAirSample>, IHandle<EvtSetting>, IHandle<EvtSampling>
     {
         [AddINotifyPropertyChangedInterface]
         public class SampleChart
@@ -199,11 +199,6 @@ namespace AirMonitor.ViewModels
 
         private void FillChart(SampleChart chart, Tuple<DateTime, double> value) => OnUIThread(() => chart.Collection.Add(value));
 
-        public void Config()
-        {
-            m_eventAggregator.PublishOnBackgroundThread(new EvtSetting() { SettingObject = StandardSetting });
-        }
-
         public void Handle(EvtSetting message)
         {
             try
@@ -222,6 +217,19 @@ namespace AirMonitor.ViewModels
             {
                 this.Warn("handler message {0} error", JsonConvert.SerializeObject(message));
                 this.Error(e);
+            }
+        }
+
+        public void Handle(EvtSampling message)
+        {
+            switch (message.Status)
+            {
+                case SamplingStatus.Stop:
+                    EnableSampling = false;
+                    break;
+                case SamplingStatus.Start:
+                    EnableSampling = true;
+                    break;
             }
         }
     }

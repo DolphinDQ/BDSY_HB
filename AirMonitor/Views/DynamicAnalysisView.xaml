@@ -29,7 +29,7 @@
                 <Label Style="{StaticResource Lbl_Title}">动态高度数据</Label>
                 <UniformGrid Columns="4">
                     <Label>采样数</Label>
-                    <Label Content="{Binding Points.Length}"></Label>
+                    <Label Content="{Binding Points.Count}"></Label>
                     <Label>最高点</Label>
                     <Label Content="{Binding MaxHeight,Converter={StaticResource Round}}"></Label>
                     <Label>最低点</Label>

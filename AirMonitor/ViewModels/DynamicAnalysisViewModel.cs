@@ -88,6 +88,7 @@ namespace AirMonitor.ViewModels
             OnUIThread(() =>
             {
                 var p = Points.FirstOrDefault(o => o.GetHashCode() == message.Seq);
+                if (p == null) return;
                 PlotData.Add(CreateScatterData(p));
             });
         }

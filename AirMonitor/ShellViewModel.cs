@@ -9,11 +9,13 @@ namespace AirMonitor
     public class ShellViewModel : Screen, IShell, IHandle<EvtSetting>
     {
         private IFactory m_factory;
+        private IResourceManager m_res;
         private IEventAggregator m_eventAggregator;
 
-        public ShellViewModel(IFactory factory, IEventAggregator eventAggregator)
+        public ShellViewModel(IFactory factory, IEventAggregator eventAggregator, IResourceManager res)
         {
             m_factory = factory;
+            m_res = res;
             m_eventAggregator = eventAggregator;
             eventAggregator.Subscribe(this);
         }
@@ -25,6 +27,8 @@ namespace AirMonitor
         public object Setting { get; set; }
 
         public bool EnableSetting { get; set; }
+
+        public string SettingTitle { get; set; }
 
         public override void TryClose(bool? dialogResult = null)
         {
@@ -40,17 +44,13 @@ namespace AirMonitor
                     var obj = message.SettingObject;
                     if (obj is AirStandardSetting setting)
                     {
-                        var tmp = m_factory.Create<PollutantSettingViewModel>();
-                        tmp.Settings = setting;
-                        Setting = tmp;
+                        OpenSetting();
                     }
-                    EnableSetting = true;
                     break;
                 case SettingCommands.Changed:
                 default:
                     Setting = null;
                     EnableSetting = false;
-
                     break;
             }
         }
@@ -62,5 +62,18 @@ namespace AirMonitor
             Container = m_factory.Create<MapViewModel>();
         }
 
+        public void OpenSetting()
+        {
+            Setting = m_factory.Create<PollutantSettingViewModel>();
+            SettingTitle = m_res.GetText("T_Setting");
+            EnableSetting = true;
+        }
+
+        public void OpenSimulator()
+        {
+            Setting = m_factory.Create<SimulatorViewModel>();
+            SettingTitle = m_res.GetText("T_Simulation");
+            EnableSetting = true;
+        }
     }
 }

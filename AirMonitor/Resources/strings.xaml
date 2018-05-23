@@ -2,7 +2,7 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:sys ="clr-namespace:System;assembly=mscorlib"
                     xmlns:local="clr-namespace:AirMonitor.Resources">
-    <sys:String x:Key="T_AppName">数研航遥-环境检测客户端</sys:String>
+    <sys:String x:Key="T_AppName">环境检测客户端</sys:String>
     <sys:String x:Key="T_UavStatus">无人机状态</sys:String>
     <sys:String x:Key="T_Battery">电量</sys:String>
     <sys:String x:Key="T_CallbackProgress">回传进度</sys:String>
@@ -61,6 +61,15 @@
     <sys:String x:Key="T_Avg">平均</sys:String>
     <sys:String x:Key="T_Realtime">实时</sys:String>
     <sys:String x:Key="T_Threshold">阈值</sys:String>
-
+    <sys:String x:Key="T_Simulation">模拟飞行</sys:String>
+    <sys:String x:Key="T_OpenSimFile">飞行数据</sys:String>
+    <sys:String x:Key="T_SamplingInterval">采样评率</sys:String>
+    <sys:String x:Key="T_Progress">模拟进度</sys:String>
+    <sys:String x:Key="T_Pause">暂停</sys:String>
+    <sys:String x:Key="T_Continue">继续</sys:String>
+    <sys:String x:Key="T_Stop">停止</sys:String>
+    <sys:String x:Key="T_StopAction">停止动作</sys:String>
+    <sys:String x:Key="T_StopConfirm">停止时显示提示框</sys:String>
+    <sys:String x:Key="T_SimulationSessionCompleted">模拟飞行任务完成！</sys:String>
 
 </ResourceDictionary>

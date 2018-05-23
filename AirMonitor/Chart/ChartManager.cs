@@ -37,8 +37,6 @@ namespace AirMonitor.Chart
             {
                 IsAxisVisible = false,
                 Position = AxisPosition.Bottom,
-                Minimum = DateTimeAxis.ToDouble(DateTime.Now.Add(-Span)),
-                Maximum = DateTimeAxis.ToDouble(DateTime.Now),
             });
             var series = new LineSeries { MarkerType = MarkerType.None };
             series.Points.AddRange(data.Select(o => new DataPoint(DateTimeAxis.ToDouble(o.Item1), o.Item2)));
@@ -51,6 +49,10 @@ namespace AirMonitor.Chart
                         if (e.NewItems == null) return;
                         var newItems = e.NewItems.Cast<Tuple<DateTime, double>>();
                         series.Points.AddRange(newItems.Select(o => new DataPoint(DateTimeAxis.ToDouble(o.Item1), o.Item2)));
+                        var axis = plot.Axes.FirstOrDefault(o => o.Position == AxisPosition.Bottom);
+                        var max = newItems.Max(o => o.Item1);
+                        axis.Maximum = DateTimeAxis.ToDouble(max);
+                        axis.Minimum = DateTimeAxis.ToDouble(max - Span);
                         break;
                     case NotifyCollectionChangedAction.Reset:
                         series.Points.Clear();
@@ -58,12 +60,7 @@ namespace AirMonitor.Chart
                     default:
                         break;
                 }
-                var axis = plot.Axes.FirstOrDefault(o => o.Position == AxisPosition.Bottom);
-                if (DateTimeAxis.ToDateTime(axis.Maximum) < DateTime.Now)
-                {
-                    axis.Maximum = DateTimeAxis.ToDouble(DateTime.Now);
-                    axis.Minimum = DateTimeAxis.ToDouble(DateTime.Now.Add(-Span));
-                }
+
                 plot.InvalidatePlot(true);
             };
             return plot;

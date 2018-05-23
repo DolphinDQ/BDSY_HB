@@ -71,7 +71,7 @@
                 <StackPanel DockPanel.Dock="Top">
                     <DockPanel>
                         <Label Style="{StaticResource Lbl_Title}" Content="{StaticResource T_RealtimeAirSamples}"/>
-                        <Button Name="Config" HorizontalAlignment="Right" Margin=" 5" Width="65" Content="{StaticResource T_Setting}" ></Button>
+                        <!--<Button Name="Config" HorizontalAlignment="Right" Margin=" 5" Width="65" Content="{StaticResource T_Setting}" ></Button>-->
                     </DockPanel>
                     <DockPanel>
                         <Label Content="{StaticResource T_SensorStatus}"></Label>

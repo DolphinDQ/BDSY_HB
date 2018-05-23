@@ -3,17 +3,24 @@
         xmlns:cal="http://www.caliburnproject.org"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        MinWidth="1000"  MinHeight="600"
-        ShowIconOnTitleBar="True"
+        MinWidth="1366"  MinHeight="768"
+                     Width="1366" Height="768"
+        ShowIconOnTitleBar="False"
         Icon="{StaticResource App_Logo}"
         GlowBrush="{DynamicResource AccentColorBrush}"
         Title="{StaticResource T_AppName}">
+    <control:MetroWindow.RightWindowCommands>
+        <control:WindowCommands>
+            <Button Name="OpenSetting" cal:Message.Attach="OpenSetting" Content="{StaticResource T_Setting}"></Button>
+            <Button Name="OpenSimulator" cal:Message.Attach="OpenSimulator"  Content="{StaticResource T_Simulation}"></Button>
+        </control:WindowCommands>
+    </control:MetroWindow.RightWindowCommands>
     <Grid>
         <DockPanel>
             <control:TransitioningContentControl cal:View.Model="{Binding Sider}" Width="300" DockPanel.Dock="Right"/>
             <control:TransitioningContentControl cal:View.Model="{Binding Container}"/>
         </DockPanel>
-        <control:Flyout Width="300" Position="Right" IsOpen="{Binding EnableSetting}"  Theme="Accent" AnimateOpacity="True"  Header="{StaticResource T_Setting}">
+        <control:Flyout Width="300" Position="Right" IsOpen="{Binding EnableSetting}"  Theme="Accent" AnimateOpacity="True"  Header="{Binding SettingTitle}">
             <ContentControl cal:View.Model="{Binding Setting}"></ContentControl>
         </control:Flyout>
     </Grid>

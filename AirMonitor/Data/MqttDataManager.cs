@@ -15,12 +15,12 @@ using System.Threading.Tasks;
 namespace AirMonitor.Data
 {
     [PropertyChanged.AddINotifyPropertyChangedInterface]
-    class MqttDataManager : IDataManager
+    class MqttDataManager : IDataManager, IHandle<EvtSampling>
     {
         private IEventAggregator m_eventAggregator;
         private IMqttClient m_client;
         private MqttSetting m_setting;
-
+        private bool CanPush { get; set; } = true;
         public bool IsConnected { get; set; }
 
         public MqttDataManager(
@@ -28,6 +28,7 @@ namespace AirMonitor.Data
             IConfigManager configManager)
         {
             m_eventAggregator = eventAggregator;
+            m_eventAggregator.Subscribe(this);
             m_setting = configManager.GetConfig<MqttSetting>();
         }
 
@@ -58,7 +59,10 @@ namespace AirMonitor.Data
                     this.Warn("recevied invald data {0}", message);
                     return;
                 }
-                m_eventAggregator.PublishOnBackgroundThread(info);
+                if (CanPush)
+                {
+                    m_eventAggregator.PublishOnBackgroundThread(info);
+                }
             }
         }
 
@@ -142,6 +146,22 @@ namespace AirMonitor.Data
                 this.Error(e);
             }
 
+        }
+
+        public void Handle(EvtSampling message)
+        {
+
+            switch (message.Status)
+            {
+                case SamplingStatus.StartSim:
+                    CanPush = false;
+                    break;
+                case SamplingStatus.StopSim:
+                    CanPush = true;
+                    break;
+                default:
+                    break;
+            }
         }
     }
 }
