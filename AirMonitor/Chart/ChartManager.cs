@@ -7,11 +7,21 @@ using OxyPlot.Series;
 using OxyPlot;
 using OxyPlot.Axes;
 using System.Collections.ObjectModel;
+using Caliburn.Micro;
+using AirMonitor.EventArgs;
+using System.Threading.Tasks;
 
 namespace AirMonitor.Chart
 {
     class ChartManager : IChartManager
     {
+        private IEventAggregator m_eventAggregator;
+        private ConcurrentDictionary<int, object> m_selectDelay = new ConcurrentDictionary<int, object>();
+        public ChartManager(IEventAggregator eventAggregator)
+        {
+            m_eventAggregator = eventAggregator;
+        }
+
         private static TimeSpan Span { get; set; } = TimeSpan.FromSeconds(60);
 
         public object CreateLiner(ObservableCollection<Tuple<DateTime, double>> data, LinerOptions options = null)
@@ -65,9 +75,13 @@ namespace AirMonitor.Chart
             var series = new ScatterSeries { MarkerType = MarkerType.Circle };
             series.Points.AddRange(data.Select(o => new ScatterPoint(o.X, o.Y, o.Size, o.Value, o.Tag)));
             plot.Series.Add(series);
+            series.SelectionMode = SelectionMode.Multiple;
+            series.Selectable = true;
+            series.SelectionChanged += Series_SelectionChanged;
             plot.Axes.Add(new LinearColorAxis() { Position = AxisPosition.Right });
             plot.Axes.Add(new LinearAxis() { Position = AxisPosition.Bottom });
             SetScatter(plot, options);
+            plot.Updated += Plot_Updated; ;
             data.CollectionChanged += (s, e) =>
             {
                 switch (e.Action)
@@ -86,6 +100,44 @@ namespace AirMonitor.Chart
                 plot.InvalidatePlot(true);
             };
             return plot;
+        }
+
+        private void Plot_Updated(object sender, System.EventArgs e)
+        {
+            var plot = sender as PlotModel;
+            if (plot.PlotView != null)
+            {
+                plot.PlotView.ActualController.UnbindMouseDown(OxyMouseButton.Left, OxyModifierKeys.Control);
+                plot.PlotView.ActualController.UnbindMouseDown(OxyMouseButton.Left, OxyModifierKeys.Shift);
+                var command = new DelegatePlotCommand<OxyMouseDownEventArgs>((p, c, arg) => c.AddMouseManipulator(p, new ScatterSelectManipulator(p), arg));
+                plot.PlotView.ActualController.BindMouseDown(OxyMouseButton.Left, OxyModifierKeys.Control, command);
+                plot.PlotView.ActualController.BindMouseDown(OxyMouseButton.Left, OxyModifierKeys.Shift, command);
+            }
+            plot.Updated -= Plot_Updated;
+        }
+
+
+
+        private async void Series_SelectionChanged(object sender, System.EventArgs e)
+        {
+            var serise = sender as ScatterSeries;
+            var key = serise.GetHashCode();
+            if (m_selectDelay.TryGetValue(key, out var _)) return;
+            m_selectDelay.TryAdd(key, serise);
+            await Task.Delay(100);
+            m_selectDelay.TryRemove(key, out var _);
+            m_eventAggregator.PublishOnBackgroundThread(new EvtChartScatterSelectChanged()
+            {
+                Scatter = serise.PlotModel,
+                Data = serise.GetSelectedItems().Select(o => serise.Points[o]).Select(o => new ScatterData()
+                {
+                    Size = o.Size,
+                    Tag = o.Tag,
+                    Value = o.Value,
+                    Y = o.Y,
+                    X = o.X
+                }).ToArray()
+            });
         }
 
         public void SetScatter(object scatter, ScatterOptions options)

@@ -52,8 +52,13 @@ namespace AirMonitor.Data
             IsConnected = true;
             if (e.ApplicationMessage.Topic == m_setting.EnvironmentTopic)
             {
-                m_eventAggregator.PublishOnBackgroundThread(
-                      JsonConvert.DeserializeObject<EvtAirSample>(message));
+                var info = JsonConvert.DeserializeObject<EvtAirSample>(message);
+                if (info.hight > 1000)
+                {
+                    this.Warn("recevied invald data {0}", message);
+                    return;
+                }
+                m_eventAggregator.PublishOnBackgroundThread(info);
             }
         }
 

@@ -86,6 +86,8 @@ if (!Array.prototype.selectMany) {
 interface IMapProvider {
     mapInit(container: string);
     mapPointConvert(seq: number, p: Point[]);
+    mapShowTempReport(d: any);
+    mapClearTempReport();
     gridInit(opt: MapGridOptions);
     gridRefresh();
     gridClear();
@@ -238,6 +240,8 @@ interface IEventAggregator {
 }
 
 abstract class MapBase implements IMapProvider, IEventAggregator {
+    abstract mapClearTempReport();
+    abstract mapShowTempReport(d: any);
     abstract mapPointConvert(seq: number, p: Point[]);
     abstract uavShowPath(name: string);
     abstract uavHidePath(name: string);
@@ -288,12 +292,14 @@ enum MapEvents {
     verticalAspect = "verticalAspect",
     clearAspect = "clearAspect",
     selectAnalysisArea = "selectAnalysisArea",
-    clearAnalysisArea = "clearAnalysisArea"
+    clearAnalysisArea = "clearAnalysisArea",
+    savePoints = "savePoints"
 }
 
 enum MapMenuItems {
     compare = "对比数据",
     reports = "统计报表",
+    savePoints = "保存",
     horizontal = "横向切面",
     vertical = "纵向切面",
     selectAnalysisArea = "选择分析区域",
@@ -444,14 +450,11 @@ class BaiduMapAnalysisArea {
             delete this.border;
             this.evt.on(MapEvents.clearAnalysisArea);
         }
-
     }
-
 }
 
-
-
 class BaiduMapProvider extends MapBase {
+
 
     private map: any;
     private menuItems: MenuItem[];
@@ -459,6 +462,7 @@ class BaiduMapProvider extends MapBase {
     private blockGrid: MapGrid;
     private uavList: Uav[];
     private analysisArea: BaiduMapAnalysisArea;
+    private tempSelectedData: Array<any>;    //临时选中数据。
     private getColor(value: number, min: number = undefined, max: number = undefined): string {
         var opt = this.blockGrid.options;
         if (!min) min = opt.minValue
@@ -529,7 +533,7 @@ class BaiduMapProvider extends MapBase {
             {
                 fillOpacity: opacity,
                 strokeWeight: 1,
-                strokeOpacity: 0.5,
+                strokeOpacity: 0.2,
                 strokeColor: "white"
             }
         );
@@ -547,7 +551,7 @@ class BaiduMapProvider extends MapBase {
      */
     private onSelectBlock(b: Block, act: MapBlockSelectAction = MapBlockSelectAction.switch) {
         var index = null;
-        var block = null;
+        var block: Block = null;
         for (var i = 0; i < this.blockGrid.selectedBlocks.length; i++) {
             block = this.blockGrid.selectedBlocks[i]
             if (block == b) {
@@ -566,7 +570,7 @@ class BaiduMapProvider extends MapBase {
         } else {
             if (act == MapBlockSelectAction.focusSelect) return;
             block.setStrokeColor("white");
-            block.setStrokeOpacity(0.5);
+            block.setStrokeOpacity(0.2);
             block.setStrokeWeight(1);
             block.setStrokeStyle("solid");
             this.blockGrid.selectedBlocks.splice(i, 1);
@@ -614,6 +618,7 @@ class BaiduMapProvider extends MapBase {
         if (!blocks) {
             this.menuItems.forEach(o => { if (o) o.disable() });
         } else {
+            setEnable(MapMenuItems.savePoints, blocks.length > 0);
             setEnable(MapMenuItems.reports, blocks.length > 0);
             setEnable(MapMenuItems.horizontal, blocks.length > 0);
             setEnable(MapMenuItems.vertical, blocks.length > 0);
@@ -675,17 +680,20 @@ class BaiduMapProvider extends MapBase {
             });
         }
     }
+    private getBlocksBounds(blocks: Block[]): Bound {
+        var minLat = blocks.min(o => o.context.center.lat).getBounds().getSouthWest().lat;
+        var maxLat = blocks.max(o => o.context.center.lat).getBounds().getNorthEast().lat;
+        var minLng = blocks.min(o => o.context.center.lng).getBounds().getSouthWest().lng;
+        var maxLng = blocks.max(o => o.context.center.lng).getBounds().getNorthEast().lng;
+        return new BMap.Bounds(
+            new BMap.Point(minLng, minLat),
+            new BMap.Point(maxLng, maxLat)
+        );
+    }
     private onShowSelectedBlockReport() {
         var blocks = this.blockGrid.selectedBlocks;
         if (blocks) {
-            var minLat = blocks.min(o => o.context.center.lat).getBounds().getSouthWest().lat;
-            var maxLat = blocks.max(o => o.context.center.lat).getBounds().getNorthEast().lat;
-            var minLng = blocks.min(o => o.context.center.lng).getBounds().getSouthWest().lng;
-            var maxLng = blocks.max(o => o.context.center.lng).getBounds().getNorthEast().lng;
-            var bound = new BMap.Bounds(
-                new BMap.Point(minLng, minLat),
-                new BMap.Point(maxLng, maxLat)
-            );
+            var bound = this.getBlocksBounds(blocks)
             var reports: PollutantReport[] = [];
             var time;
             blocks.forEach(block => {
@@ -766,6 +774,18 @@ class BaiduMapProvider extends MapBase {
         this.map.addOverlay(blockGrid.infoWindow.targetBorder);
     }
 
+    private onSaveSelectedBlocks() {
+        if (this.tempSelectedData && this.tempSelectedData.length) {
+            this.on(MapEvents.savePoints, { points: this.tempSelectedData });
+            delete this.tempSelectedData
+            return;
+        }
+        var blocks = this.blockGrid.selectedBlocks;
+        if (blocks && blocks.length) {
+            this.on(MapEvents.savePoints, { points: blocks.selectMany(o => o.context.getPoints(i => true).select(i => i.data)) })
+        }
+    }
+
     /**
      * 初始化地图。
      * @param container 地图容器id
@@ -800,6 +820,7 @@ class BaiduMapProvider extends MapBase {
                 createItem(MapMenuItems.selectAnalysisArea, o => this.analysisArea.enable()),
                 createItem(MapMenuItems.clearAnalysisArea, o => this.analysisArea.disable()),
                 false,
+                createItem(MapMenuItems.savePoints, o => this.onSaveSelectedBlocks()),
                 createItem(MapMenuItems.reports, o => this.onShowSelectedBlockReport()),
                 createItem(MapMenuItems.horizontal, o => this.onShowHorizontalAspect()),
                 createItem(MapMenuItems.vertical, o => this.onShowVerticalAspect()),
@@ -840,6 +861,57 @@ class BaiduMapProvider extends MapBase {
                 this.on(MapEvents.pointConvert, { Seq: seq, Points: o.points })
             }
         });
+    }
+    /**
+     * 显示临时报表。
+     * @param d
+     */
+    mapShowTempReport(d: any) {
+        var data: Array<any> = this.parseJson(d);
+        this.tempSelectedData = data;
+        if (data) {
+            var reports: PollutantReport[] = [];
+            var time: string;
+            var blocks: Block[] = [];
+            this.blockGrid.options.pollutants.forEach(pollutant => {
+                var rp = new PollutantReport();
+                rp.pollutant = pollutant;
+                rp.count = 0;
+                reports.push(rp);
+            });
+            data.forEach(d => {
+                if (!time) {
+                    time = d.time;
+                }
+                var lat = d.ActualLat;
+                var lng = d.ActualLng;
+                var block = this.blockGrid.blocks.first(o => o.getBounds().containsPoint(new BMap.Point(lng, lat)))
+                if (block && !blocks.first(o => o == block)) {
+                    blocks.push(block)
+                }
+                reports.forEach(rp => {
+                    var val = d[rp.pollutant.Name];
+                    if (rp.count == 0) {
+                        rp.avg = val;
+                        rp.sum = val;
+                        rp.min = val;
+                        rp.max = val;
+                    } else {
+                        rp.avg = (rp.avg * rp.count + val) / (rp.count + 1);
+                        rp.sum += val;
+                        rp.max = rp.max > val ? rp.max : val;
+                        rp.min = rp.min < val ? rp.min : val;
+                    }
+                    rp.count++;
+                });
+            });
+            this.onShowReport(this.getBlocksBounds(blocks), reports, time);
+        }
+    }
+    mapClearTempReport() {
+        delete this.tempSelectedData;
+        this.map.closeInfoWindow(this.blockGrid.infoWindow)
+        this.map.removeOverlay(this.blockGrid.infoWindow.targetBorder);
     }
     gridInit(opt: MapGridOptions) {
         opt = this.parseJson(opt);
@@ -925,13 +997,13 @@ class BaiduMapProvider extends MapBase {
             }
             o.pathMarker.setPath(o.pathPoint);
             this.map.addOverlay(o.pathMarker);
-            o.pathMarker.show();
         }, null);
     }
     uavHidePath(name: string) {
         this.uav(name, o => {
             if (o.pathMarker) {
-                o.pathMarker.hide();
+                this.map.removeOverlay(o.pathMarker);
+                delete o.pathMarker;
             }
         }, null);
     }

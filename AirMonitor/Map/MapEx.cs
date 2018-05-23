@@ -21,6 +21,21 @@ namespace AirMonitor.Map
         {
             map.Invoke("map.mapPointConvert", seq, JsonConvert.SerializeObject(points));
         }
+        /// <summary>
+        /// 显示地图报表。
+        /// </summary>
+        /// <param name="map"></param>
+        /// <param name="points"></param>
+        public static void MapShowTempReport(this IMapProvider map, MapPointData[] points)
+        {
+            map.Invoke("map.mapShowTempReport", JsonConvert.SerializeObject(points));
+        }
+
+        public static void MapClearTempReport(this IMapProvider map)
+        {
+            map.Invoke("map.mapClearTempReport");
+        }
+
 
         ///// <summary>
         ///// 地图边界变更事件。

@@ -24,6 +24,7 @@ namespace AirMonitor.ViewModels
         IHandle<EvtMapVerticalAspect>,
         IHandle<EvtMapSelectAnalysisArea>,
         IHandle<EvtMapClearAnalysisArea>,
+        IHandle<EvtMapSavePoints>,
         IHandle<EvtMapClearAspect>
     {
         private IMapProvider m_mapProvider;
@@ -227,6 +228,28 @@ namespace AirMonitor.ViewModels
             }
         }
 
+        public void Handle(EvtMapSavePoints message)
+        {
+            OnSaveSamples(message.points.Cast<EvtAirSample>().ToArray());
+        }
+
+        private void OnSaveSamples(EvtAirSample[] airSamples)
+        {
+            OnUIThread(() =>
+            {
+                try
+                {
+                    var file = m_saveManager.ShowSaveFileDialog();
+                    if (file == null) return;
+                    m_saveManager.Save(file, airSamples);
+                }
+                catch (Exception e)
+                {
+                    MessageBox.Show(m_res.GetText("T_SaveSamplesFailed") + e.Message);
+                }
+            });
+        }
+
         private void OnShowAnalysisPanel(MapBlock[] blocks, AnalysisMode mode)
         {
             if (!(PropertyPanel is SampleAnalysisViewModel view))
@@ -291,6 +314,7 @@ namespace AirMonitor.ViewModels
         public void RefreshMap()
         {
             MapLoad = false;
+            EnableAnalysis = false;
             m_mapProvider.LoadMap(MapContainer);
         }
 
@@ -341,17 +365,7 @@ namespace AirMonitor.ViewModels
         public void SaveSamples()
         {
             if (!Samples.Any()) return;
-            try
-            {
-                var file = m_saveManager.ShowSaveFileDialog();
-                if (file == null) return;
-                m_saveManager.Save(file, Samples);
-            }
-            catch (Exception e)
-            {
-                MessageBox.Show(m_res.GetText("T_SaveSamplesFailed") + e.Message);
-            }
-
+            OnSaveSamples(Samples.ToArray());
         }
 
         public void LoadSamples()

@@ -225,11 +225,13 @@ var MapEvents;
     MapEvents["clearAspect"] = "clearAspect";
     MapEvents["selectAnalysisArea"] = "selectAnalysisArea";
     MapEvents["clearAnalysisArea"] = "clearAnalysisArea";
+    MapEvents["savePoints"] = "savePoints";
 })(MapEvents || (MapEvents = {}));
 var MapMenuItems;
 (function (MapMenuItems) {
     MapMenuItems["compare"] = "\u5BF9\u6BD4\u6570\u636E";
     MapMenuItems["reports"] = "\u7EDF\u8BA1\u62A5\u8868";
+    MapMenuItems["savePoints"] = "\u4FDD\u5B58";
     MapMenuItems["horizontal"] = "\u6A2A\u5411\u5207\u9762";
     MapMenuItems["vertical"] = "\u7EB5\u5411\u5207\u9762";
     MapMenuItems["selectAnalysisArea"] = "\u9009\u62E9\u5206\u6790\u533A\u57DF";
@@ -439,7 +441,7 @@ var BaiduMapProvider = /** @class */ (function (_super) {
         ], {
             fillOpacity: opacity,
             strokeWeight: 1,
-            strokeOpacity: 0.5,
+            strokeOpacity: 0.2,
             strokeColor: "white"
         });
         var context = new BlockContext(new BMap.Point(lng, lat), opt.pollutants);
@@ -479,7 +481,7 @@ var BaiduMapProvider = /** @class */ (function (_super) {
             if (act == MapBlockSelectAction.focusSelect)
                 return;
             block.setStrokeColor("white");
-            block.setStrokeOpacity(0.5);
+            block.setStrokeOpacity(0.2);
             block.setStrokeWeight(1);
             block.setStrokeStyle("solid");
             this.blockGrid.selectedBlocks.splice(i, 1);
@@ -534,6 +536,7 @@ var BaiduMapProvider = /** @class */ (function (_super) {
                 o.disable(); });
         }
         else {
+            setEnable(MapMenuItems.savePoints, blocks.length > 0);
             setEnable(MapMenuItems.reports, blocks.length > 0);
             setEnable(MapMenuItems.horizontal, blocks.length > 0);
             setEnable(MapMenuItems.vertical, blocks.length > 0);
@@ -598,14 +601,17 @@ var BaiduMapProvider = /** @class */ (function (_super) {
             });
         }
     };
+    BaiduMapProvider.prototype.getBlocksBounds = function (blocks) {
+        var minLat = blocks.min(function (o) { return o.context.center.lat; }).getBounds().getSouthWest().lat;
+        var maxLat = blocks.max(function (o) { return o.context.center.lat; }).getBounds().getNorthEast().lat;
+        var minLng = blocks.min(function (o) { return o.context.center.lng; }).getBounds().getSouthWest().lng;
+        var maxLng = blocks.max(function (o) { return o.context.center.lng; }).getBounds().getNorthEast().lng;
+        return new BMap.Bounds(new BMap.Point(minLng, minLat), new BMap.Point(maxLng, maxLat));
+    };
     BaiduMapProvider.prototype.onShowSelectedBlockReport = function () {
         var blocks = this.blockGrid.selectedBlocks;
         if (blocks) {
-            var minLat = blocks.min(function (o) { return o.context.center.lat; }).getBounds().getSouthWest().lat;
-            var maxLat = blocks.max(function (o) { return o.context.center.lat; }).getBounds().getNorthEast().lat;
-            var minLng = blocks.min(function (o) { return o.context.center.lng; }).getBounds().getSouthWest().lng;
-            var maxLng = blocks.max(function (o) { return o.context.center.lng; }).getBounds().getNorthEast().lng;
-            var bound = new BMap.Bounds(new BMap.Point(minLng, minLat), new BMap.Point(maxLng, maxLat));
+            var bound = this.getBlocksBounds(blocks);
             var reports = [];
             var time;
             blocks.forEach(function (block) {
@@ -684,6 +690,17 @@ var BaiduMapProvider = /** @class */ (function (_super) {
         this.map.openInfoWindow(blockGrid.infoWindow, bound.getNorthEast());
         this.map.addOverlay(blockGrid.infoWindow.targetBorder);
     };
+    BaiduMapProvider.prototype.onSaveSelectedBlocks = function () {
+        if (this.tempSelectedData && this.tempSelectedData.length) {
+            this.on(MapEvents.savePoints, { points: this.tempSelectedData });
+            delete this.tempSelectedData;
+            return;
+        }
+        var blocks = this.blockGrid.selectedBlocks;
+        if (blocks && blocks.length) {
+            this.on(MapEvents.savePoints, { points: blocks.selectMany(function (o) { return o.context.getPoints(function (i) { return true; }).select(function (i) { return i.data; }); }) });
+        }
+    };
     /**
      * 初始化地图。
      * @param container 地图容器id
@@ -719,6 +736,7 @@ var BaiduMapProvider = /** @class */ (function (_super) {
                 createItem(MapMenuItems.selectAnalysisArea, function (o) { return _this.analysisArea.enable(); }),
                 createItem(MapMenuItems.clearAnalysisArea, function (o) { return _this.analysisArea.disable(); }),
                 false,
+                createItem(MapMenuItems.savePoints, function (o) { return _this.onSaveSelectedBlocks(); }),
                 createItem(MapMenuItems.reports, function (o) { return _this.onShowSelectedBlockReport(); }),
                 createItem(MapMenuItems.horizontal, function (o) { return _this.onShowHorizontalAspect(); }),
                 createItem(MapMenuItems.vertical, function (o) { return _this.onShowVerticalAspect(); }),
@@ -762,6 +780,59 @@ var BaiduMapProvider = /** @class */ (function (_super) {
                 _this.on(MapEvents.pointConvert, { Seq: seq, Points: o.points });
             }
         });
+    };
+    /**
+     * 显示临时报表。
+     * @param d
+     */
+    BaiduMapProvider.prototype.mapShowTempReport = function (d) {
+        var _this = this;
+        var data = this.parseJson(d);
+        this.tempSelectedData = data;
+        if (data) {
+            var reports = [];
+            var time;
+            var blocks = [];
+            this.blockGrid.options.pollutants.forEach(function (pollutant) {
+                var rp = new PollutantReport();
+                rp.pollutant = pollutant;
+                rp.count = 0;
+                reports.push(rp);
+            });
+            data.forEach(function (d) {
+                if (!time) {
+                    time = d.time;
+                }
+                var lat = d.ActualLat;
+                var lng = d.ActualLng;
+                var block = _this.blockGrid.blocks.first(function (o) { return o.getBounds().containsPoint(new BMap.Point(lng, lat)); });
+                if (block && !blocks.first(function (o) { return o == block; })) {
+                    blocks.push(block);
+                }
+                reports.forEach(function (rp) {
+                    var val = d[rp.pollutant.Name];
+                    if (rp.count == 0) {
+                        rp.avg = val;
+                        rp.sum = val;
+                        rp.min = val;
+                        rp.max = val;
+                    }
+                    else {
+                        rp.avg = (rp.avg * rp.count + val) / (rp.count + 1);
+                        rp.sum += val;
+                        rp.max = rp.max > val ? rp.max : val;
+                        rp.min = rp.min < val ? rp.min : val;
+                    }
+                    rp.count++;
+                });
+            });
+            this.onShowReport(this.getBlocksBounds(blocks), reports, time);
+        }
+    };
+    BaiduMapProvider.prototype.mapClearTempReport = function () {
+        delete this.tempSelectedData;
+        this.map.closeInfoWindow(this.blockGrid.infoWindow);
+        this.map.removeOverlay(this.blockGrid.infoWindow.targetBorder);
     };
     BaiduMapProvider.prototype.gridInit = function (opt) {
         opt = this.parseJson(opt);
@@ -863,13 +934,14 @@ var BaiduMapProvider = /** @class */ (function (_super) {
             }
             o.pathMarker.setPath(o.pathPoint);
             _this.map.addOverlay(o.pathMarker);
-            o.pathMarker.show();
         }, null);
     };
     BaiduMapProvider.prototype.uavHidePath = function (name) {
+        var _this = this;
         this.uav(name, function (o) {
             if (o.pathMarker) {
-                o.pathMarker.hide();
+                _this.map.removeOverlay(o.pathMarker);
+                delete o.pathMarker;
             }
         }, null);
     };

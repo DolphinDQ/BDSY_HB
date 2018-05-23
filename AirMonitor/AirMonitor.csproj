@@ -106,6 +106,7 @@
     <Compile Include="Chart\LinerOptions.cs" />
     <Compile Include="Chart\ScatterData.cs" />
     <Compile Include="Chart\ScatterOptions.cs" />
+    <Compile Include="Chart\ScatterSelectManipulator.cs" />
     <Compile Include="Config\AirPollutant.cs" />
     <Compile Include="Config\AirStandardSetting.cs" />
     <Compile Include="Config\MqttSetting.cs" />
@@ -120,10 +121,12 @@
     <Compile Include="Core\SaveManager.cs" />
     <Compile Include="EventArgs\EvtAirSample.cs" />
     <Compile Include="Data\MqttDataManager.cs" />
+    <Compile Include="EventArgs\EvtChartScatterSelectChanged.cs" />
     <Compile Include="EventArgs\EvtMapClearAnalysisArea.cs" />
     <Compile Include="EventArgs\EvtMapClearAspect.cs" />
     <Compile Include="EventArgs\EvtMapHorizontalAspect.cs" />
     <Compile Include="EventArgs\EvtMapPointConverted.cs" />
+    <Compile Include="EventArgs\EvtMapSavePoints.cs" />
     <Compile Include="EventArgs\EvtMapSelectAnalysisArea.cs" />
     <Compile Include="EventArgs\EvtMapVerticalAspect.cs" />
     <Compile Include="EventArgs\EvtSampling.cs" />
@@ -250,6 +253,7 @@
     <Content Include="Map\marker.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Resource Include="Resources\Images\logo.png" />
     <Content Include="useie.exe">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
@@ -258,6 +262,7 @@
     <TypeScriptCompile Include="Map\map.d.ts" />
     <TypeScriptCompile Include="Map\map.ts" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\packages\Fody.3.0.3\build\Fody.targets" Condition="Exists('..\packages\Fody.3.0.3\build\Fody.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

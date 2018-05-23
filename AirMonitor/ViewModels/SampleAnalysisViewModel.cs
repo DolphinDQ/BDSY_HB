@@ -1,4 +1,5 @@
 ﻿using AirMonitor.Chart;
+using AirMonitor.EventArgs;
 using AirMonitor.Interfaces;
 using AirMonitor.Map;
 using Caliburn.Micro;
@@ -11,16 +12,24 @@ using System.Threading.Tasks;
 
 namespace AirMonitor.ViewModels
 {
-    public class SampleAnalysisViewModel : Screen
+    public class SampleAnalysisViewModel : Screen, IHandle<EvtChartScatterSelectChanged>
     {
         private IChartManager m_chartManager;
+        private IEventAggregator m_eventAggregator;
 
-
-
-        public SampleAnalysisViewModel(IChartManager chartManager)
+        public SampleAnalysisViewModel(IChartManager chartManager, IEventAggregator eventAggregator)
         {
             m_chartManager = chartManager;
+            m_eventAggregator = eventAggregator;
+            m_eventAggregator.Subscribe(this);
         }
+
+        public override void TryClose(bool? dialogResult = null)
+        {
+            base.TryClose(dialogResult);
+            m_eventAggregator.Unsubscribe(this);
+        }
+
 
         public IMapView MapView { get; set; }
 
@@ -41,7 +50,6 @@ namespace AirMonitor.ViewModels
         public double CorrectHeight { get; set; }
 
         public object PlotModel { get; set; }
-
 
         public void OnMapBlocksChanged()
         {
@@ -83,6 +91,21 @@ namespace AirMonitor.ViewModels
                         MaxColor = MapView.MapGridOptions.colorEnd,
                         MinColor = MapView.MapGridOptions.colorBegin,
                     });
+            }
+        }
+
+        public void Handle(EvtChartScatterSelectChanged message)
+        {
+            if (message.Scatter == PlotModel)
+            {
+                if (message.Data.Any())
+                {
+                    MapView.MapProvider.MapShowTempReport(message.Data.Select(o => o.Tag as MapPointData).ToArray());
+                }
+                else
+                {
+                    MapView.MapProvider.MapClearTempReport();
+                }
             }
         }
     }

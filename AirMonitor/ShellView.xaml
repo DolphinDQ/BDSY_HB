@@ -4,8 +4,10 @@
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         MinWidth="1000"  MinHeight="600"
-                     Title="{StaticResource T_AppName}"
-        >
+        ShowIconOnTitleBar="True"
+        Icon="{StaticResource App_Logo}"
+        GlowBrush="{DynamicResource AccentColorBrush}"
+        Title="{StaticResource T_AppName}">
     <Grid>
         <DockPanel>
             <control:TransitioningContentControl cal:View.Model="{Binding Sider}" Width="300" DockPanel.Dock="Right"/>

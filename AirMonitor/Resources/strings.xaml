@@ -2,7 +2,7 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:sys ="clr-namespace:System;assembly=mscorlib"
                     xmlns:local="clr-namespace:AirMonitor.Resources">
-    <sys:String x:Key="T_AppName">环境检测DEMO</sys:String>
+    <sys:String x:Key="T_AppName">数研航遥-环境检测客户端</sys:String>
     <sys:String x:Key="T_UavStatus">无人机状态</sys:String>
     <sys:String x:Key="T_Battery">电量</sys:String>
     <sys:String x:Key="T_CallbackProgress">回传进度</sys:String>
