@@ -43,7 +43,7 @@
                     <Label Content="{Binding Samples.Count}"></Label>
                     <Label Content="{StaticResource T_InvalidSamples }"></Label>
                     <Label Content="{Binding InvalidSamples.Count}"></Label>
-                    <Button Name="ClearSamples" Content="{StaticResource T_ClearSamples}"></Button>
+                    <Button Name="ClearSamples" Content="{StaticResource T_ClearMap}"></Button>
                     <Button Name="SaveSamples" Content="{StaticResource T_SaveSamples}"></Button>
                     <Button Name="LoadSamples" Content="{StaticResource T_LoadSamples}"></Button>
                     <ToggleButton Visibility="Collapsed" Content="{StaticResource T_AnalysisSamples}" IsChecked="{Binding EnableAnalysis}"></ToggleButton>
@@ -132,7 +132,8 @@
             </Grid>
         </Border>
         <DockPanel>
-            <control:TransitioningContentControl DockPanel.Dock="Bottom" Visibility="{Binding EnableAnalysis,Converter={StaticResource IsVisible}}" cal:View.Model="{Binding PropertyPanel}"></control:TransitioningContentControl>
+            <control:TransitioningContentControl DockPanel.Dock="Bottom" Visibility="{Binding EnableAnalysis,Converter={StaticResource IsVisible}}" cal:View.Model="{Binding PropertyPanel}"/>
+            <control:TransitioningContentControl DockPanel.Dock="Right" Visibility="{Binding EnableAnalysis,Converter={StaticResource IsVisible}}" cal:View.Model="{Binding ComparePanel}"/>
             <Border>
                 <WebBrowser  Name="Map" Tag="{Binding MapContainer,Mode=OneWayToSource}"/>
             </Border>

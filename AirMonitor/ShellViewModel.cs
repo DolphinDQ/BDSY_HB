@@ -3,6 +3,7 @@ using AirMonitor.EventArgs;
 using AirMonitor.Interfaces;
 using AirMonitor.ViewModels;
 using Caliburn.Micro;
+using System.Windows;
 
 namespace AirMonitor
 {
@@ -74,6 +75,14 @@ namespace AirMonitor
             Setting = m_factory.Create<SimulatorViewModel>();
             SettingTitle = m_res.GetText("T_Simulation");
             EnableSetting = true;
+        }
+
+        public void ClearAllSample()
+        {
+            if (MessageBox.Show(m_res.GetText("T_ClearSamplesWarning"), "", MessageBoxButton.OKCancel) == MessageBoxResult.OK)
+            {
+                m_eventAggregator.PublishOnBackgroundThread(new EvtSampling() { Status = SamplingStatus.ClearAll });
+            }
         }
     }
 }

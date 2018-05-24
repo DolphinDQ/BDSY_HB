@@ -158,6 +158,7 @@
     <Compile Include="ViewModels\DynamicAnalysisViewModel.cs" />
     <Compile Include="ViewModels\DataDisplayViewModel.cs" />
     <Compile Include="Interfaces\IMapView.cs" />
+    <Compile Include="ViewModels\Map3DViewModel.cs" />
     <Compile Include="ViewModels\MapViewModel.cs" />
     <Compile Include="ViewModels\PollutantSettingViewModel.cs" />
     <Compile Include="ViewModels\SampleAnalysisViewModel.cs" />
@@ -168,6 +169,9 @@
     </Compile>
     <Compile Include="Views\DataDisplayView.xaml.cs">
       <DependentUpon>DataDisplayView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Map3DView.xaml.cs">
+      <DependentUpon>Map3DView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\MapView.xaml.cs">
       <DependentUpon>MapView.xaml</DependentUpon>
@@ -198,6 +202,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\DataDisplayView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\Map3DView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

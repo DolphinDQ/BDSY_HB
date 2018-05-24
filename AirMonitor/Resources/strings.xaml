@@ -43,8 +43,10 @@
     <sys:String x:Key="T_SamplingStatus">采样状态</sys:String>
     <sys:String x:Key="T_ValidSamples">有效样本</sys:String>
     <sys:String x:Key="T_InvalidSamples">无效样本</sys:String>
-    <sys:String x:Key="T_ClearSamples">清空地图</sys:String>
-    <sys:String x:Key="T_ClearSamplesWarning">确认要清空当前地图采样数据？</sys:String>
+    <sys:String x:Key="T_ClearMap">清空地图</sys:String>
+    <sys:String x:Key="T_ClearMapWarning">确认要清空当前地图采样数据？</sys:String>
+    <sys:String x:Key="T_ClearSamples">清空数据</sys:String>
+    <sys:String x:Key="T_ClearSamplesWarning">确认要清空当前全部采样数据？</sys:String>
     <sys:String x:Key="T_SaveSamples">保存样本</sys:String>
     <sys:String x:Key="T_SaveSamplesFailed">保存样本失败。</sys:String>
     <sys:String x:Key="T_LoadSamples">加载样本</sys:String>
@@ -68,6 +70,7 @@
     <sys:String x:Key="T_Pause">暂停</sys:String>
     <sys:String x:Key="T_Continue">继续</sys:String>
     <sys:String x:Key="T_Stop">停止</sys:String>
+    <sys:String x:Key="T_Replay">重播</sys:String>
     <sys:String x:Key="T_StopAction">停止动作</sys:String>
     <sys:String x:Key="T_StopConfirm">停止时显示提示框</sys:String>
     <sys:String x:Key="T_SimulationSessionCompleted">模拟飞行任务完成！</sys:String>

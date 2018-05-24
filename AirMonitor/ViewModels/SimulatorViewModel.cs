@@ -37,10 +37,19 @@ namespace AirMonitor.ViewModels
 
         public void Continue() => Status = SimulatorStatus.Running;
 
+        public async void Relay()
+        {
+            if (Path != null)
+            {
+                Status = SimulatorStatus.Stop;
+                await Task.Delay(1000);
+                await OnRun();
+            }
+        }
+
         public void Stop()
         {
             Status = SimulatorStatus.Stop;
-
         }
 
         public void OnStatusChanged()
@@ -63,6 +72,7 @@ namespace AirMonitor.ViewModels
                     }
                     break;
                 case SimulatorStatus.Running:
+                    m_eventAggregator.BeginPublishOnUIThread(new EvtSampling() { Status = SamplingStatus.ClearAll });
                     m_eventAggregator.BeginPublishOnUIThread(new EvtSampling() { Status = SamplingStatus.StartSim });
                     m_eventAggregator.BeginPublishOnUIThread(new EvtSampling() { Status = SamplingStatus.Start });
                     break;
@@ -81,44 +91,50 @@ namespace AirMonitor.ViewModels
                 if (file != null && File.Exists(file))
                 {
                     Path = file;
-                    var data = m_saveManager.Load<EvtAirSample[]>(file).OrderBy(o => o.RecordTime).ToArray();
-                    Stop();
-                    try
-                    {
-                        var source = new CancellationTokenSource();
-                        m_source = source;
-                        Status = SimulatorStatus.Running;
-                        DataCount = data.Length;
-                        for (int i = 0; i < DataCount; i++)
-                        {
-                            CurrentIndex = i;
-                            var item = data[CurrentIndex];
-                            if (m_source != source)
-                            {
-                                break;
-                            }
-                            m_eventAggregator.PublishOnBackgroundThread(item);
-                            do
-                            {
-                                await Task.Delay(Interval < 100 ? 100 : Interval, source.Token);
-                            } while (Status == SimulatorStatus.Pause);
-                        }
-                        if (source == m_source)
-                        {
-                            Stop();
-                        }
-                    }
-                    catch (Exception e)
-                    {
-                        this.Warn("simulation cancelled :{0}", e);
-                        this.Error(e);
-                    }
+                    await OnRun();
                 }
             }
             catch (Exception e)
             {
                 MessageBox.Show("打开存档失败:" + e.Message);
             }
+        }
+
+        public async Task OnRun()
+        {
+            var data = m_saveManager.Load<EvtAirSample[]>(Path).OrderBy(o => o.RecordTime).ToArray();
+            Stop();
+            try
+            {
+                var source = new CancellationTokenSource();
+                m_source = source;
+                Status = SimulatorStatus.Running;
+                DataCount = data.Length;
+                for (int i = 0; i < DataCount; i++)
+                {
+                    CurrentIndex = i;
+                    var item = data[CurrentIndex];
+                    if (m_source != source)
+                    {
+                        break;
+                    }
+                    m_eventAggregator.PublishOnBackgroundThread(item);
+                    do
+                    {
+                        await Task.Delay(Interval < 100 ? 100 : Interval, source.Token);
+                    } while (Status == SimulatorStatus.Pause);
+                }
+                if (source == m_source)
+                {
+                    Stop();
+                }
+            }
+            catch (Exception e)
+            {
+                this.Warn("simulation cancelled :{0}", e);
+                this.Error(e);
+            }
+
         }
     }
 }

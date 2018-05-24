@@ -76,6 +76,10 @@ namespace AirMonitor.ViewModels
         /// 属性框。
         /// </summary>
         public object PropertyPanel { get; set; }
+        /// <summary>
+        /// 比较框。
+        /// </summary>
+        public object ComparePanel { get; set; }
 
         public MapViewModel(
             IEventAggregator eventAggregator,
@@ -161,8 +165,8 @@ namespace AirMonitor.ViewModels
                 case SamplingStatus.Start:
                     Sampling = true;
                     break;
-                case SamplingStatus.Clear:
-                    //ClearSamples(true);
+                case SamplingStatus.ClearAll:
+                    ClearSamples(true);
                     break;
                 default:
                     break;
@@ -352,7 +356,7 @@ namespace AirMonitor.ViewModels
 
         public void ClearSamples(bool focus = false)
         {
-            if (Samples.Any() && (focus || MessageBox.Show(m_res.GetText("T_ClearSamplesWarning"), "", MessageBoxButton.YesNo) == MessageBoxResult.Yes))
+            if (Samples.Any() && (focus || MessageBox.Show(m_res.GetText("T_ClearMapWarning"), "", MessageBoxButton.YesNo) == MessageBoxResult.Yes))
             {
                 Samples.Clear();
                 NotifyOfPropertyChange(nameof(Samples));

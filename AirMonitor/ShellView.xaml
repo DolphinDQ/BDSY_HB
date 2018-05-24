@@ -6,13 +6,14 @@
         MinWidth="1366"  MinHeight="768"
                      Width="1366" Height="768"
         ShowIconOnTitleBar="False"
-        Icon="{StaticResource App_Logo}"
+        
         GlowBrush="{DynamicResource AccentColorBrush}"
         Title="{StaticResource T_AppName}">
     <control:MetroWindow.RightWindowCommands>
         <control:WindowCommands>
-            <Button Name="OpenSetting" cal:Message.Attach="OpenSetting" Content="{StaticResource T_Setting}"></Button>
-            <Button Name="OpenSimulator" cal:Message.Attach="OpenSimulator"  Content="{StaticResource T_Simulation}"></Button>
+            <Button cal:Message.Attach="ClearAllSample"  Content="{StaticResource T_ClearSamples}"></Button>
+            <Button cal:Message.Attach="OpenSetting" Content="{StaticResource T_Setting}"></Button>
+            <Button cal:Message.Attach="OpenSimulator"  Content="{StaticResource T_Simulation}"></Button>
         </control:WindowCommands>
     </control:MetroWindow.RightWindowCommands>
     <Grid>

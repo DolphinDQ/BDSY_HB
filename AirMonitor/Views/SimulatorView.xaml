@@ -32,7 +32,7 @@
         <DockPanel>
             <Label Style="{StaticResource  LblSettingTitle}" Content="{StaticResource T_OpenSimFile}"></Label>
             <Button Name="Start" Style="{DynamicResource BtnOpt}" Content="{StaticResource T_LoadSamples}"></Button>
-            <TextBox IsEnabled="False" Text="{Binding Path}"></TextBox>
+            <TextBox IsReadOnly="True" Text="{Binding Path}"></TextBox>
         </DockPanel>
 
         <DockPanel>
@@ -49,15 +49,16 @@
             <Label Style="{StaticResource  LblSettingTitle}" Content="{StaticResource T_StopAction}"></Label>
             <CheckBox IsChecked="{Binding IsAlert}" Content="{StaticResource T_StopConfirm}"></CheckBox>
         </DockPanel>
-        <UniformGrid Columns="3">
+        <UniformGrid Columns="4">
             <UniformGrid.Resources>
                 <Style TargetType="Button" BasedOn="{StaticResource MetroButton}">
                     <Setter Property="Margin" Value="3"/>
                 </Style>
             </UniformGrid.Resources>
-            <Button Name="Pause" Content="{StaticResource T_Pause}" ></Button>
-            <Button Name="Continue" Content="{StaticResource T_Continue}"></Button>
-            <Button Name="Stop" Content="{StaticResource T_Stop}"></Button>
+            <Button Name="Pause" Content="{StaticResource T_Pause}" />
+            <Button Name="Continue" Content="{StaticResource T_Continue}"/>
+            <Button Name="Stop" Content="{StaticResource T_Stop}"/>
+            <Button Name="Replay" Content="{StaticResource T_Replay}"/>
         </UniformGrid>
     </StackPanel>
 </UserControl>

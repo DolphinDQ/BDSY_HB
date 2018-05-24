@@ -177,9 +177,9 @@ namespace AirMonitor.ViewModels
             }
         }
 
-        public void ClearData()
+        public void ClearData(bool focus = false)
         {
-            if (MessageBox.Show(m_res.GetText("T_ClearReportWarning"), "", MessageBoxButton.YesNo) == MessageBoxResult.Yes)
+            if (focus || MessageBox.Show(m_res.GetText("T_ClearReportWarning"), "", MessageBoxButton.YesNo) == MessageBoxResult.Yes)
             {
                 ClearChart(Temperature);
                 ClearChart(Humidity);
@@ -191,7 +191,6 @@ namespace AirMonitor.ViewModels
                 ClearChart(PM2_5);
                 ClearChart(PM10);
                 ClearChart(RelativeHeight);
-                m_eventAggregator.PublishOnBackgroundThread(new EvtSampling() { Status = SamplingStatus.Clear });
             }
         }
 
@@ -229,6 +228,9 @@ namespace AirMonitor.ViewModels
                     break;
                 case SamplingStatus.Start:
                     EnableSampling = true;
+                    break;
+                case SamplingStatus.ClearAll:
+                    ClearData(true);
                     break;
             }
         }
