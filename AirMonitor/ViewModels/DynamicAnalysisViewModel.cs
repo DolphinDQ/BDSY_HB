@@ -71,7 +71,7 @@ namespace AirMonitor.ViewModels
 
         public void Handle(EvtAirSample message)
         {
-            if (Bounds != null)
+            if (Bounds != null && MapView.Sampling)
             {
                 OnUIThread(() =>
                 {
