@@ -41,8 +41,6 @@ namespace AirMonitor.ViewModels
         {
             if (Path != null)
             {
-                Status = SimulatorStatus.Stop;
-                await Task.Delay(1000);
                 await OnRun();
             }
         }
