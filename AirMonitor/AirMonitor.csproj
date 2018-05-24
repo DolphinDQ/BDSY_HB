@@ -271,6 +271,7 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Resource Include="Resources\Images\logo.png" />
+    <Resource Include="Resources\Images\timg.jpg" />
     <Content Include="useie.exe">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>

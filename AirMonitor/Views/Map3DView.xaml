@@ -9,16 +9,29 @@
     <Grid>
         <Viewport3D>
             <Viewport3D.Camera>
-                <OrthographicCamera></OrthographicCamera>
+                <PerspectiveCamera Position="15,30,30" LookDirection="-20,-90,-90"/>
             </Viewport3D.Camera>
             <ModelVisual3D>
                 <ModelVisual3D.Content>
-                    <AmbientLight></AmbientLight>
+                    <AmbientLight />
                 </ModelVisual3D.Content>
                 <ModelVisual3D>
-                    <!--<ModelVisual3D.Content>
-                        
-                    </ModelVisual3D.Content>-->
+                    <ModelVisual3D.Content>
+                        <GeometryModel3D>
+                            <GeometryModel3D.Geometry>
+                                <MeshGeometry3D Positions="0 0 0,16 0 0,16 0 9,0 0 9" TriangleIndices="0 3 2,0 2 1" TextureCoordinates="0 1,1 1,1 0,0 0"/>
+                            </GeometryModel3D.Geometry>
+                            <GeometryModel3D.Material >
+                                <MaterialGroup >
+                                    <DiffuseMaterial>
+                                        <DiffuseMaterial.Brush>
+                                            <ImageBrush ImageSource="/AirHunter;component/Resources/Images/timg.jpg"/>
+                                        </DiffuseMaterial.Brush>
+                                    </DiffuseMaterial>
+                                </MaterialGroup >
+                            </GeometryModel3D.Material >
+                        </GeometryModel3D>
+                    </ModelVisual3D.Content>
                 </ModelVisual3D>
             </ModelVisual3D>
         </Viewport3D>
