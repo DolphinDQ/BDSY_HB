@@ -54,8 +54,8 @@
             </ModelVisual3D>
         </Viewport3D >
         <Button Height="39.998" Click="Button_Click" VerticalAlignment="Bottom" HorizontalAlignment="Right" Width="125.179"/>
-
-        <WebBrowser  Name="Broswer" Source="https://www.baidu.com"  Height="169.464" VerticalAlignment="Bottom" HorizontalAlignment="Left" Width="239.332" ></WebBrowser>
+        <CheckBox Margin="407,515,323,0" Checked="CheckBox_Checked"></CheckBox>
+        <WebBrowser  Name="Broswer" Source="https://map.baidu.com"  Height="169.464" VerticalAlignment="Bottom" HorizontalAlignment="Left" Width="239.332" ></WebBrowser>
         <!--<Border Background="Yellow" Height="169.464" VerticalAlignment="Bottom" HorizontalAlignment="Left" Width="239.332"  >
             <Button Name="Broswer" Margin="0,0,114.153,97.448" Content="12345"/>
         </Border>-->

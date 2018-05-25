@@ -23,6 +23,10 @@ namespace AirMonitor.Views
         public Map3DView()
         {
             InitializeComponent();
+            //var _trackball = new Trackball();
+            //_trackball.Attach(this);
+            //_trackball.Servants.Add(myViewport3D);
+            //_trackball.Enabled = true;
         }
     }
 }

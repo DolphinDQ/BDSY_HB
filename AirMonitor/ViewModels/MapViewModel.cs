@@ -60,10 +60,7 @@ namespace AirMonitor.ViewModels
         /// 无人机跟踪
         /// </summary>
         public bool IsUavFocus { get; set; } = true;
-        /// <summary>
-        /// 开始数据分析。
-        /// </summary>
-        public bool EnableAnalysis { get; set; } = false;
+
         /// <summary>
         /// 污染物名称。
         /// </summary>
@@ -76,6 +73,20 @@ namespace AirMonitor.ViewModels
         /// 属性框。
         /// </summary>
         public object PropertyPanel { get; set; }
+
+        private void SetPropertyPanel(object obj)
+        {
+            if (!(obj is Screen) && obj != null)
+            {
+                return;
+            }
+            if (PropertyPanel is Screen s)
+            {
+                s.TryClose();
+            }
+            PropertyPanel = obj;
+        }
+
         /// <summary>
         /// 比较框。
         /// </summary>
@@ -208,7 +219,7 @@ namespace AirMonitor.ViewModels
         {
             if (PropertyPanel is SampleAnalysisViewModel)
             {
-                EnableAnalysis = false;
+                SetPropertyPanel(null);
             }
         }
 
@@ -220,15 +231,14 @@ namespace AirMonitor.ViewModels
             }
             view.MapView = this;
             view.Bounds = message;
-            PropertyPanel = view;
-            EnableAnalysis = true;
+            SetPropertyPanel(view);
         }
 
         public void Handle(EvtMapClearAnalysisArea message)
         {
             if (PropertyPanel is DynamicAnalysisViewModel)
             {
-                EnableAnalysis = false;
+                SetPropertyPanel(null);
             }
         }
 
@@ -263,17 +273,7 @@ namespace AirMonitor.ViewModels
             view.MapView = this;
             view.Mode = mode;
             view.MapBlocks = blocks;
-            PropertyPanel = view;
-            EnableAnalysis = true;
-        }
-
-        public void OnEnableAnalysisChanged()
-        {
-            if (!EnableAnalysis && PropertyPanel is Screen s)
-            {
-                s.TryClose();
-                PropertyPanel = null;
-            }
+            SetPropertyPanel(view);
         }
 
         private void OnUpdateUavPosition(EvtAirSample sample)
@@ -318,32 +318,14 @@ namespace AirMonitor.ViewModels
         public void RefreshMap()
         {
             MapLoad = false;
-            EnableAnalysis = false;
+            SetPropertyPanel(null);
             m_mapProvider.LoadMap(MapContainer);
         }
 
         public void Test()
         {
-            //Task.Factory.StartNew(() =>
-            //{
-            //    var random = new Random();
-            //    var lat = 23.016791666666666667;
-            //    var lng = 113.077023333333333333;
-            //    do
-            //    {
-            //        OnUIThread(() =>
-            //        {
-            //            Handle(new EvtAirSample()
-            //            {
-            //                co = 60 + random.NextDouble() * 40,
-            //                lat = lat -= 0.0001,
-            //                lon = lng -= 0.0001
-            //            });
-            //        });
-            //        Task.Delay(1000).Wait();
-            //    } while (true);
-            //});
-            //m_mapProvider.Invoke("mapPointConvert", 1, JsonConvert.SerializeObject(new[] { new MapPoint() { lat = 23.016791666666666667, lng = 113.077023333333333333 } }));
+            var view = m_factory.Create<Map3DViewModel>();
+            ComparePanel = view;
         }
 
         public void UavLocation()
@@ -432,6 +414,7 @@ namespace AirMonitor.ViewModels
             m_mapProvider.GridRefresh();
             m_mapProvider.UavPath(GetUavName(null), ShowUavPath);
         }
+
 
     }
 }

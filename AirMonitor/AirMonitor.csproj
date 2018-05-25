@@ -79,6 +79,7 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Windows.Interactivity, Version=4.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Caliburn.Micro.3.2.0\lib\net45\System.Windows.Interactivity.dll</HintPath>
@@ -110,6 +111,13 @@
     <Compile Include="Config\AirPollutant.cs" />
     <Compile Include="Config\AirStandardSetting.cs" />
     <Compile Include="Config\MqttSetting.cs" />
+    <Compile Include="Controls\Map3D.xaml.cs">
+      <DependentUpon>Map3D.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\Map3DBound.cs" />
+    <Compile Include="Controls\Trackball3D.cs" />
+    <Compile Include="Controls\Trackball3DContext.cs" />
+    <Compile Include="Converter\AnyVisiableConverter.cs" />
     <Compile Include="Converter\IsNullConverter.cs" />
     <Compile Include="Converter\IsVisibleConverter.cs" />
     <Compile Include="Converter\WarningConverter.cs" />
@@ -119,6 +127,7 @@
     <Compile Include="Core\ResourcesManager.cs" />
     <Compile Include="Converter\RoundConverter.cs" />
     <Compile Include="Core\SaveManager.cs" />
+    <Compile Include="Core\Utils.cs" />
     <Compile Include="EventArgs\EvtAirSample.cs" />
     <Compile Include="Data\MqttDataManager.cs" />
     <Compile Include="EventArgs\EvtChartScatterSelectChanged.cs" />
@@ -185,6 +194,11 @@
     <Compile Include="Views\SimulatorView.xaml.cs">
       <DependentUpon>SimulatorView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\trackball.cs" />
+    <Page Include="Controls\Map3D.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Resources\NamedStyles.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -271,7 +285,7 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Resource Include="Resources\Images\logo.png" />
-    <Resource Include="Resources\Images\timg.jpg" />
+    <Resource Include="Resources\Images\map.png" />
     <Content Include="useie.exe">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>

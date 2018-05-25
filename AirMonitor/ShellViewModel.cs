@@ -13,12 +13,14 @@ namespace AirMonitor
         private IResourceManager m_res;
         private IEventAggregator m_eventAggregator;
 
-        public ShellViewModel(IFactory factory, IEventAggregator eventAggregator, IResourceManager res)
+        public ShellViewModel(IFactory factory, IDataManager dataManager, IEventAggregator eventAggregator, IResourceManager res)
         {
             m_factory = factory;
             m_res = res;
             m_eventAggregator = eventAggregator;
             eventAggregator.Subscribe(this);
+            LogManager.GetLog = o => factory.Create<ILog>();
+            dataManager.Init();
         }
 
         public object Sider { get; set; }

@@ -68,5 +68,10 @@ namespace Viewport3DTest
         {
             Img2.Source = BrowserSnapShot(Broswer);
         }
+
+        private void CheckBox_Checked(object sender, RoutedEventArgs e)
+        {
+            Broswer.Visibility = Visibility.Hidden;
+        }
     }
 }

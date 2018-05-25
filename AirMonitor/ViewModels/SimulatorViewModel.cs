@@ -37,7 +37,7 @@ namespace AirMonitor.ViewModels
 
         public void Continue() => Status = SimulatorStatus.Running;
 
-        public async void Relay()
+        public async void Replay()
         {
             if (Path != null)
             {

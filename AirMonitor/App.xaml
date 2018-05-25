@@ -13,6 +13,7 @@
                     <converter:IsNullConverter x:Key="IsNull"/>
                     <converter:WarningConverter x:Key="Warning"/>
                     <converter:IsVisibleConverter x:Key="IsVisible"/>
+                    <converter:AnyVisiableConverter x:Key="AnyVisiable"/>
                 </ResourceDictionary>
                 <!-- MahApps.Metro resource dictionaries. Make sure that all file names are Case Sensitive! -->
                 <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Controls.xaml" />

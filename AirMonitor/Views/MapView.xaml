@@ -87,7 +87,7 @@
                 <ToggleButton IsChecked="{Binding ShowUavPath}" Content="{StaticResource T_UavPath}"></ToggleButton>
                 <Button Name="UavLocation" Content="{StaticResource T_UavLocation}"></Button>
                 <Button Name="RefreshMap" Content="{StaticResource T_RefreshMap}"></Button>
-                <Button Name="Test" Visibility="Hidden">测试</Button>
+                <Button Name="Test" >测试</Button>
             </StackPanel>
         </Border>
         <Border DockPanel.Dock="Left">
@@ -132,8 +132,8 @@
             </Grid>
         </Border>
         <DockPanel>
-            <control:TransitioningContentControl DockPanel.Dock="Bottom" Visibility="{Binding EnableAnalysis,Converter={StaticResource IsVisible}}" cal:View.Model="{Binding PropertyPanel}"/>
-            <control:TransitioningContentControl DockPanel.Dock="Right" Visibility="{Binding EnableAnalysis,Converter={StaticResource IsVisible}}" cal:View.Model="{Binding ComparePanel}"/>
+            <control:TransitioningContentControl DockPanel.Dock="Bottom" Visibility="{Binding PropertyPanel,Converter={StaticResource AnyVisiable}}" cal:View.Model="{Binding PropertyPanel}"/>
+            <control:TransitioningContentControl DockPanel.Dock="Right" Visibility="{Binding ComparePanel,Converter={StaticResource AnyVisiable}}" cal:View.Model="{Binding ComparePanel}"/>
             <Border>
                 <WebBrowser  Name="Map" Tag="{Binding MapContainer,Mode=OneWayToSource}"/>
             </Border>
