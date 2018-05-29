@@ -115,6 +115,7 @@
       <DependentUpon>Map3D.xaml</DependentUpon>
     </Compile>
     <Compile Include="Controls\Map3DBound.cs" />
+    <Compile Include="Controls\Map3DPoint.cs" />
     <Compile Include="Controls\Trackball3D.cs" />
     <Compile Include="Controls\Trackball3DContext.cs" />
     <Compile Include="Converter\AnyVisiableConverter.cs" />

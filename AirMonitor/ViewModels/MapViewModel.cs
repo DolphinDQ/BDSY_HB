@@ -325,6 +325,7 @@ namespace AirMonitor.ViewModels
         public void Test()
         {
             var view = m_factory.Create<Map3DViewModel>();
+            view.MapContainer = MapContainer;
             ComparePanel = view;
         }
 

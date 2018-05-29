@@ -7,10 +7,13 @@ using System.Threading.Tasks;
 namespace AirMonitor.Controls
 {
     [PropertyChanged.AddINotifyPropertyChangedInterface]
-    public class Map3DBound
+    public class Map3DPoint
     {
-        public Map3DPoint Max { get; set; } = new Map3DPoint();
 
-        public Map3DPoint Min { get; set; } = new Map3DPoint();
+        public double Lat { get; set; }
+
+        public double Lng { get; set; }
+
+        public double Height { get; set; }
     }
 }

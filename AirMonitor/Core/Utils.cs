@@ -25,8 +25,8 @@ namespace AirMonitor.Core
         public static ImageSource SnapShot(HwndHost win32View)
         {
             // 获取宽高
-            int screenWidth = (int)win32View.Width;
-            int screenHeight = (int)win32View.Height;
+            int screenWidth = (int)win32View.ActualWidth;
+            int screenHeight = (int)win32View.ActualHeight;
 
             var myIntptr = win32View.Handle;
             var hwndInt = myIntptr.ToInt32();

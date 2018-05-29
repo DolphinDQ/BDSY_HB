@@ -23,9 +23,7 @@ namespace AirMonitor.Controls
 
         // Using a DependencyProperty as the backing store for TransformModel.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty TransformModelProperty =
-            DependencyProperty.RegisterAttached("TransformModel", typeof(ModelVisual3D), typeof(object), new PropertyMetadata(null, new PropertyChangedCallback(OnTransformModelChanged)));
-
-
+            DependencyProperty.RegisterAttached("TransformModel", typeof(ModelVisual3D), typeof(Trackball3D), new PropertyMetadata(null, new PropertyChangedCallback(OnTransformModelChanged)));
 
         public static Trackball3DContext GetTrackball3DContext(DependencyObject obj)
         {
@@ -39,8 +37,7 @@ namespace AirMonitor.Controls
 
         // Using a DependencyProperty as the backing store for Trackball3DContext.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty Trackball3DContextProperty =
-            DependencyProperty.RegisterAttached("Trackball3DContext", typeof(Trackball3DContext), typeof(object), new PropertyMetadata(new Trackball3DContext()));
-
+            DependencyProperty.RegisterAttached("Trackball3DContext", typeof(Trackball3DContext), typeof(Trackball3D), new PropertyMetadata(new Trackball3DContext()));
 
 
         private static void OnTransformModelChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
@@ -79,7 +76,7 @@ namespace AirMonitor.Controls
             {
                 e.Handled = true;
                 var d = context.Scale.ScaleX + e.Delta / 1000d;
-                if (d < 1 || d > 5)
+                if (d < 0.8 || d > 5)
                 {
                     return;
                 }
@@ -97,7 +94,6 @@ namespace AirMonitor.Controls
             }
         }
 
-
         private static void View_MouseMove(object sender, System.Windows.Input.MouseEventArgs e)
         {
             IsViewport3D(sender, (view, context) =>
@@ -108,23 +104,22 @@ namespace AirMonitor.Controls
                     delta /= 2;
                     if (e.LeftButton == System.Windows.Input.MouseButtonState.Pressed) //tranlate
                     {
-                        delta /= 20;
+                        //delta /= 20;
                         context.Translate.OffsetX = context.MouseDownTranslate.OffsetX - delta.X;
                         context.Translate.OffsetY = context.MouseDownTranslate.OffsetY + delta.Y;
                     }
                     else if (e.RightButton == System.Windows.Input.MouseButtonState.Pressed) //rotate
                     {
-                        Vector3D mouse = new Vector3D(delta.X, -delta.Y, 0);
-                        Vector3D axis = Vector3D.CrossProduct(mouse, new Vector3D(0, 0, 1));
-                        double len = axis.Length;
+                        //Vector3D mouse = new Vector3D(delta.X, -delta.Y, 0);
+                        //Vector3D axis = Vector3D.CrossProduct(mouse, new Vector3D(0, 0, 1));
+                        //double len = axis.Length;
                         if (context.Rotate.Rotation is AxisAngleRotation3D a)
                         {
                             var a1 = context.MouseDownRotate.Rotation as AxisAngleRotation3D;
-                            var q = new Quaternion(axis, len) * new Quaternion(a1.Axis, a1.Angle);
-
-                            a.Axis = q.Axis;
-                            a.Angle = q.Angle;
-                            view.Info("x={0},y={1},z={2},l={4},a={3}", a.Axis.X, a.Axis.Y, a.Axis.Z, a.Angle, a.Axis.Length);
+                            //var q = new Quaternion(axis, len) * new Quaternion(a1.Axis, a1.Angle);
+                            //a.Axis = q.Axis;
+                            a.Angle = (a1.Angle - delta.X) % 360;
+                            //view.Info("x={0},y={1},z={2},l={4},a={3}", a.Axis.X, a.Axis.Y, a.Axis.Z, a.Angle, a.Axis.Length);
                         }
                     }
                 }

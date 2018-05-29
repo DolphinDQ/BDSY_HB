@@ -9,51 +9,6 @@
              Width="500"
              d:DesignHeight="450" d:DesignWidth="800">
     <Grid>
-        <Viewport3D Focusable="True" Name="myViewport3D" ctrl:Trackball3D.TransformModel="{Binding ElementName=M}" >
-            <Viewport3D.Camera>
-                <PerspectiveCamera Position="0,16,40" LookDirection="0,-9,-20"/>
-                <!--<PerspectiveCamera Position="8,25,13.5" LookDirection="0,-16,-9"/>-->
-            </Viewport3D.Camera>
-            <ModelVisual3D x:Name="M">
-                <!--<ModelVisual3D.Transform>
-                    <Transform3DGroup>
-                        <Transform3DGroup.Children>
-                            <Transform3DCollection >
-                                <ScaleTransform3D ScaleX="1" ScaleY="1"  ScaleZ="1" />
-                                <RotateTransform3D>
-                                    <RotateTransform3D.Rotation>
-                                        <AxisAngleRotation3D Axis="0 1 0" Angle="0" />
-                                    </RotateTransform3D.Rotation>
-                                </RotateTransform3D>
-                                <TranslateTransform3D OffsetX="0" OffsetY="0" OffsetZ="0" />
-                            </Transform3DCollection>
-                        </Transform3DGroup.Children>
-                    </Transform3DGroup>
-                </ModelVisual3D.Transform>-->
-                <ModelVisual3D>
-                    <ModelVisual3D.Content>
-                        <Model3DGroup>
-                            <Model3DGroup.Children>
-                                <AmbientLight />
-                                <GeometryModel3D>
-                                    <GeometryModel3D.Geometry>
-                                        <MeshGeometry3D Positions="-16 0 -9,16 0 -9,16 0 9,-16 0 9" TriangleIndices="0 3 2,0 2 1" TextureCoordinates="0 0,1 0,1 1,0 1"/>
-                                    </GeometryModel3D.Geometry>
-                                    <GeometryModel3D.Material >
-                                        <MaterialGroup >
-                                            <DiffuseMaterial>
-                                                <DiffuseMaterial.Brush>
-                                                    <ImageBrush ImageSource="/AirHunter;component/Resources/Images/map.png"/>
-                                                </DiffuseMaterial.Brush>
-                                            </DiffuseMaterial>
-                                        </MaterialGroup >
-                                    </GeometryModel3D.Material >
-                                </GeometryModel3D>
-                            </Model3DGroup.Children>
-                        </Model3DGroup>
-                    </ModelVisual3D.Content>
-                </ModelVisual3D>
-            </ModelVisual3D>
-        </Viewport3D>
+        <ctrl:Map3D MapContainer="{Binding MapContainer}"  MapBound="{Binding MapBound}" />
     </Grid>
 </UserControl>
