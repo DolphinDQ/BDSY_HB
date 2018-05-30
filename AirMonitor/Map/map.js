@@ -544,7 +544,7 @@ var BaiduMapProvider = /** @class */ (function (_super) {
     /** 地图显示发生变更。 */
     BaiduMapProvider.prototype.onMapBoundChanged = function () {
         var bound = this.map.getBounds();
-        this.on(MapEvents.boundChanged, { sw: bound.getSouthWest(), ne: bound.getNorthEast() });
+        this.on(MapEvents.boundChanged, { bound: { sw: bound.getSouthWest(), ne: bound.getNorthEast() } });
     };
     BaiduMapProvider.prototype.onCheckContextMenu = function () {
         var _this = this;
@@ -727,11 +727,28 @@ var BaiduMapProvider = /** @class */ (function (_super) {
             return { sw: bounds.getSouthWest(), ne: bounds.getNorthEast() };
         }
     };
+    /**获取地图中所有无人机数据 */
+    BaiduMapProvider.prototype.getUavData = function () {
+        return this.uavList.select(function (o) {
+            var i = o.marker.getPosition();
+            return {
+                lat: i.lat,
+                lng: i.lng,
+                name: o.name,
+            };
+        });
+    };
     /**获取所有在地图上的方块数据。 */
     BaiduMapProvider.prototype.getBlocksData = function (blocks) {
         return blocks.select(function (o) {
             var b = o.getBounds();
-            return { sw: b.getSouthWest(), ne: b.getNorthEast(), center: o.context.center, points: o.context.getPoints(function (i) { return true; }).select(function (i) { return i.data; }) };
+            return {
+                sw: b.getSouthWest(),
+                ne: b.getNorthEast(),
+                center: o.context.center,
+                points: o.context.getPoints(function (i) { return true; }).select(function (i) { return i.data; }),
+                reports: o.context.getReports(function (i) { return true; })
+            };
         });
     };
     /**
@@ -811,8 +828,8 @@ var BaiduMapProvider = /** @class */ (function (_super) {
             _this.subscribe(MapEvents.selectAnalysisArea, true);
             _this.subscribe(MapEvents.verticalAspect, true);
             _this.on(MapEvents.load);
-            _this.map.addEventListener("moveend", _this.onMapBoundChanged());
-            _this.map.addEventListener("zoomend", _this.onMapBoundChanged());
+            map.addEventListener("moveend", function (o) { return _this.onMapBoundChanged(); });
+            map.addEventListener("zoomend", function (o) { return _this.onMapBoundChanged(); });
         });
     };
     /**
@@ -956,15 +973,18 @@ var BaiduMapProvider = /** @class */ (function (_super) {
             uav.pathPoint = [point];
             _this.uavList.push(uav);
             _this.map.addOverlay(uav.marker);
+            _this.on(MapEvents.uavChanged, { uav: _this.getUavData() });
         });
     };
     BaiduMapProvider.prototype.uavMove = function (name, lng, lat, d) {
+        var _this = this;
         var data = this.parseJson(d);
         this.uav(name, function (o) {
             var point = new BMap.Point(lng, lat);
             point.data = data;
             o.pathPoint.push(point);
             o.marker.setPosition(point);
+            _this.on(MapEvents.uavChanged, { uav: _this.getUavData() });
         }, null);
     };
     BaiduMapProvider.prototype.uavShowPath = function (name) {
@@ -1005,6 +1025,7 @@ var BaiduMapProvider = /** @class */ (function (_super) {
                 i = index;
                 delete o.marker;
                 delete o.pathMarker;
+                _this.on(MapEvents.uavChanged, { uav: _this.getUavData() });
             }
         });
         if (i != -1) {
@@ -1037,6 +1058,7 @@ var BaiduMapProvider = /** @class */ (function (_super) {
                 result = { bound: this.getMapBounds() };
                 break;
             case MapEvents.uavChanged:
+                result = { uav: this.getUavData() };
                 break;
             default:
                 break;

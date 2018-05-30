@@ -628,7 +628,7 @@ class BaiduMapProvider extends MapBase {
     /** 地图显示发生变更。 */
     private onMapBoundChanged(): any {
         var bound: Bound = this.map.getBounds();
-        this.on(MapEvents.boundChanged, { sw: bound.getSouthWest(), ne: bound.getNorthEast() })
+        this.on(MapEvents.boundChanged, { bound: { sw: bound.getSouthWest(), ne: bound.getNorthEast() } });
     }
     private onCheckContextMenu() {
         var blocks = this.blockGrid.selectedBlocks
@@ -808,11 +808,28 @@ class BaiduMapProvider extends MapBase {
             return { sw: bounds.getSouthWest(), ne: bounds.getNorthEast() }
         }
     }
+    /**获取地图中所有无人机数据 */
+    private getUavData() {
+        return this.uavList.select(o => {
+            var i = o.marker.getPosition()
+            return {
+                lat: i.lat,
+                lng: i.lng,
+                name: o.name,
+            };
+        });
+    }
     /**获取所有在地图上的方块数据。 */
     private getBlocksData(blocks: Block[]) {
         return blocks.select(o => {
             var b = o.getBounds();
-            return { sw: b.getSouthWest(), ne: b.getNorthEast(), center: o.context.center, points: o.context.getPoints(i => true).select(i => i.data) }
+            return {
+                sw: b.getSouthWest(),
+                ne: b.getNorthEast(),
+                center: o.context.center,
+                points: o.context.getPoints(i => true).select(i => i.data),
+                reports: o.context.getReports(i => true)
+            }
         })
     }
     /**
@@ -889,8 +906,9 @@ class BaiduMapProvider extends MapBase {
             this.subscribe(MapEvents.selectAnalysisArea, true);
             this.subscribe(MapEvents.verticalAspect, true);
             this.on(MapEvents.load);
-            this.map.addEventListener("moveend", this.onMapBoundChanged());
-            this.map.addEventListener("zoomend", this.onMapBoundChanged());
+            map.addEventListener("moveend", o => this.onMapBoundChanged());
+            map.addEventListener("zoomend", o => this.onMapBoundChanged());
+
         });
     }
     /**
@@ -1017,6 +1035,7 @@ class BaiduMapProvider extends MapBase {
             uav.pathPoint = [point];
             this.uavList.push(uav);
             this.map.addOverlay(uav.marker);
+            this.on(MapEvents.uavChanged, { uav: this.getUavData() });
         });
     }
     uavMove(name: string, lng: number, lat: number, d: any) {
@@ -1026,6 +1045,7 @@ class BaiduMapProvider extends MapBase {
             point.data = data;
             o.pathPoint.push(point);
             o.marker.setPosition(point);
+            this.on(MapEvents.uavChanged, { uav: this.getUavData() });
         }, null);
     }
     uavShowPath(name: string) {
@@ -1062,6 +1082,7 @@ class BaiduMapProvider extends MapBase {
                 i = index;
                 delete o.marker;
                 delete o.pathMarker;
+                this.on(MapEvents.uavChanged, { uav: this.getUavData() });
             }
         });
         if (i != -1) {
@@ -1092,6 +1113,7 @@ class BaiduMapProvider extends MapBase {
                 result = { bound: this.getMapBounds() };
                 break;
             case MapEvents.uavChanged:
+                result = { uav: this.getUavData() };
                 break;
             default:
                 break;

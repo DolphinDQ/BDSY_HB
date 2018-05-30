@@ -15,5 +15,7 @@ namespace AirMonitor.Map
         public MapPoint center { get; set; }
 
         public MapPointData[] points { get; set; }
+
+        public MapBlockReport[] reports { get; set; }
     }
 }

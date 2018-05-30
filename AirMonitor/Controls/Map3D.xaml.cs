@@ -83,7 +83,7 @@ namespace AirMonitor.Controls
         {
             if (d is Map3D map)
             {
-                map.OnMapBoundChanged();
+                map.OnReloadMap();
             }
         }
 
@@ -225,7 +225,7 @@ namespace AirMonitor.Controls
                 var max = bound.Max.Lat;
                 var min = bound.Min.Lat;
                 var diff = max - min;
-                return diff == 0 ? double.NaN : (img.Height / diff * lat) - (img.Height / 2);
+                return diff == 0 ? double.NaN : (img.Height / 2 - img.Height / diff * (lat - min));
             }
             return 0;
         }
@@ -243,7 +243,7 @@ namespace AirMonitor.Controls
                 var max = bound.Max.Lng;
                 var min = bound.Min.Lng;
                 var diff = max - min;
-                return diff == 0 ? double.NaN : (img.Width / diff * lng) - (img.Width / 2);
+                return diff == 0 ? double.NaN : (img.Width / diff * (lng - min) - img.Width / 2);
             }
             return 0;
         }
@@ -297,6 +297,7 @@ namespace AirMonitor.Controls
             var geometry = View3D.FindResource("UavGeometry") as MeshGeometry3D;
             geometry.Positions = Point3DCollection.Parse(string.Format("{1} {0} {2},{1} {0} {4},{3} {0} {4},{3} {0} {2}", h, x1, y1, x2, y2));
             var result = new GeometryModel3D(geometry, View3D.FindResource("UavMaterial") as Material);
+            result.Transform = new ScaleTransform3D(0.9, 1, 0.9);
             result.SetValue(MapMarker3D.MapMarkerProperty, item);
             return result;
         }
@@ -321,7 +322,7 @@ namespace AirMonitor.Controls
                     }
                     break;
                 case System.Collections.Specialized.NotifyCollectionChangedAction.Reset:
-                    UavGroup.Children.Clear();
+                    Dispatcher.Invoke(() => UavGroup.Children.Clear());
                     break;
             }
         }
@@ -355,18 +356,18 @@ namespace AirMonitor.Controls
         private Model3D CreateBlock(BlockMarker3D item)
         {
             var x1 = LngConvert(item.Bound.Min.Lng);
-            var y1 = LatConvert(item.Bound.Min.Lat);
-            var z1 = HeightConvert(item.Bound.Min.Height);
+            var z1 = LatConvert(item.Bound.Min.Lat);
+            var y1 = HeightConvert(item.Bound.Min.Height);
             var x2 = LngConvert(item.Bound.Max.Lng);
-            var y2 = LatConvert(item.Bound.Max.Lat);
-            var z2 = HeightConvert(item.Bound.Max.Height);
+            var z2 = LatConvert(item.Bound.Max.Lat);
+            var y2 = HeightConvert(item.Bound.Max.Height);
             var geometry = View3D.FindResource("BlockGeometry") as MeshGeometry3D;
-            geometry.Positions = Point3DCollection.Parse(string.Format("{1} {0} {2},{1} {0} {4},{3} {0} {4},{3} {0} {2},{1} {5} {2},{1} {5} {4},{3} {5} {4},{3} {5} {2}", z1, x1, y1, x2, y2, z2));
+            geometry.Positions = Point3DCollection.Parse(string.Format("{1} {0} {2},{1} {0} {4},{3} {0} {4},{3} {0} {2},{1} {5} {2},{1} {5} {4},{3} {5} {4},{3} {5} {2}", y1, x1, z1, x2, z2, y2));
             var material = View3D.FindResource("BlockMaterial") as DiffuseMaterial;
             var color = new BrushConverter().ConvertFromString(item.Color) as System.Windows.Media.Brush;
             color.Opacity = item.Opacity;
             material.Brush = color;
-            var result = new GeometryModel3D(geometry, material);
+            var result = new GeometryModel3D(geometry.Clone(), material.Clone());
             result.SetValue(MapMarker3D.MapMarkerProperty, item);
             return result;
         }
@@ -391,7 +392,7 @@ namespace AirMonitor.Controls
                     }
                     break;
                 case System.Collections.Specialized.NotifyCollectionChangedAction.Reset:
-                    UavGroup.Children.Clear();
+                    Dispatcher.Invoke(() => UavGroup.Children.Clear());
                     break;
             }
         }

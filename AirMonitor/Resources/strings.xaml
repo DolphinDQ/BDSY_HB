@@ -9,7 +9,9 @@
     <sys:String x:Key="T_GpsAltitude">GPS海拔</sys:String>
     <sys:String x:Key="T_PressureAltitude">气压海拔</sys:String>
     <sys:String x:Key="T_RelativeHeight">高度</sys:String>
-    <sys:String x:Key="T_CorrectAltitude">高度修正</sys:String>
+    <sys:String x:Key="T_CorrectAltitude">海拔修正</sys:String>
+    <sys:String x:Key="T_AltitudeUnit">高度单位</sys:String>
+    <sys:String x:Key="T_MaxAltitude">最高海拔</sys:String>
     <sys:String x:Key="T_Speed">速度</sys:String>
     <sys:String x:Key="T_RealtimeAirSamples">实时空气采样</sys:String>
     <sys:String x:Key="T_SensorStatus">传感器状态</sys:String>

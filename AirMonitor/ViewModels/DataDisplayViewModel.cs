@@ -84,11 +84,13 @@ namespace AirMonitor.ViewModels
 
         public bool EnableSampling { get; set; }
 
-
+        public double CorrectAltitude { get; set; }
         /// <summary>
         /// 数据名称列表，是采样数据的名称列表。
         /// </summary>
         public List<Tuple<string, string>> DataNameList { get; set; }
+
+
 
         #region Sample list
         public SampleChart Temperature => Plots[nameof(EvtAirSample.temp)];
@@ -119,26 +121,31 @@ namespace AirMonitor.ViewModels
             m_eventAggregator = eventAggregator;
             m_res = res;
             DataManager = data;
+            m_configManager = configManager;
+            StandardSetting = configManager.GetConfig<AirStandardSetting>();
+            CorrectAltitude = StandardSetting.CorrectAltitude;
             Plots = new Dictionary<string, SampleChart>();
             Plots.Add(nameof(EvtAirSample.RelativeHeight), new SampleChart(chartManager)
             {
-                Pollutant = new AirPollutant()
-                {
-                    Name = nameof(EvtAirSample.RelativeHeight),
-                    DisplayName = res.GetText("T_RelativeHeight"),
-                    Unit = "m",
-                    MinValue = 0,
-                    MaxValue = 1000,
-                }
+                Pollutant = GetHeightPollutant()
             });
-            m_configManager = configManager;
-            StandardSetting = configManager.GetConfig<AirStandardSetting>();
+
             foreach (var item in StandardSetting.Pollutant)
             {
                 Plots.Add(item.Name, new SampleChart(chartManager) { Pollutant = item });
             }
         }
-
+        private AirPollutant GetHeightPollutant()
+        {
+            return new AirPollutant()
+            {
+                Name = nameof(EvtAirSample.RelativeHeight),
+                DisplayName = m_res.GetText("T_RelativeHeight"),
+                Unit = StandardSetting.AltitudeUnit,
+                MinValue = 0,
+                MaxValue = StandardSetting.MaxAltitude,
+            };
+        }
         public override void TryClose(bool? dialogResult = null)
         {
             base.TryClose(dialogResult);
@@ -176,10 +183,16 @@ namespace AirMonitor.ViewModels
         {
             if (NewestData != null)
             {
-                StandardSetting.CorrectAltitude = NewestData.hight;
-                m_configManager.SaveConfig(StandardSetting);
+                CorrectAltitude = NewestData.hight;
             }
         }
+
+        public void OnCorrectAltitudeChanged()
+        {
+            StandardSetting.CorrectAltitude = CorrectAltitude;
+            m_configManager.SaveConfig(StandardSetting);
+        }
+
 
         public void ClearData(bool focus = false)
         {
@@ -214,6 +227,8 @@ namespace AirMonitor.ViewModels
                         Plots[item.Name].Pollutant = null;
                         Plots[item.Name].Pollutant = item;
                     }
+                    Plots[nameof(RelativeHeight)].Pollutant = GetHeightPollutant();
+                    NotifyOfPropertyChange(nameof(StandardSetting));
                 }
             }
             catch (Exception e)

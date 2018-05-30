@@ -16,5 +16,13 @@ namespace AirMonitor.Config
         /// 相对海拔。
         /// </summary>
         public double CorrectAltitude { get; set; }
+        /// <summary>
+        /// 最高海拔限制。
+        /// </summary>
+        public double MaxAltitude { get; set; }
+        /// <summary>
+        /// 高度单位。
+        /// </summary>
+        public string AltitudeUnit { get; set; }
     }
 }

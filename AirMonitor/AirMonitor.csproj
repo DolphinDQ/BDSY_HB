@@ -156,6 +156,7 @@
     <Compile Include="Interfaces\ISaveManager.cs" />
     <Compile Include="IShell.cs" />
     <Compile Include="Map\MapBlock.cs" />
+    <Compile Include="Map\MapBlockReport.cs" />
     <Compile Include="Map\MapBound.cs" />
     <Compile Include="Map\MapEventHandler.cs" />
     <Compile Include="Map\MapEvents.cs" />

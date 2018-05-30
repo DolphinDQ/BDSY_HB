@@ -1,4 +1,5 @@
 ﻿using AirMonitor.Chart;
+using AirMonitor.Config;
 using AirMonitor.EventArgs;
 using AirMonitor.Interfaces;
 using AirMonitor.Map;
@@ -25,6 +26,7 @@ namespace AirMonitor.ViewModels
 
         public DynamicAnalysisViewModel(
             IEventAggregator eventAggregator,
+            IConfigManager configManager,
             IChartManager chartManager)
         {
             m_chartManager = chartManager;
@@ -34,6 +36,7 @@ namespace AirMonitor.ViewModels
                 Tuple.Create(AnalysisMode.Horizontal,"横向"),
                 Tuple.Create(AnalysisMode.Vertical, "纵向"),
             };
+            CorrectHeight = configManager.GetConfig<AirStandardSetting>().CorrectAltitude;
             m_eventAggregator.Subscribe(this);
         }
 

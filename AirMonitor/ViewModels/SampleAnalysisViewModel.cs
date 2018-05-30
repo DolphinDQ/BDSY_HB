@@ -1,4 +1,5 @@
 ﻿using AirMonitor.Chart;
+using AirMonitor.Config;
 using AirMonitor.EventArgs;
 using AirMonitor.Interfaces;
 using AirMonitor.Map;
@@ -17,11 +18,14 @@ namespace AirMonitor.ViewModels
         private IChartManager m_chartManager;
         private IEventAggregator m_eventAggregator;
 
-        public SampleAnalysisViewModel(IChartManager chartManager, IEventAggregator eventAggregator)
+        public SampleAnalysisViewModel(IChartManager chartManager,
+            IConfigManager configManager,
+            IEventAggregator eventAggregator)
         {
             m_chartManager = chartManager;
             m_eventAggregator = eventAggregator;
             m_eventAggregator.Subscribe(this);
+            CorrectHeight = configManager.GetConfig<AirStandardSetting>().CorrectAltitude;
         }
 
         public override void TryClose(bool? dialogResult = null)
