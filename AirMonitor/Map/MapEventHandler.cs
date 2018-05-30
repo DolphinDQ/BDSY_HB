@@ -22,37 +22,50 @@ namespace AirMonitor.Map
 
         public void On(string name, string json)
         {
-            switch (name)
+            if (Enum.TryParse<MapEvents>(name, out var evt))
             {
-                case "pointConvert":
-                    On<EvtMapPointConverted>(json);
-                    break;
-                case "load":
-                    On<EvtMapLoad>();
-                    break;
-                case "horizontalAspect":
-                    On<EvtMapHorizontalAspect>(json);
-                    break;
-                case "verticalAspect":
-                    On<EvtMapVerticalAspect>(json);
-                    break;
-                case "clearAspect":
-                    On<EvtMapClearAspect>();
-                    break;
-                case "selectAnalysisArea":
-                    On<EvtMapSelectAnalysisArea>(json);
-                    break;
-                case "clearAnalysisArea":
-                    On<EvtMapClearAnalysisArea>();
-                    break;
-                case "savePoints":
-                    On<EvtMapSavePoints>(json);
-                    break;
-                //case "boundChanged":
-                //    On<EvtMapBoundChanged>(json);
-                //    break;
-                default:
-                    break;
+                switch (evt)
+                {
+                    case MapEvents.pointConvert:
+                        On<EvtMapPointConverted>(json);
+                        break;
+                    case MapEvents.load:
+                        On<EvtMapLoad>();
+                        break;
+                    case MapEvents.horizontalAspect:
+                        On<EvtMapHorizontalAspect>(json);
+                        break;
+                    case MapEvents.verticalAspect:
+                        On<EvtMapVerticalAspect>(json);
+                        break;
+                    case MapEvents.clearAspect:
+                        On<EvtMapClearAspect>();
+                        break;
+                    case MapEvents.selectAnalysisArea:
+                        On<EvtMapSelectAnalysisArea>(json);
+                        break;
+                    case MapEvents.clearAnalysisArea:
+                        On<EvtMapClearAnalysisArea>();
+                        break;
+                    case MapEvents.savePoints:
+                        On<EvtMapSavePoints>(json);
+                        break;
+                    case MapEvents.boundChanged:
+                        On<EvtMapBoundChanged>(json);
+                        break;
+                    case MapEvents.blockChanged:
+                        On<EvtMapBlockChanged>(json);
+                        break;
+                    case MapEvents.uavChanged:
+                        On<EvtMapUavChanged>(json);
+                        break;
+                    default:
+                        break;
+                }
+            }
+            else
+            {
+                this.Warn("nuknow map event :{0} ->{1}", name, json);
             }
         }
 

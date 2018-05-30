@@ -111,6 +111,8 @@
     <Compile Include="Config\AirPollutant.cs" />
     <Compile Include="Config\AirStandardSetting.cs" />
     <Compile Include="Config\MqttSetting.cs" />
+    <Compile Include="Controls\BlockMarker3D.cs" />
+    <Compile Include="Controls\MapMarker3D.cs" />
     <Compile Include="Controls\Map3D.xaml.cs">
       <DependentUpon>Map3D.xaml</DependentUpon>
     </Compile>
@@ -118,6 +120,7 @@
     <Compile Include="Controls\Map3DPoint.cs" />
     <Compile Include="Controls\Trackball3D.cs" />
     <Compile Include="Controls\Trackball3DContext.cs" />
+    <Compile Include="Controls\UavMarker3D.cs" />
     <Compile Include="Converter\AnyVisiableConverter.cs" />
     <Compile Include="Converter\IsNullConverter.cs" />
     <Compile Include="Converter\IsVisibleConverter.cs" />
@@ -132,12 +135,15 @@
     <Compile Include="EventArgs\EvtAirSample.cs" />
     <Compile Include="Data\MqttDataManager.cs" />
     <Compile Include="EventArgs\EvtChartScatterSelectChanged.cs" />
+    <Compile Include="EventArgs\EvtMapBlockChanged.cs" />
+    <Compile Include="EventArgs\EvtMapBoundChanged.cs" />
     <Compile Include="EventArgs\EvtMapClearAnalysisArea.cs" />
     <Compile Include="EventArgs\EvtMapClearAspect.cs" />
     <Compile Include="EventArgs\EvtMapHorizontalAspect.cs" />
     <Compile Include="EventArgs\EvtMapPointConverted.cs" />
     <Compile Include="EventArgs\EvtMapSavePoints.cs" />
     <Compile Include="EventArgs\EvtMapSelectAnalysisArea.cs" />
+    <Compile Include="EventArgs\EvtMapUavChanged.cs" />
     <Compile Include="EventArgs\EvtMapVerticalAspect.cs" />
     <Compile Include="EventArgs\EvtSampling.cs" />
     <Compile Include="EventArgs\EvtMapLoad.cs" />
@@ -150,13 +156,15 @@
     <Compile Include="Interfaces\ISaveManager.cs" />
     <Compile Include="IShell.cs" />
     <Compile Include="Map\MapBlock.cs" />
+    <Compile Include="Map\MapBound.cs" />
     <Compile Include="Map\MapEventHandler.cs" />
+    <Compile Include="Map\MapEvents.cs" />
     <Compile Include="Map\MapEx.cs" />
     <Compile Include="Map\MapGridOptions.cs" />
     <Compile Include="Map\MapPoint.cs" />
     <Compile Include="Map\MapPointData.cs" />
     <Compile Include="Map\MapProvider.cs" />
-    <Compile Include="Map\Uav.cs" />
+    <Compile Include="Map\MapUav.cs" />
     <Compile Include="ShellViewModel.cs" />
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
@@ -282,11 +290,12 @@
     <Content Include="Map\map.html">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Map\marker.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
     <Resource Include="Resources\Images\logo.png" />
     <Resource Include="Resources\Images\map.png" />
+    <Resource Include="Resources\Images\uav.png" />
+    <Content Include="Map\marker.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="useie.exe">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>

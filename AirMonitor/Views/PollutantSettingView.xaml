@@ -27,6 +27,12 @@
     <StackPanel>
 
         <DockPanel>
+            <Label Style="{StaticResource  LblSettingTitle}" Content="{StaticResource T_CorrectAltitude}"></Label>
+            <Label Style="{StaticResource  LblSettingUnit}">m</Label>
+            <control:NumericUpDown Value="{Binding Settings.CorrectAltitude,Converter={StaticResource Round}}"></control:NumericUpDown>
+        </DockPanel>
+
+        <DockPanel>
             <Label Style="{StaticResource  LblSettingTitle}" Content="{StaticResource T_Pollutant}"></Label>
             <Label Style="{StaticResource  LblSettingUnit}"></Label>
             <ComboBox ItemsSource="{Binding Pollutants}" SelectedItem="{Binding Current}" DisplayMemberPath="DisplayName"></ComboBox>

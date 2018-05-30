@@ -180,8 +180,14 @@ var Uav = /** @class */ (function () {
     }
     return Uav;
 }());
+var EventSubscribe = /** @class */ (function () {
+    function EventSubscribe() {
+    }
+    return EventSubscribe;
+}());
 var MapBase = /** @class */ (function () {
     function MapBase() {
+        this.m_events = [];
     }
     MapBase.prototype.loadJs = function (url, onLoad) {
         try {
@@ -202,15 +208,31 @@ var MapBase = /** @class */ (function () {
     };
     MapBase.prototype.on = function (eventName, arg) {
         try {
-            if (arg) {
-                arg = JSON.stringify(arg);
+            var sub = this.m_events.first(function (o) { return o.name == eventName; });
+            if (sub && sub.enable) {
+                if (arg) {
+                    arg = JSON.stringify(arg);
+                }
+                window.external.On(eventName, arg);
+                return;
             }
-            window.external.On(eventName, arg);
         }
         catch (e) {
             //ignore;
-            console.log("triger event [%s] arguments is :", eventName);
-            console.dir(arg);
+        }
+        console.log("triger event [%s] arguments is :", eventName);
+        console.dir(arg);
+    };
+    MapBase.prototype.subscribe = function (eventName, enable) {
+        var evt = this.m_events.first(function (o) { return o.name == eventName; });
+        if (evt) {
+            evt.enable = enable;
+        }
+        else {
+            this.m_events.push({ name: eventName, enable: enable });
+        }
+        if (enable) {
+            return this.onSubscribe(eventName);
         }
     };
     return MapBase;
@@ -219,13 +241,15 @@ var MapEvents;
 (function (MapEvents) {
     MapEvents["load"] = "load";
     MapEvents["pointConvert"] = "pointConvert";
-    MapEvents["boundChanged"] = "boundChanged";
     MapEvents["horizontalAspect"] = "horizontalAspect";
     MapEvents["verticalAspect"] = "verticalAspect";
     MapEvents["clearAspect"] = "clearAspect";
     MapEvents["selectAnalysisArea"] = "selectAnalysisArea";
     MapEvents["clearAnalysisArea"] = "clearAnalysisArea";
     MapEvents["savePoints"] = "savePoints";
+    MapEvents["boundChanged"] = "boundChanged";
+    MapEvents["blockChanged"] = "blockChanged";
+    MapEvents["uavChanged"] = "uavChanged";
 })(MapEvents || (MapEvents = {}));
 var MapMenuItems;
 (function (MapMenuItems) {
@@ -517,6 +541,11 @@ var BaiduMapProvider = /** @class */ (function (_super) {
             // alert(e.message);
         }
     };
+    /** 地图显示发生变更。 */
+    BaiduMapProvider.prototype.onMapBoundChanged = function () {
+        var bound = this.map.getBounds();
+        this.on(MapEvents.boundChanged, { sw: bound.getSouthWest(), ne: bound.getNorthEast() });
+    };
     BaiduMapProvider.prototype.onCheckContextMenu = function () {
         var _this = this;
         var blocks = this.blockGrid.selectedBlocks;
@@ -567,12 +596,7 @@ var BaiduMapProvider = /** @class */ (function (_super) {
             this.addLine(min.getBounds().getSouthWest(), 0, 10000);
             this.addLine(max.getBounds().getNorthEast(), 0, 10000);
             this.on(MapEvents.verticalAspect, {
-                blocks: blocks.select(function (o) {
-                    return {
-                        center: o.context.center,
-                        points: o.context.getPoints(function (i) { return true; }).select(function (i) { return i.data; }),
-                    };
-                })
+                blocks: this.getBlocksData(blocks)
             });
         }
     };
@@ -592,12 +616,7 @@ var BaiduMapProvider = /** @class */ (function (_super) {
             this.addLine(min.getBounds().getSouthWest(), 10000, 0);
             this.addLine(max.getBounds().getNorthEast(), 10000, 0);
             this.on(MapEvents.horizontalAspect, {
-                blocks: blocks.select(function (o) {
-                    return {
-                        center: o.context.center,
-                        points: o.context.getPoints(function (i) { return true; }).select(function (i) { return i.data; }),
-                    };
-                })
+                blocks: this.getBlocksData(blocks)
             });
         }
     };
@@ -701,6 +720,20 @@ var BaiduMapProvider = /** @class */ (function (_super) {
             this.on(MapEvents.savePoints, { points: blocks.selectMany(function (o) { return o.context.getPoints(function (i) { return true; }).select(function (i) { return i.data; }); }) });
         }
     };
+    /**获取地图边界。 */
+    BaiduMapProvider.prototype.getMapBounds = function () {
+        var bounds = this.map.getBounds();
+        if (bounds) {
+            return { sw: bounds.getSouthWest(), ne: bounds.getNorthEast() };
+        }
+    };
+    /**获取所有在地图上的方块数据。 */
+    BaiduMapProvider.prototype.getBlocksData = function (blocks) {
+        return blocks.select(function (o) {
+            var b = o.getBounds();
+            return { sw: b.getSouthWest(), ne: b.getNorthEast(), center: o.context.center, points: o.context.getPoints(function (i) { return true; }).select(function (i) { return i.data; }) };
+        });
+    };
     /**
      * 初始化地图。
      * @param container 地图容器id
@@ -769,9 +802,24 @@ var BaiduMapProvider = /** @class */ (function (_super) {
             _this.blockGrid = new MapGrid();
             _this.blockGrid.blocks = new Array();
             _this.uavList = new Array();
+            _this.subscribe(MapEvents.load, true);
+            _this.subscribe(MapEvents.clearAnalysisArea, true);
+            _this.subscribe(MapEvents.clearAspect, true);
+            _this.subscribe(MapEvents.horizontalAspect, true);
+            _this.subscribe(MapEvents.pointConvert, true);
+            _this.subscribe(MapEvents.savePoints, true);
+            _this.subscribe(MapEvents.selectAnalysisArea, true);
+            _this.subscribe(MapEvents.verticalAspect, true);
             _this.on(MapEvents.load);
+            _this.map.addEventListener("moveend", _this.onMapBoundChanged());
+            _this.map.addEventListener("zoomend", _this.onMapBoundChanged());
         });
     };
+    /**
+     * 地图坐标转换。转换完成的点会以pointConvert事件回调。
+     * @param seq 序列号
+     * @param p 转换的点。
+     */
     BaiduMapProvider.prototype.mapPointConvert = function (seq, p) {
         var _this = this;
         var points = this.parseJson(p);
@@ -873,6 +921,7 @@ var BaiduMapProvider = /** @class */ (function (_super) {
                 block = _this.createBlock(point, opt);
                 blockGrid.blocks.push(block);
                 _this.map.addOverlay(block);
+                _this.on(MapEvents.blockChanged, { blocks: _this.getBlocksData(_this.blockGrid.blocks) });
             }
             else {
                 block.context.addPoint(point);
@@ -977,6 +1026,24 @@ var BaiduMapProvider = /** @class */ (function (_super) {
                 _this.map.centerAndZoom(point, 19);
             }
         }, null);
+    };
+    BaiduMapProvider.prototype.onSubscribe = function (eventName) {
+        var result;
+        switch (eventName) {
+            case MapEvents.blockChanged:
+                result = { blocks: this.getBlocksData(this.blockGrid.blocks) };
+                break;
+            case MapEvents.boundChanged:
+                result = { bound: this.getMapBounds() };
+                break;
+            case MapEvents.uavChanged:
+                break;
+            default:
+                break;
+        }
+        if (result) {
+            return JSON.stringify(result);
+        }
     };
     BaiduMapProvider.prototype.testGrid = function () {
         this.gridInit(new MapGridOptions());

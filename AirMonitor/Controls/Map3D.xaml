@@ -14,6 +14,20 @@
             </LinearGradientBrush>
         </Grid.OpacityMask>
         <Viewport3D Focusable="True" Name="View3D" local:Trackball3D.TransformModel="{Binding ElementName=M}" >
+            <Viewport3D.Resources>
+                <MeshGeometry3D x:Key="UavGeometry" Positions="-1 10 -1,-1 10 1,1 10 1, 1 10 -1" TriangleIndices="0 1 2,0 2 3" TextureCoordinates="0 0 ,0 1 ,1 1, 1 0"/>
+                <DiffuseMaterial x:Key="UavMaterial">
+                    <DiffuseMaterial.Brush>
+                        <ImageBrush ImageSource="/AirHunter;component/Resources/Images/uav.png"/>
+                    </DiffuseMaterial.Brush>
+                </DiffuseMaterial>
+                <MeshGeometry3D x:Key="BlockGeometry"
+                                Positions="-1 1 -1,-1 1 1,1 1 1, 1 1 -1,-1 0 -1,-1 0 1,1 0 1, 1 0 -1" 
+                                TriangleIndices="4 5 1,4 1 0 , 4 0 3 ,4 3 7 ,0 1 2,0 2 3 ,1 5 6 ,1 6 2 ,3 2 6 ,3 6 7 ,5 4 7 ,5 7 6"
+                                TextureCoordinates="0 0 ,0 1 ,1 1, 1 0" />
+                <DiffuseMaterial x:Key="BlockMaterial" Brush="#7F00FF00"/>
+
+            </Viewport3D.Resources>
             <Viewport3D.OpacityMask>
                 <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
                     <GradientStop Color="Black" Offset="0"/>
@@ -23,31 +37,45 @@
             <Viewport3D.Camera>
                 <PerspectiveCamera x:Name="Camera" Position="0,25,40" LookDirection="0,-9,-18"/>
             </Viewport3D.Camera>
-            <ModelVisual3D  x:Name="M">
+            <ModelVisual3D x:Name="M">
                 <ModelVisual3D>
                     <ModelVisual3D.Content>
                         <Model3DGroup>
                             <Model3DGroup.Children>
                                 <AmbientLight />
-                                <GeometryModel3D>
-                                    <GeometryModel3D.Geometry>
-                                        <MeshGeometry3D x:Name="Map" Positions="-16 0 -9,16 0 -9,16 0 9,-16 0 9" TriangleIndices="0 3 2,0 2 1" TextureCoordinates="0 0,1 0,1 1,0 1"/>
-                                    </GeometryModel3D.Geometry>
-                                    <GeometryModel3D.Material >
-                                        <MaterialGroup>
-                                            <DiffuseMaterial>
-                                                <DiffuseMaterial.Brush>
-                                                    <ImageBrush x:Name="MapImage" ImageSource="/AirHunter;component/Resources/Images/map.png"/>
-                                                </DiffuseMaterial.Brush>
-                                            </DiffuseMaterial>
-                                        </MaterialGroup >
-                                    </GeometryModel3D.Material >
-                                </GeometryModel3D>
+                                <Model3DGroup x:Name="MapGroup">
+                                    <Model3DGroup.Children>
+                                        <GeometryModel3D>
+                                            <GeometryModel3D.Geometry>
+                                                <MeshGeometry3D x:Name="Map" Positions="-16 0 -9,16 0 -9,16 0 9,-16 0 9" TriangleIndices="0 3 2,0 2 1" TextureCoordinates="0 0,1 0,1 1,0 1"/>
+                                            </GeometryModel3D.Geometry>
+                                            <GeometryModel3D.Material >
+                                                <MaterialGroup>
+                                                    <DiffuseMaterial>
+                                                        <DiffuseMaterial.Brush>
+                                                            <ImageBrush x:Name="MapImage" ImageSource="/AirHunter;component/Resources/Images/map.png"/>
+                                                        </DiffuseMaterial.Brush>
+                                                    </DiffuseMaterial>
+                                                </MaterialGroup >
+                                            </GeometryModel3D.Material >
+                                        </GeometryModel3D>
+                                    </Model3DGroup.Children>
+                                </Model3DGroup>
+                                <Model3DGroup x:Name="UavGroup">
+                                    <Model3DGroup.Children>
+                                        <GeometryModel3D Geometry="{DynamicResource UavGeometry}" Material="{StaticResource UavMaterial}"/>
+                                    </Model3DGroup.Children>
+                                </Model3DGroup>
+                                <Model3DGroup x:Name="BlockGroup" >
+                                    <Model3DGroup.Children>
+                                        <GeometryModel3D Geometry="{DynamicResource BlockGeometry}" Material="{StaticResource BlockMaterial}"/>
+                                    </Model3DGroup.Children>
+                                </Model3DGroup>
                             </Model3DGroup.Children>
                         </Model3DGroup>
                     </ModelVisual3D.Content>
                     <ModelVisual3D.Children>
-                        <Viewport2DVisual3D>
+                        <Viewport2DVisual3D x:Name="North">
                             <Viewport2DVisual3D.Geometry>
                                 <MeshGeometry3D  x:Name="WallNorth"  Positions="-16 10 -9, -16 0 -9, 16 0 -9,16 10 -9" TriangleIndices="0 1 2,0 2 3" TextureCoordinates="0 0,0 1,1 1,1 0" />
                             </Viewport2DVisual3D.Geometry>
@@ -62,7 +90,7 @@
                                 </Canvas>
                             </Viewport2DVisual3D.Visual>
                         </Viewport2DVisual3D>
-                        <Viewport2DVisual3D>
+                        <Viewport2DVisual3D x:Name="South">
                             <Viewport2DVisual3D.Geometry>
                                 <MeshGeometry3D  x:Name="WallSouth"  Positions="16 10 9, 16 0 9, -16 0 9,-16 10 9" TriangleIndices="0 1 2,0 2 3" TextureCoordinates="0 0,0 1,1 1,1 0" />
                             </Viewport2DVisual3D.Geometry>
@@ -77,7 +105,7 @@
                                 </Canvas>
                             </Viewport2DVisual3D.Visual>
                         </Viewport2DVisual3D>
-                        <Viewport2DVisual3D>
+                        <Viewport2DVisual3D x:Name="East">
                             <Viewport2DVisual3D.Geometry>
                                 <MeshGeometry3D  x:Name="WallEast"  Positions="16 10 -9, 16 0 -9,16 0 9, 16 10 9" TriangleIndices="0 1 2,0 2 3" TextureCoordinates="0 0,0 1,1 1,1 0" />
                             </Viewport2DVisual3D.Geometry>
@@ -92,7 +120,7 @@
                                 </Canvas>
                             </Viewport2DVisual3D.Visual>
                         </Viewport2DVisual3D>
-                        <Viewport2DVisual3D>
+                        <Viewport2DVisual3D x:Name="West">
                             <Viewport2DVisual3D.Geometry>
                                 <MeshGeometry3D  x:Name="WallWest"  Positions="-16 10 9, -16 0 9, -16 0 -9, -16 10 -9" TriangleIndices="0 1 2,0 2 3" TextureCoordinates="0 0,0 1,1 1,1 0" />
                             </Viewport2DVisual3D.Geometry>

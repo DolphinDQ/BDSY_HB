@@ -84,7 +84,7 @@ namespace AirMonitor.Map
         /// </summary>
         /// <param name="map"></param>
         /// <param name="uav"></param>
-        public static void UavAdd(this IMapProvider map, Uav uav)
+        public static void UavAdd(this IMapProvider map, MapUav uav)
         {
             map.Invoke("map.uavAdd", uav.name, uav.lng, uav.lat, JsonConvert.SerializeObject(uav.data));
         }
@@ -93,7 +93,7 @@ namespace AirMonitor.Map
         /// </summary>
         /// <param name="map"></param>
         /// <param name="uav"></param>
-        public static void UavMove(this IMapProvider map, Uav uav)
+        public static void UavMove(this IMapProvider map, MapUav uav)
         {
             map.Invoke("map.uavMove", uav.name, uav.lng, uav.lat, JsonConvert.SerializeObject(uav.data));
         }
@@ -140,6 +140,11 @@ namespace AirMonitor.Map
         public static void UavFocus(this IMapProvider map, string name)
         {
             map.Invoke("map.uavFocus", name);
+        }
+
+        public static T Subscribe<T>(this IMapProvider map, MapEvents events, bool enable)
+        {
+            return map.Invoke<T>("map.subscribe", events.ToString(), enable);
         }
         #endregion
     }

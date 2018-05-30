@@ -84,7 +84,6 @@ namespace AirMonitor.ViewModels
 
         public bool EnableSampling { get; set; }
 
-        public double CorrectAltitude { get; set; }
 
         /// <summary>
         /// 数据名称列表，是采样数据的名称列表。
@@ -103,6 +102,9 @@ namespace AirMonitor.ViewModels
         public SampleChart PM10 => Plots[nameof(EvtAirSample.pm10)];
         public SampleChart RelativeHeight => Plots[nameof(EvtAirSample.RelativeHeight)];
         public Dictionary<string, SampleChart> Plots { get; set; }
+
+        private IConfigManager m_configManager;
+
         public AirStandardSetting StandardSetting { get; private set; }
         #endregion
 
@@ -129,6 +131,7 @@ namespace AirMonitor.ViewModels
                     MaxValue = 1000,
                 }
             });
+            m_configManager = configManager;
             StandardSetting = configManager.GetConfig<AirStandardSetting>();
             foreach (var item in StandardSetting.Pollutant)
             {
@@ -152,7 +155,7 @@ namespace AirMonitor.ViewModels
 
         public void Handle(EvtAirSample message)
         {
-            message.RelativeHeight = message.hight - CorrectAltitude;
+            message.RelativeHeight = message.hight - StandardSetting.CorrectAltitude;
             NewestData = message;
             if (EnableSampling)
             {
@@ -173,7 +176,8 @@ namespace AirMonitor.ViewModels
         {
             if (NewestData != null)
             {
-                CorrectAltitude = NewestData.hight;
+                StandardSetting.CorrectAltitude = NewestData.hight;
+                m_configManager.SaveConfig(StandardSetting);
             }
         }
 

@@ -6,14 +6,10 @@ using System.Threading.Tasks;
 
 namespace AirMonitor.Map
 {
-    public class MapBlock
+    public class MapBound
     {
         public MapPoint sw { get; set; }
 
         public MapPoint ne { get; set; }
-
-        public MapPoint center { get; set; }
-
-        public MapPointData[] points { get; set; }
     }
 }

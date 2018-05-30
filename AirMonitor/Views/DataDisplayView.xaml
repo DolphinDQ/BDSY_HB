@@ -43,7 +43,7 @@
                 <DockPanel Margin="5">
                     <Label DockPanel.Dock="Left" VerticalContentAlignment="Center" Content="{StaticResource T_CorrectAltitude}"></Label>
                     <Label DockPanel.Dock="Right" Content="{Binding NewestData.RelativeHeight,Converter={StaticResource Round}}"></Label>
-                    <controls:NumericUpDown Margin="10 0" Value="{Binding CorrectAltitude,Converter={StaticResource Round}}"></controls:NumericUpDown>
+                    <controls:NumericUpDown Margin="10 0" Value="{Binding StandardSetting.CorrectAltitude,Converter={StaticResource Round}}"></controls:NumericUpDown>
                 </DockPanel>
             </StackPanel>
         </Border>

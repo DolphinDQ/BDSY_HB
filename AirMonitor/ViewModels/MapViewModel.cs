@@ -287,7 +287,7 @@ namespace AirMonitor.ViewModels
                 }
                 else
                 {
-                    m_mapProvider.UavMove(new Uav { name = name, data = sample, lat = sample.ActualLat, lng = sample.ActualLng });
+                    m_mapProvider.UavMove(new MapUav { name = name, data = sample, lat = sample.ActualLat, lng = sample.ActualLng });
                     m_mapProvider.GridRefresh();
                     m_mapProvider.UavPath(name, ShowUavPath);
                 }
@@ -303,10 +303,10 @@ namespace AirMonitor.ViewModels
             var s = Samples.Where(o => o.ActualLat != 0 && o.ActualLng != 0).ToList();
             var first = s.FirstOrDefault();
             if (first == null) return;
-            m_mapProvider.UavAdd(new Uav { name = name, data = first, lat = first.ActualLat, lng = first.ActualLng });
+            m_mapProvider.UavAdd(new MapUav { name = name, data = first, lat = first.ActualLat, lng = first.ActualLng });
             foreach (var item in s)
             {
-                m_mapProvider.UavMove(new Uav() { name = name, data = item, lat = item.ActualLat, lng = item.ActualLng });
+                m_mapProvider.UavMove(new MapUav() { name = name, data = item, lat = item.ActualLat, lng = item.ActualLng });
             }
             m_mapProvider.GridInit(MapGridOptions);
             m_mapProvider.UavFocus(name);
@@ -325,7 +325,7 @@ namespace AirMonitor.ViewModels
         public void Test()
         {
             var view = m_factory.Create<Map3DViewModel>();
-            view.MapContainer = MapContainer;
+            view.MapView = this;
             ComparePanel = view;
         }
 

@@ -98,6 +98,7 @@ interface IMapProvider {
     uavRemove(name: string);
     uavExist(name: string): boolean;
     uavFocus(name: string);
+    subscribe(eventName: MapEvents, enable: boolean): any;
 }
 interface MenuItem {
     setText(text: String);
@@ -234,12 +235,17 @@ class Uav {
     marker: any;
     pathMarker: any;
 }
+class EventSubscribe {
+    name: MapEvents;
+    enable: boolean;
+}
 
 interface IEventAggregator {
     on(eventName: MapEvents, arg?: any);
 }
 
 abstract class MapBase implements IMapProvider, IEventAggregator {
+
     abstract mapClearTempReport();
     abstract mapShowTempReport(d: any);
     abstract mapPointConvert(seq: number, p: Point[]);
@@ -254,6 +260,7 @@ abstract class MapBase implements IMapProvider, IEventAggregator {
     abstract gridInit(opt: MapGridOptions);
     abstract mapInit(container: string);
     abstract gridRefresh();
+    abstract onSubscribe(eventName: MapEvents);
     protected loadJs(url: string, onLoad: (e) => any) {
         try {
             var file = document.createElement("script");
@@ -270,16 +277,32 @@ abstract class MapBase implements IMapProvider, IEventAggregator {
             obj = JSON.parse(obj)
         return obj;
     }
+    protected m_events: Array<EventSubscribe> = [];
     on(eventName: MapEvents, arg?: any) {
         try {
-            if (arg) {
-                arg = JSON.stringify(arg);
+            var sub = this.m_events.first(o => o.name == eventName);
+            if (sub && sub.enable) {
+                if (arg) {
+                    arg = JSON.stringify(arg);
+                }
+                window.external.On(eventName, arg);
+                return;
             }
-            window.external.On(eventName, arg);
         } catch (e) {
             //ignore;
-            console.log("triger event [%s] arguments is :", eventName);
-            console.dir(arg);
+        }
+        console.log("triger event [%s] arguments is :", eventName);
+        console.dir(arg);
+    }
+    subscribe(eventName: MapEvents, enable: boolean) {
+        var evt = this.m_events.first(o => o.name == eventName)
+        if (evt) {
+            evt.enable = enable;
+        } else {
+            this.m_events.push(<EventSubscribe>{ name: eventName, enable: enable });
+        }
+        if (enable) {
+            return this.onSubscribe(eventName)
         }
     }
 }
@@ -287,13 +310,15 @@ abstract class MapBase implements IMapProvider, IEventAggregator {
 enum MapEvents {
     load = "load",
     pointConvert = "pointConvert",
-    boundChanged = "boundChanged",
     horizontalAspect = "horizontalAspect",
     verticalAspect = "verticalAspect",
     clearAspect = "clearAspect",
     selectAnalysisArea = "selectAnalysisArea",
     clearAnalysisArea = "clearAnalysisArea",
-    savePoints = "savePoints"
+    savePoints = "savePoints",
+    boundChanged = "boundChanged",
+    blockChanged = "blockChanged",
+    uavChanged = "uavChanged",
 }
 
 enum MapMenuItems {
@@ -454,8 +479,6 @@ class BaiduMapAnalysisArea {
 }
 
 class BaiduMapProvider extends MapBase {
-
-
     private map: any;
     private menuItems: MenuItem[];
     private convertor: any;
@@ -602,7 +625,11 @@ class BaiduMapProvider extends MapBase {
             // alert(e.message);
         }
     }
-
+    /** 地图显示发生变更。 */
+    private onMapBoundChanged(): any {
+        var bound: Bound = this.map.getBounds();
+        this.on(MapEvents.boundChanged, { sw: bound.getSouthWest(), ne: bound.getNorthEast() })
+    }
     private onCheckContextMenu() {
         var blocks = this.blockGrid.selectedBlocks
         var setEnable = (name: MapMenuItems, enable) => {
@@ -648,12 +675,7 @@ class BaiduMapProvider extends MapBase {
             this.addLine(min.getBounds().getSouthWest(), 0, 10000);
             this.addLine(max.getBounds().getNorthEast(), 0, 10000);
             this.on(MapEvents.verticalAspect, {
-                blocks: blocks.select(o => {
-                    return {
-                        center: o.context.center,
-                        points: o.context.getPoints(i => true).select(i => i.data),
-                    }
-                })
+                blocks: this.getBlocksData(blocks)
             });
         }
     }
@@ -671,12 +693,7 @@ class BaiduMapProvider extends MapBase {
             this.addLine(min.getBounds().getSouthWest(), 10000, 0);
             this.addLine(max.getBounds().getNorthEast(), 10000, 0);
             this.on(MapEvents.horizontalAspect, {
-                blocks: blocks.select(o => {
-                    return {
-                        center: o.context.center,
-                        points: o.context.getPoints(i => true).select(i => i.data),
-                    }
-                })
+                blocks: this.getBlocksData(blocks)
             });
         }
     }
@@ -773,7 +790,6 @@ class BaiduMapProvider extends MapBase {
         this.map.openInfoWindow(blockGrid.infoWindow, bound.getNorthEast())
         this.map.addOverlay(blockGrid.infoWindow.targetBorder);
     }
-
     private onSaveSelectedBlocks() {
         if (this.tempSelectedData && this.tempSelectedData.length) {
             this.on(MapEvents.savePoints, { points: this.tempSelectedData });
@@ -785,7 +801,20 @@ class BaiduMapProvider extends MapBase {
             this.on(MapEvents.savePoints, { points: blocks.selectMany(o => o.context.getPoints(i => true).select(i => i.data)) })
         }
     }
-
+    /**获取地图边界。 */
+    private getMapBounds() {
+        var bounds: Bound = this.map.getBounds();
+        if (bounds) {
+            return { sw: bounds.getSouthWest(), ne: bounds.getNorthEast() }
+        }
+    }
+    /**获取所有在地图上的方块数据。 */
+    private getBlocksData(blocks: Block[]) {
+        return blocks.select(o => {
+            var b = o.getBounds();
+            return { sw: b.getSouthWest(), ne: b.getNorthEast(), center: o.context.center, points: o.context.getPoints(i => true).select(i => i.data) }
+        })
+    }
     /**
      * 初始化地图。
      * @param container 地图容器id
@@ -851,9 +880,24 @@ class BaiduMapProvider extends MapBase {
             this.blockGrid = new MapGrid();
             this.blockGrid.blocks = new Array<any>();
             this.uavList = new Array<Uav>();
+            this.subscribe(MapEvents.load, true);
+            this.subscribe(MapEvents.clearAnalysisArea, true);
+            this.subscribe(MapEvents.clearAspect, true);
+            this.subscribe(MapEvents.horizontalAspect, true);
+            this.subscribe(MapEvents.pointConvert, true);
+            this.subscribe(MapEvents.savePoints, true);
+            this.subscribe(MapEvents.selectAnalysisArea, true);
+            this.subscribe(MapEvents.verticalAspect, true);
             this.on(MapEvents.load);
+            this.map.addEventListener("moveend", this.onMapBoundChanged());
+            this.map.addEventListener("zoomend", this.onMapBoundChanged());
         });
     }
+    /**
+     * 地图坐标转换。转换完成的点会以pointConvert事件回调。
+     * @param seq 序列号
+     * @param p 转换的点。
+     */
     mapPointConvert(seq: number, p: Point[]) {
         var points = this.parseJson(p);
         this.convertor.translate(points, 1, 5, o => {
@@ -941,6 +985,7 @@ class BaiduMapProvider extends MapBase {
                 block = this.createBlock(point, opt);
                 blockGrid.blocks.push(block);
                 this.map.addOverlay(block);
+                this.on(MapEvents.blockChanged, { blocks: this.getBlocksData(this.blockGrid.blocks) });
             } else {
                 block.context.addPoint(point);
             }
@@ -1036,6 +1081,24 @@ class BaiduMapProvider extends MapBase {
                 this.map.centerAndZoom(point, 19);
             }
         }, null);
+    }
+    onSubscribe(eventName: MapEvents) {
+        var result: any;
+        switch (eventName) {
+            case MapEvents.blockChanged:
+                result = { blocks: this.getBlocksData(this.blockGrid.blocks) };
+                break;
+            case MapEvents.boundChanged:
+                result = { bound: this.getMapBounds() };
+                break;
+            case MapEvents.uavChanged:
+                break;
+            default:
+                break;
+        }
+        if (result) {
+            return JSON.stringify(result);
+        }
     }
     testGrid() {
         this.gridInit(new MapGridOptions());

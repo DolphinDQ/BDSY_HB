@@ -35,7 +35,6 @@ namespace AirMonitor.ViewModels
             if (Settings != null)
             {
                 m_configManager.SaveConfig(Settings);
-                m_eventAggregator.PublishOnBackgroundThread(new EvtSetting() { Command = SettingCommands.Changed, SettingObject = Settings });
             }
         }
 

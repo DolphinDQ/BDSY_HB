@@ -1,6 +1,7 @@
 ﻿using AirMonitor.Core;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Drawing;
 using System.IO;
 using System.Linq;
@@ -87,6 +88,52 @@ namespace AirMonitor.Controls
         }
 
 
+        /// <summary>
+        /// 无人机列表。
+        /// </summary>
+        public ObservableCollection<UavMarker3D> UavCollection
+        {
+            get { return (ObservableCollection<UavMarker3D>)GetValue(UavCollectionProperty); }
+            set { SetValue(UavCollectionProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for UavCollection.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty UavCollectionProperty =
+            DependencyProperty.Register("UavCollection", typeof(ObservableCollection<UavMarker3D>), typeof(Map3D), new PropertyMetadata(null, new PropertyChangedCallback(OnUavCollectionChanged)));
+
+        private static void OnUavCollectionChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            if (d is Map3D map)
+            {
+                map.OnUavCollectionChanged(e);
+            }
+        }
+
+
+
+        /// <summary>
+        /// 方块列表。
+        /// </summary>
+        public ObservableCollection<BlockMarker3D> BlockCollection
+        {
+            get { return (ObservableCollection<BlockMarker3D>)GetValue(BlockCollectionProperty); }
+            set { SetValue(BlockCollectionProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for BlockCollection.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty BlockCollectionProperty =
+            DependencyProperty.Register("BlockCollection", typeof(ObservableCollection<BlockMarker3D>), typeof(Map3D), new PropertyMetadata(null, new PropertyChangedCallback(OnBlockCollectionChanged)));
+
+        private static void OnBlockCollectionChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            if (d is Map3D map)
+            {
+                map.OnBlockCollectionChanged(e);
+            }
+        }
+
+
+
 
         #endregion
 
@@ -102,7 +149,6 @@ namespace AirMonitor.Controls
             get { return (object)GetValue(MapContainerProperty); }
             set { SetValue(MapContainerProperty, value); }
         }
-
 
         private void OnReloadMap()
         {
@@ -211,6 +257,142 @@ namespace AirMonitor.Controls
                 DrawWallGrid(WallSouthPanel, bound.Max.Lng, bound.Min.Lng, bound.Max.Height, bound.Min.Height, true);
                 DrawWallGrid(WallEastPanel, bound.Max.Lat, bound.Min.Lat, bound.Max.Height, bound.Min.Height, true);
                 DrawWallGrid(WallWestPanel, bound.Max.Lat, bound.Min.Lat, bound.Max.Height, bound.Min.Height);
+            }
+        }
+
+        private void OnUavCollectionChanged(DependencyPropertyChangedEventArgs e)
+        {
+            if (e.OldValue is ObservableCollection<UavMarker3D> oldUav)
+            {
+                oldUav.CollectionChanged -= Uav_CollectionChanged;
+            }
+
+            if (e.NewValue is ObservableCollection<UavMarker3D> newUav)
+            {
+                newUav.CollectionChanged += Uav_CollectionChanged;
+                OnReloadUav();
+            }
+        }
+
+        private void OnReloadUav()
+        {
+            var uav = UavCollection.ToArray();//copy
+            if (uav != null && MapBound != null)
+            {
+                UavGroup.Children.Clear();
+                foreach (var item in uav)
+                {
+                    UavGroup.Children.Add(CreateUav(item));
+                }
+            }
+        }
+
+        private Model3D CreateUav(UavMarker3D item)
+        {
+            var h = HeightConvert(item.Bound.Min.Height);
+            var x1 = LngConvert(item.Bound.Min.Lng);
+            var y1 = LatConvert(item.Bound.Min.Lat);
+            var x2 = LngConvert(item.Bound.Max.Lng);
+            var y2 = LatConvert(item.Bound.Max.Lat);
+            var geometry = View3D.FindResource("UavGeometry") as MeshGeometry3D;
+            geometry.Positions = Point3DCollection.Parse(string.Format("{1} {0} {2},{1} {0} {4},{3} {0} {4},{3} {0} {2}", h, x1, y1, x2, y2));
+            var result = new GeometryModel3D(geometry, View3D.FindResource("UavMaterial") as Material);
+            result.SetValue(MapMarker3D.MapMarkerProperty, item);
+            return result;
+        }
+
+        private void Uav_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+        {
+            switch (e.Action)
+            {
+                case System.Collections.Specialized.NotifyCollectionChangedAction.Add:
+                    if (e.NewItems != null)
+                    {
+                        foreach (var item in e.NewItems)
+                        {
+                            if (item is UavMarker3D uav)
+                            {
+                                Dispatcher.Invoke(() =>
+                                {
+                                    UavGroup.Children.Add(CreateUav(uav));
+                                });
+                            }
+                        }
+                    }
+                    break;
+                case System.Collections.Specialized.NotifyCollectionChangedAction.Reset:
+                    UavGroup.Children.Clear();
+                    break;
+            }
+        }
+
+        private void OnBlockCollectionChanged(DependencyPropertyChangedEventArgs e)
+        {
+            if (e.OldValue is ObservableCollection<BlockMarker3D> oldBlock)
+            {
+                oldBlock.CollectionChanged -= Block_CollectionChanged;
+            }
+            if (e.NewValue is ObservableCollection<BlockMarker3D> newBlock)
+            {
+                newBlock.CollectionChanged += Block_CollectionChanged;
+                OnReloadBlock();
+            }
+        }
+
+        private void OnReloadBlock()
+        {
+            var uav = BlockCollection.ToArray();//copy
+            if (uav != null && MapBound != null)
+            {
+                UavGroup.Children.Clear();
+                foreach (var item in uav)
+                {
+                    UavGroup.Children.Add(CreateBlock(item));
+                }
+            }
+        }
+
+        private Model3D CreateBlock(BlockMarker3D item)
+        {
+            var x1 = LngConvert(item.Bound.Min.Lng);
+            var y1 = LatConvert(item.Bound.Min.Lat);
+            var z1 = HeightConvert(item.Bound.Min.Height);
+            var x2 = LngConvert(item.Bound.Max.Lng);
+            var y2 = LatConvert(item.Bound.Max.Lat);
+            var z2 = HeightConvert(item.Bound.Max.Height);
+            var geometry = View3D.FindResource("BlockGeometry") as MeshGeometry3D;
+            geometry.Positions = Point3DCollection.Parse(string.Format("{1} {0} {2},{1} {0} {4},{3} {0} {4},{3} {0} {2},{1} {5} {2},{1} {5} {4},{3} {5} {4},{3} {5} {2}", z1, x1, y1, x2, y2, z2));
+            var material = View3D.FindResource("BlockMaterial") as DiffuseMaterial;
+            var color = new BrushConverter().ConvertFromString(item.Color) as System.Windows.Media.Brush;
+            color.Opacity = item.Opacity;
+            material.Brush = color;
+            var result = new GeometryModel3D(geometry, material);
+            result.SetValue(MapMarker3D.MapMarkerProperty, item);
+            return result;
+        }
+
+        private void Block_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+        {
+            switch (e.Action)
+            {
+                case System.Collections.Specialized.NotifyCollectionChangedAction.Add:
+                    if (e.NewItems != null)
+                    {
+                        foreach (var item in e.NewItems)
+                        {
+                            if (item is BlockMarker3D block)
+                            {
+                                Dispatcher.Invoke(() =>
+                                {
+                                    UavGroup.Children.Add(CreateBlock(block));
+                                });
+                            }
+                        }
+                    }
+                    break;
+                case System.Collections.Specialized.NotifyCollectionChangedAction.Reset:
+                    UavGroup.Children.Clear();
+                    break;
             }
         }
 

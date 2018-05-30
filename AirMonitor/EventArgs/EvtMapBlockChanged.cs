@@ -7,8 +7,8 @@ using System.Threading.Tasks;
 
 namespace AirMonitor.EventArgs
 {
-    public class EvtMapBoundChanged
+    public class EvtMapBlockChanged
     {
-        public MapBound bound { get; set; }
+        public MapBlock[] blocks { get; set; }
     }
 }

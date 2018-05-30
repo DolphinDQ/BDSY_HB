@@ -7,8 +7,8 @@ using System.Threading.Tasks;
 
 namespace AirMonitor.EventArgs
 {
-    public class EvtMapBoundChanged
+    public class EvtMapUavChanged
     {
-        public MapBound bound { get; set; }
+        public MapUav[] uav { get; set; }
     }
 }

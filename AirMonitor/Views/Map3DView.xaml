@@ -9,6 +9,6 @@
              Width="500"
              d:DesignHeight="450" d:DesignWidth="800">
     <Grid>
-        <ctrl:Map3D MapContainer="{Binding MapContainer}"  MapBound="{Binding MapBound}" />
+        <ctrl:Map3D MapContainer="{Binding MapView.MapContainer}"  MapBound="{Binding MapBound}" UavCollection="{Binding UavList}"  BlockCollection="{Binding BlockList}"/>
     </Grid>
 </UserControl>
