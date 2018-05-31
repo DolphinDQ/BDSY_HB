@@ -26,10 +26,10 @@ namespace AirMonitor.Controls
 
 
 
-        /// <summary>
-        /// 中心点位置。
-        /// </summary>
-        public Map3DPoint Position { get; set; }
+        ///// <summary>
+        ///// 中心点位置。
+        ///// </summary>
+        //public Map3DPoint Position { get; set; }
         /// <summary>
         /// 占用区域。
         /// </summary>
