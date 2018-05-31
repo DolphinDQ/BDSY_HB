@@ -18,7 +18,7 @@ using AirMonitor.Chart;
 
 namespace AirMonitor.ViewModels
 {
-    class DataDisplayViewModel : Screen, IHandle<EvtAirSample>, IHandle<EvtSetting>
+    class DataDisplayViewModel : Screen, IHandle<EvtAirSample>, IHandle<EvtSetting>, IHandle<EvtSampling>
     {
         [AddINotifyPropertyChangedInterface]
         public class SampleChart
@@ -28,7 +28,7 @@ namespace AirMonitor.ViewModels
             public SampleChart(IChartManager chart, double max = double.NaN, double min = double.NaN)
             {
                 Collection = new ObservableCollection<Tuple<DateTime, double>>();
-                ChartModel = chart.CreateLiner(Collection, new LinerOptions() { MaxVaule = max, MinValue = min });
+                ChartModel = chart.CreateLiner(Collection, new LinerOptions() { MaxY = max, MinY = min });
                 Collection.CollectionChanged += Collection_CollectionChanged;
                 m_chart = chart;
             }
@@ -85,11 +85,12 @@ namespace AirMonitor.ViewModels
         public bool EnableSampling { get; set; }
 
         public double CorrectAltitude { get; set; }
-
         /// <summary>
         /// 数据名称列表，是采样数据的名称列表。
         /// </summary>
         public List<Tuple<string, string>> DataNameList { get; set; }
+
+
 
         #region Sample list
         public SampleChart Temperature => Plots[nameof(EvtAirSample.temp)];
@@ -103,6 +104,9 @@ namespace AirMonitor.ViewModels
         public SampleChart PM10 => Plots[nameof(EvtAirSample.pm10)];
         public SampleChart RelativeHeight => Plots[nameof(EvtAirSample.RelativeHeight)];
         public Dictionary<string, SampleChart> Plots { get; set; }
+
+        private IConfigManager m_configManager;
+
         public AirStandardSetting StandardSetting { get; private set; }
         #endregion
 
@@ -117,25 +121,31 @@ namespace AirMonitor.ViewModels
             m_eventAggregator = eventAggregator;
             m_res = res;
             DataManager = data;
+            m_configManager = configManager;
+            StandardSetting = configManager.GetConfig<AirStandardSetting>();
+            CorrectAltitude = StandardSetting.CorrectAltitude;
             Plots = new Dictionary<string, SampleChart>();
             Plots.Add(nameof(EvtAirSample.RelativeHeight), new SampleChart(chartManager)
             {
-                Pollutant = new AirPollutant()
-                {
-                    Name = nameof(EvtAirSample.RelativeHeight),
-                    DisplayName = res.GetText("T_RelativeHeight"),
-                    Unit = "m",
-                    MinValue = 0,
-                    MaxValue = 1000,
-                }
+                Pollutant = GetHeightPollutant()
             });
-            StandardSetting = configManager.GetConfig<AirStandardSetting>();
+
             foreach (var item in StandardSetting.Pollutant)
             {
                 Plots.Add(item.Name, new SampleChart(chartManager) { Pollutant = item });
             }
         }
-
+        private AirPollutant GetHeightPollutant()
+        {
+            return new AirPollutant()
+            {
+                Name = nameof(EvtAirSample.RelativeHeight),
+                DisplayName = m_res.GetText("T_RelativeHeight"),
+                Unit = StandardSetting.AltitudeUnit,
+                MinValue = 0,
+                MaxValue = StandardSetting.MaxAltitude,
+            };
+        }
         public override void TryClose(bool? dialogResult = null)
         {
             base.TryClose(dialogResult);
@@ -152,7 +162,7 @@ namespace AirMonitor.ViewModels
 
         public void Handle(EvtAirSample message)
         {
-            message.RelativeHeight = message.hight - CorrectAltitude;
+            message.RelativeHeight = message.hight - StandardSetting.CorrectAltitude;
             NewestData = message;
             if (EnableSampling)
             {
@@ -177,9 +187,16 @@ namespace AirMonitor.ViewModels
             }
         }
 
-        public void ClearData()
+        public void OnCorrectAltitudeChanged()
         {
-            if (MessageBox.Show(m_res.GetText("T_ClearReportWarning"), "", MessageBoxButton.YesNo) == MessageBoxResult.Yes)
+            StandardSetting.CorrectAltitude = CorrectAltitude;
+            m_configManager.SaveConfig(StandardSetting);
+        }
+
+
+        public void ClearData(bool focus = false)
+        {
+            if (focus || MessageBox.Show(m_res.GetText("T_ClearReportWarning"), "", MessageBoxButton.YesNo) == MessageBoxResult.Yes)
             {
                 ClearChart(Temperature);
                 ClearChart(Humidity);
@@ -191,18 +208,12 @@ namespace AirMonitor.ViewModels
                 ClearChart(PM2_5);
                 ClearChart(PM10);
                 ClearChart(RelativeHeight);
-                m_eventAggregator.PublishOnBackgroundThread(new EvtSampling() { Status = SamplingStatus.Clear });
             }
         }
 
         private void ClearChart(SampleChart chart) => OnUIThread(() => chart.Collection.Clear());
 
         private void FillChart(SampleChart chart, Tuple<DateTime, double> value) => OnUIThread(() => chart.Collection.Add(value));
-
-        public void Config()
-        {
-            m_eventAggregator.PublishOnBackgroundThread(new EvtSetting() { SettingObject = StandardSetting });
-        }
 
         public void Handle(EvtSetting message)
         {
@@ -216,12 +227,30 @@ namespace AirMonitor.ViewModels
                         Plots[item.Name].Pollutant = null;
                         Plots[item.Name].Pollutant = item;
                     }
+                    Plots[nameof(RelativeHeight)].Pollutant = GetHeightPollutant();
+                    NotifyOfPropertyChange(nameof(StandardSetting));
                 }
             }
             catch (Exception e)
             {
                 this.Warn("handler message {0} error", JsonConvert.SerializeObject(message));
                 this.Error(e);
+            }
+        }
+
+        public void Handle(EvtSampling message)
+        {
+            switch (message.Status)
+            {
+                case SamplingStatus.Stop:
+                    EnableSampling = false;
+                    break;
+                case SamplingStatus.Start:
+                    EnableSampling = true;
+                    break;
+                case SamplingStatus.ClearAll:
+                    ClearData(true);
+                    break;
             }
         }
     }

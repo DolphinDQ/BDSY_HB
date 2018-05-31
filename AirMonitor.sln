@@ -15,6 +15,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "chart", "chart\chart.csproj
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Viewport3DTest", "Viewport3DTest\Viewport3DTest.csproj", "{93EB80F2-380C-4443-A3B5-5A624C6F80F8}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TooltipTest", "TooltipTest\TooltipTest.csproj", "{088D9B46-C018-42D3-A155-0939A573C1FB}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -45,6 +47,10 @@ Global
 		{93EB80F2-380C-4443-A3B5-5A624C6F80F8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{93EB80F2-380C-4443-A3B5-5A624C6F80F8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{93EB80F2-380C-4443-A3B5-5A624C6F80F8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{088D9B46-C018-42D3-A155-0939A573C1FB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{088D9B46-C018-42D3-A155-0939A573C1FB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{088D9B46-C018-42D3-A155-0939A573C1FB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{088D9B46-C018-42D3-A155-0939A573C1FB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

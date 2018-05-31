@@ -43,7 +43,7 @@
                     <Label Content="{Binding Samples.Count}"></Label>
                     <Label Content="{StaticResource T_InvalidSamples }"></Label>
                     <Label Content="{Binding InvalidSamples.Count}"></Label>
-                    <Button Name="ClearSamples" Content="{StaticResource T_ClearSamples}"></Button>
+                    <Button Name="ClearSamples" Content="{StaticResource T_ClearMap}"></Button>
                     <Button Name="SaveSamples" Content="{StaticResource T_SaveSamples}"></Button>
                     <Button Name="LoadSamples" Content="{StaticResource T_LoadSamples}"></Button>
                     <ToggleButton Visibility="Collapsed" Content="{StaticResource T_AnalysisSamples}" IsChecked="{Binding EnableAnalysis}"></ToggleButton>
@@ -87,7 +87,7 @@
                 <ToggleButton IsChecked="{Binding ShowUavPath}" Content="{StaticResource T_UavPath}"></ToggleButton>
                 <Button Name="UavLocation" Content="{StaticResource T_UavLocation}"></Button>
                 <Button Name="RefreshMap" Content="{StaticResource T_RefreshMap}"></Button>
-                <Button Name="Test" Visibility="Hidden">测试</Button>
+                <!--<Button Name="Test" >测试</Button>-->
             </StackPanel>
         </Border>
         <Border DockPanel.Dock="Left">
@@ -126,16 +126,47 @@
                 <Label Grid.ColumnSpan="2" Grid.Row="0" Content="{Binding MapGridOptions.ValueStep[5],Converter={StaticResource Round}}"></Label>
                 <Label Grid.ColumnSpan="2" Grid.Row="1" Content="{Binding MapGridOptions.ValueStep[4],Converter={StaticResource Round}}"></Label>
                 <Label Grid.ColumnSpan="2" Grid.Row="2" Content="{Binding MapGridOptions.ValueStep[3],Converter={StaticResource Round}}"></Label>
-                <Label Grid.ColumnSpan="2" Grid.Row="3" Content="{Binding MapGridOptions.ValueStep[2],Converter={StaticResource Round}}"></Label>
+                <Label Grid.ColumnSpan="2" Grid.Row="3" Content="{Binding MapGridOptions.ValueStep[2],Converter={StaticResource Round}}" Background="{x:Null}"/>
                 <Label Grid.ColumnSpan="2" Grid.Row="4" Content="{Binding MapGridOptions.ValueStep[1],Converter={StaticResource Round}}"></Label>
                 <Label Grid.ColumnSpan="2" Grid.Row="5" Content="{Binding MapGridOptions.ValueStep[0],Converter={StaticResource Round}}"></Label>
             </Grid>
         </Border>
-        <DockPanel>
-            <control:TransitioningContentControl DockPanel.Dock="Bottom" Visibility="{Binding EnableAnalysis,Converter={StaticResource IsVisible}}" cal:View.Model="{Binding PropertyPanel}"></control:TransitioningContentControl>
-            <Border>
+        <Border>
+            <Grid>
                 <WebBrowser  Name="Map" Tag="{Binding MapContainer,Mode=OneWayToSource}"/>
-            </Border>
-        </DockPanel>
+                <Popup Placement="Top"  VerticalOffset="{Binding ElementName=Map,Path=ActualHeight}" IsOpen="True" AllowsTransparency="True" >
+                    <Grid Width="{Binding ElementName=Map,Path=ActualWidth}" Height="{Binding ElementName=Map,Path=ActualHeight}">
+                        <Border  VerticalAlignment="Bottom"
+                            Background="White"
+                            Visibility="{Binding PropertyPanel,Converter={StaticResource AnyVisiable}}" >
+                            <control:TransitioningContentControl  cal:View.Model="{Binding PropertyPanel}"/>
+                        </Border>
+                        <Border 
+                            Background="White"
+                            VerticalAlignment="Top"
+                            HorizontalAlignment="Left">
+                            <Grid>
+                                <control:TransitioningContentControl  
+                                    Visibility="{Binding ComparePanel,Converter={StaticResource AnyVisiable}}" 
+                                    Width="{Binding ElementName=Map,Path=ActualWidth,Converter={StaticResource Multiple}, ConverterParameter=0.4}" 
+                                    Height="{Binding ElementName=Map,Path=ActualHeight,Converter={StaticResource Multiple}, ConverterParameter=0.4}"  
+                                    cal:View.Model="{Binding ComparePanel}"/>
+                                <control:TransitioningContentControl  
+                                    Width="{Binding ElementName=Map,Path=ActualWidth}" 
+                                    Height="{Binding ElementName=Map,Path=ActualHeight}"  
+                                    Visibility="{Binding FullScreenPanel,Converter={StaticResource AnyVisiable}}" 
+                                    cal:View.Model="{Binding FullScreenPanel}"/>
+                                <ToggleButton IsChecked="{Binding Show3DView}" Width="30" Height="30" 
+                                              Style="{DynamicResource MetroCircleButtonStyle}" VerticalAlignment="Top" HorizontalAlignment="Left">3D</ToggleButton>
+                                <ToggleButton IsChecked="{Binding FullScreen}" Width="30" Height="30" 
+                                              Visibility="{Binding Show3DView,Converter={StaticResource IsVisible}}" 
+                                              Style="{DynamicResource MetroCircleButtonStyle}" VerticalAlignment="Top" HorizontalAlignment="Right">〓</ToggleButton>
+                            </Grid>
+                        </Border>
+                    </Grid>
+                </Popup>
+            </Grid>
+        </Border>
     </DockPanel>
+
 </UserControl>

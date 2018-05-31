@@ -86,6 +86,8 @@ if (!Array.prototype.selectMany) {
 interface IMapProvider {
     mapInit(container: string);
     mapPointConvert(seq: number, p: Point[]);
+    mapShowTempReport(d: any);
+    mapClearTempReport();
     gridInit(opt: MapGridOptions);
     gridRefresh();
     gridClear();
@@ -96,6 +98,7 @@ interface IMapProvider {
     uavRemove(name: string);
     uavExist(name: string): boolean;
     uavFocus(name: string);
+    subscribe(eventName: MapEvents, enable: boolean): any;
 }
 interface MenuItem {
     setText(text: String);
@@ -152,6 +155,7 @@ class BlockContext {
         })
     }
     readonly center: Point;
+    color: string;
     time: string;
     private points: Point[] = [];
     private reports: PollutantReport[] = [];
@@ -232,12 +236,19 @@ class Uav {
     marker: any;
     pathMarker: any;
 }
+class EventSubscribe {
+    name: MapEvents;
+    enable: boolean;
+}
 
 interface IEventAggregator {
     on(eventName: MapEvents, arg?: any);
 }
 
 abstract class MapBase implements IMapProvider, IEventAggregator {
+
+    abstract mapClearTempReport();
+    abstract mapShowTempReport(d: any);
     abstract mapPointConvert(seq: number, p: Point[]);
     abstract uavShowPath(name: string);
     abstract uavHidePath(name: string);
@@ -250,6 +261,7 @@ abstract class MapBase implements IMapProvider, IEventAggregator {
     abstract gridInit(opt: MapGridOptions);
     abstract mapInit(container: string);
     abstract gridRefresh();
+    abstract onSubscribe(eventName: MapEvents);
     protected loadJs(url: string, onLoad: (e) => any) {
         try {
             var file = document.createElement("script");
@@ -266,16 +278,32 @@ abstract class MapBase implements IMapProvider, IEventAggregator {
             obj = JSON.parse(obj)
         return obj;
     }
+    protected m_events: Array<EventSubscribe> = [];
     on(eventName: MapEvents, arg?: any) {
         try {
-            if (arg) {
-                arg = JSON.stringify(arg);
+            var sub = this.m_events.first(o => o.name == eventName);
+            if (sub && sub.enable) {
+                if (arg) {
+                    arg = JSON.stringify(arg);
+                }
+                window.external.On(eventName, arg);
+                return;
             }
-            window.external.On(eventName, arg);
         } catch (e) {
             //ignore;
-            console.log("triger event [%s] arguments is :", eventName);
-            console.dir(arg);
+        }
+        console.log("triger event [%s] arguments is :", eventName);
+        console.dir(arg);
+    }
+    subscribe(eventName: MapEvents, enable: boolean) {
+        var evt = this.m_events.first(o => o.name == eventName)
+        if (evt) {
+            evt.enable = enable;
+        } else {
+            this.m_events.push(<EventSubscribe>{ name: eventName, enable: enable });
+        }
+        if (enable) {
+            return this.onSubscribe(eventName)
         }
     }
 }
@@ -283,17 +311,21 @@ abstract class MapBase implements IMapProvider, IEventAggregator {
 enum MapEvents {
     load = "load",
     pointConvert = "pointConvert",
-    boundChanged = "boundChanged",
     horizontalAspect = "horizontalAspect",
     verticalAspect = "verticalAspect",
     clearAspect = "clearAspect",
     selectAnalysisArea = "selectAnalysisArea",
-    clearAnalysisArea = "clearAnalysisArea"
+    clearAnalysisArea = "clearAnalysisArea",
+    savePoints = "savePoints",
+    boundChanged = "boundChanged",
+    blockChanged = "blockChanged",
+    uavChanged = "uavChanged",
 }
 
 enum MapMenuItems {
     compare = "对比数据",
     reports = "统计报表",
+    savePoints = "保存",
     horizontal = "横向切面",
     vertical = "纵向切面",
     selectAnalysisArea = "选择分析区域",
@@ -333,7 +365,7 @@ class BaiduMapSelector {
         this.callback = callbackFn;
         map.addEventListener("mousedown", o => {
             if (!this.enable) return;
-            if (o.domEvent.which == 3) {
+            if (o.domEvent.which == 3 || o.domEvent.button == 2) {
                 var selector = this.selector;
                 if (!selector) {
                     selector = this.selector = new BMap.Polygon([], {
@@ -357,7 +389,7 @@ class BaiduMapSelector {
         map.addEventListener("mousemove", o => {
             var selector = this.selector;
             var p1 = this.pointOne;
-            if (o.domEvent.which == 3 && selector && p1) {
+            if (selector && p1) {
                 var p2: Point = o.point;
                 selector.setPath([
                     new BMap.Point(p1.lng, p1.lat),
@@ -444,21 +476,17 @@ class BaiduMapAnalysisArea {
             delete this.border;
             this.evt.on(MapEvents.clearAnalysisArea);
         }
-
     }
-
 }
 
-
-
 class BaiduMapProvider extends MapBase {
-
     private map: any;
     private menuItems: MenuItem[];
     private convertor: any;
     private blockGrid: MapGrid;
     private uavList: Uav[];
     private analysisArea: BaiduMapAnalysisArea;
+    private tempSelectedData: Array<any>;    //临时选中数据。
     private getColor(value: number, min: number = undefined, max: number = undefined): string {
         var opt = this.blockGrid.options;
         if (!min) min = opt.minValue
@@ -529,7 +557,7 @@ class BaiduMapProvider extends MapBase {
             {
                 fillOpacity: opacity,
                 strokeWeight: 1,
-                strokeOpacity: 0.5,
+                strokeOpacity: 0.2,
                 strokeColor: "white"
             }
         );
@@ -547,7 +575,7 @@ class BaiduMapProvider extends MapBase {
      */
     private onSelectBlock(b: Block, act: MapBlockSelectAction = MapBlockSelectAction.switch) {
         var index = null;
-        var block = null;
+        var block: Block = null;
         for (var i = 0; i < this.blockGrid.selectedBlocks.length; i++) {
             block = this.blockGrid.selectedBlocks[i]
             if (block == b) {
@@ -566,7 +594,7 @@ class BaiduMapProvider extends MapBase {
         } else {
             if (act == MapBlockSelectAction.focusSelect) return;
             block.setStrokeColor("white");
-            block.setStrokeOpacity(0.5);
+            block.setStrokeOpacity(0.2);
             block.setStrokeWeight(1);
             block.setStrokeStyle("solid");
             this.blockGrid.selectedBlocks.splice(i, 1);
@@ -598,7 +626,11 @@ class BaiduMapProvider extends MapBase {
             // alert(e.message);
         }
     }
-
+    /** 地图显示发生变更。 */
+    private onMapBoundChanged(): any {
+        var bound: Bound = this.map.getBounds();
+        this.on(MapEvents.boundChanged, { bound: { sw: bound.getSouthWest(), ne: bound.getNorthEast() } });
+    }
     private onCheckContextMenu() {
         var blocks = this.blockGrid.selectedBlocks
         var setEnable = (name: MapMenuItems, enable) => {
@@ -614,6 +646,7 @@ class BaiduMapProvider extends MapBase {
         if (!blocks) {
             this.menuItems.forEach(o => { if (o) o.disable() });
         } else {
+            setEnable(MapMenuItems.savePoints, blocks.length > 0);
             setEnable(MapMenuItems.reports, blocks.length > 0);
             setEnable(MapMenuItems.horizontal, blocks.length > 0);
             setEnable(MapMenuItems.vertical, blocks.length > 0);
@@ -643,12 +676,7 @@ class BaiduMapProvider extends MapBase {
             this.addLine(min.getBounds().getSouthWest(), 0, 10000);
             this.addLine(max.getBounds().getNorthEast(), 0, 10000);
             this.on(MapEvents.verticalAspect, {
-                blocks: blocks.select(o => {
-                    return {
-                        center: o.context.center,
-                        points: o.context.getPoints(i => true).select(i => i.data),
-                    }
-                })
+                blocks: this.getBlocksData(blocks)
             });
         }
     }
@@ -666,26 +694,24 @@ class BaiduMapProvider extends MapBase {
             this.addLine(min.getBounds().getSouthWest(), 10000, 0);
             this.addLine(max.getBounds().getNorthEast(), 10000, 0);
             this.on(MapEvents.horizontalAspect, {
-                blocks: blocks.select(o => {
-                    return {
-                        center: o.context.center,
-                        points: o.context.getPoints(i => true).select(i => i.data),
-                    }
-                })
+                blocks: this.getBlocksData(blocks)
             });
         }
+    }
+    private getBlocksBounds(blocks: Block[]): Bound {
+        var minLat = blocks.min(o => o.context.center.lat).getBounds().getSouthWest().lat;
+        var maxLat = blocks.max(o => o.context.center.lat).getBounds().getNorthEast().lat;
+        var minLng = blocks.min(o => o.context.center.lng).getBounds().getSouthWest().lng;
+        var maxLng = blocks.max(o => o.context.center.lng).getBounds().getNorthEast().lng;
+        return new BMap.Bounds(
+            new BMap.Point(minLng, minLat),
+            new BMap.Point(maxLng, maxLat)
+        );
     }
     private onShowSelectedBlockReport() {
         var blocks = this.blockGrid.selectedBlocks;
         if (blocks) {
-            var minLat = blocks.min(o => o.context.center.lat).getBounds().getSouthWest().lat;
-            var maxLat = blocks.max(o => o.context.center.lat).getBounds().getNorthEast().lat;
-            var minLng = blocks.min(o => o.context.center.lng).getBounds().getSouthWest().lng;
-            var maxLng = blocks.max(o => o.context.center.lng).getBounds().getNorthEast().lng;
-            var bound = new BMap.Bounds(
-                new BMap.Point(minLng, minLat),
-                new BMap.Point(maxLng, maxLat)
-            );
+            var bound = this.getBlocksBounds(blocks)
             var reports: PollutantReport[] = [];
             var time;
             blocks.forEach(block => {
@@ -765,7 +791,50 @@ class BaiduMapProvider extends MapBase {
         this.map.openInfoWindow(blockGrid.infoWindow, bound.getNorthEast())
         this.map.addOverlay(blockGrid.infoWindow.targetBorder);
     }
-
+    private onSaveSelectedBlocks() {
+        if (this.tempSelectedData && this.tempSelectedData.length) {
+            this.on(MapEvents.savePoints, { points: this.tempSelectedData });
+            delete this.tempSelectedData
+            return;
+        }
+        var blocks = this.blockGrid.selectedBlocks;
+        if (blocks && blocks.length) {
+            this.on(MapEvents.savePoints, { points: blocks.selectMany(o => o.context.getPoints(i => true).select(i => i.data)) })
+        }
+    }
+    /**获取地图边界。 */
+    private getMapBounds() {
+        var bounds: Bound = this.map.getBounds();
+        if (bounds) {
+            return { sw: bounds.getSouthWest(), ne: bounds.getNorthEast() }
+        }
+    }
+    /**获取地图中所有无人机数据 */
+    private getUavData() {
+        return this.uavList.select(o => {
+            var i = o.marker.getPosition()
+            return {
+                lat: i.lat,
+                lng: i.lng,
+                name: o.name,
+            };
+        });
+    }
+    /**获取所有在地图上的方块数据。 */
+    private getBlocksData(blocks: Block[]) {
+        return blocks.filter(o => o.context.color).select(o => {
+            var b = o.getBounds();
+            return {
+                sw: b.getSouthWest(),
+                ne: b.getNorthEast(),
+                center: o.context.center,
+                points: o.context.getPoints(i => true).select(i => i.data),
+                reports: o.context.getReports(i => true),
+                color: o.context.color,
+                opacity: this.blockGrid.options.opacity
+            }
+        })
+    }
     /**
      * 初始化地图。
      * @param container 地图容器id
@@ -784,8 +853,8 @@ class BaiduMapProvider extends MapBase {
                     BMAP_HYBRID_MAP
                 ]
             }));
-            map.addControl(new BMap.ScaleControl());
-            map.addControl(new BMap.NavigationControl());
+            //map.addControl(new BMap.ScaleControl());
+            //map.addControl(new BMap.NavigationControl());
             map.addControl(new BMap.OverviewMapControl());
             //map.addControl(new BMap.GeolocationControl());
             map.enableScrollWheelZoom(true);     //开启鼠标滚轮缩放
@@ -800,6 +869,7 @@ class BaiduMapProvider extends MapBase {
                 createItem(MapMenuItems.selectAnalysisArea, o => this.analysisArea.enable()),
                 createItem(MapMenuItems.clearAnalysisArea, o => this.analysisArea.disable()),
                 false,
+                createItem(MapMenuItems.savePoints, o => this.onSaveSelectedBlocks()),
                 createItem(MapMenuItems.reports, o => this.onShowSelectedBlockReport()),
                 createItem(MapMenuItems.horizontal, o => this.onShowHorizontalAspect()),
                 createItem(MapMenuItems.vertical, o => this.onShowVerticalAspect()),
@@ -830,9 +900,35 @@ class BaiduMapProvider extends MapBase {
             this.blockGrid = new MapGrid();
             this.blockGrid.blocks = new Array<any>();
             this.uavList = new Array<Uav>();
+            this.subscribe(MapEvents.load, true);
+            this.subscribe(MapEvents.clearAnalysisArea, true);
+            this.subscribe(MapEvents.clearAspect, true);
+            this.subscribe(MapEvents.horizontalAspect, true);
+            this.subscribe(MapEvents.pointConvert, true);
+            this.subscribe(MapEvents.savePoints, true);
+            this.subscribe(MapEvents.selectAnalysisArea, true);
+            this.subscribe(MapEvents.verticalAspect, true);
             this.on(MapEvents.load);
+            var h = setInterval(() => {
+                var i = $("a[title='到百度地图查看此区域']");
+                var b = $("span[_cid='1']");
+                if (!i.hasClass("hide") || !b.hasClass("hide")) {
+                    i.addClass("hide");
+                    b.addClass("hide");
+                } else {
+                    clearInterval(h);
+                }
+            }, 100);
+            map.addEventListener("moveend", o => this.onMapBoundChanged());
+            map.addEventListener("zoomend", o => this.onMapBoundChanged());
+
         });
     }
+    /**
+     * 地图坐标转换。转换完成的点会以pointConvert事件回调。
+     * @param seq 序列号
+     * @param p 转换的点。
+     */
     mapPointConvert(seq: number, p: Point[]) {
         var points = this.parseJson(p);
         this.convertor.translate(points, 1, 5, o => {
@@ -840,6 +936,57 @@ class BaiduMapProvider extends MapBase {
                 this.on(MapEvents.pointConvert, { Seq: seq, Points: o.points })
             }
         });
+    }
+    /**
+     * 显示临时报表。
+     * @param d
+     */
+    mapShowTempReport(d: any) {
+        var data: Array<any> = this.parseJson(d);
+        this.tempSelectedData = data;
+        if (data) {
+            var reports: PollutantReport[] = [];
+            var time: string;
+            var blocks: Block[] = [];
+            this.blockGrid.options.pollutants.forEach(pollutant => {
+                var rp = new PollutantReport();
+                rp.pollutant = pollutant;
+                rp.count = 0;
+                reports.push(rp);
+            });
+            data.forEach(d => {
+                if (!time) {
+                    time = d.time;
+                }
+                var lat = d.ActualLat;
+                var lng = d.ActualLng;
+                var block = this.blockGrid.blocks.first(o => o.getBounds().containsPoint(new BMap.Point(lng, lat)))
+                if (block && !blocks.first(o => o == block)) {
+                    blocks.push(block)
+                }
+                reports.forEach(rp => {
+                    var val = d[rp.pollutant.Name];
+                    if (rp.count == 0) {
+                        rp.avg = val;
+                        rp.sum = val;
+                        rp.min = val;
+                        rp.max = val;
+                    } else {
+                        rp.avg = (rp.avg * rp.count + val) / (rp.count + 1);
+                        rp.sum += val;
+                        rp.max = rp.max > val ? rp.max : val;
+                        rp.min = rp.min < val ? rp.min : val;
+                    }
+                    rp.count++;
+                });
+            });
+            this.onShowReport(this.getBlocksBounds(blocks), reports, time);
+        }
+    }
+    mapClearTempReport() {
+        delete this.tempSelectedData;
+        this.map.closeInfoWindow(this.blockGrid.infoWindow)
+        this.map.removeOverlay(this.blockGrid.infoWindow.targetBorder);
     }
     gridInit(opt: MapGridOptions) {
         opt = this.parseJson(opt);
@@ -876,7 +1023,12 @@ class BaiduMapProvider extends MapBase {
         blockGrid.blocks.forEach(block => {
             var report = block.context.getReports(o => o.pollutant.Name == opt.dataName).first(o => true);
             if (report) {
-                block.setFillColor(this.getColor(report.avg));
+                var color = this.getColor(report.avg);
+                if (block.context.color != color) {
+                    block.context.color = color;
+                    this.on(MapEvents.blockChanged, { blocks: this.getBlocksData(this.blockGrid.blocks) });
+                }
+                block.setFillColor(block.context.color);
             }
         });
     }
@@ -900,6 +1052,7 @@ class BaiduMapProvider extends MapBase {
             uav.pathPoint = [point];
             this.uavList.push(uav);
             this.map.addOverlay(uav.marker);
+            this.on(MapEvents.uavChanged, { uav: this.getUavData() });
         });
     }
     uavMove(name: string, lng: number, lat: number, d: any) {
@@ -909,6 +1062,7 @@ class BaiduMapProvider extends MapBase {
             point.data = data;
             o.pathPoint.push(point);
             o.marker.setPosition(point);
+            this.on(MapEvents.uavChanged, { uav: this.getUavData() });
         }, null);
     }
     uavShowPath(name: string) {
@@ -925,13 +1079,13 @@ class BaiduMapProvider extends MapBase {
             }
             o.pathMarker.setPath(o.pathPoint);
             this.map.addOverlay(o.pathMarker);
-            o.pathMarker.show();
         }, null);
     }
     uavHidePath(name: string) {
         this.uav(name, o => {
             if (o.pathMarker) {
-                o.pathMarker.hide();
+                this.map.removeOverlay(o.pathMarker);
+                delete o.pathMarker;
             }
         }, null);
     }
@@ -945,6 +1099,7 @@ class BaiduMapProvider extends MapBase {
                 i = index;
                 delete o.marker;
                 delete o.pathMarker;
+                this.on(MapEvents.uavChanged, { uav: this.getUavData() });
             }
         });
         if (i != -1) {
@@ -964,6 +1119,25 @@ class BaiduMapProvider extends MapBase {
                 this.map.centerAndZoom(point, 19);
             }
         }, null);
+    }
+    onSubscribe(eventName: MapEvents) {
+        var result: any;
+        switch (eventName) {
+            case MapEvents.blockChanged:
+                result = { blocks: this.getBlocksData(this.blockGrid.blocks) };
+                break;
+            case MapEvents.boundChanged:
+                result = { bound: this.getMapBounds() };
+                break;
+            case MapEvents.uavChanged:
+                result = { uav: this.getUavData() };
+                break;
+            default:
+                break;
+        }
+        if (result) {
+            return JSON.stringify(result);
+        }
     }
     testGrid() {
         this.gridInit(new MapGridOptions());

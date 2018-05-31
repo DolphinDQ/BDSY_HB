@@ -1,0 +1,64 @@
+﻿<UserControl x:Class="AirMonitor.Views.SimulatorView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:control="http://metro.mahapps.com/winfx/xaml/controls"
+             xmlns:local="clr-namespace:AirMonitor.Views"
+             mc:Ignorable="d" 
+             d:DesignHeight="800" d:DesignWidth="300">
+    <UserControl.Resources>
+        <Style x:Key="LblSettingTitle" TargetType="Label" BasedOn="{StaticResource MetroLabel}">
+            <Setter Property="DockPanel.Dock" Value="Left"/>
+            <Setter Property="Width" Value="80"/>
+        </Style>
+        <Style x:Key="LblSettingUnit" TargetType="Label" BasedOn="{StaticResource MetroLabel}">
+            <Setter Property="DockPanel.Dock" Value="Right"/>
+            <Setter Property="Width" Value="70"/>
+            <Setter Property="FontStyle" Value="Italic"/>
+            <Setter Property="FontSize" Value="12"/>
+        </Style>
+
+        <Style x:Key="BtnOpt" TargetType="Button" BasedOn="{StaticResource MetroButton}">
+            <Setter Property="DockPanel.Dock" Value="Right"/>
+            <Setter Property="Width" Value="65"/>
+            <Setter Property="Margin" Value="5 0" />
+        </Style>
+        <Style TargetType="DockPanel">
+            <Setter Property="Margin" Value="3"/>
+        </Style>
+    </UserControl.Resources>
+    <StackPanel>
+        <DockPanel>
+            <Label Style="{StaticResource  LblSettingTitle}" Content="{StaticResource T_OpenSimFile}"></Label>
+            <Button Name="Start" Style="{DynamicResource BtnOpt}" Content="{StaticResource T_LoadSamples}"></Button>
+            <TextBox IsReadOnly="True" Text="{Binding Path}"></TextBox>
+        </DockPanel>
+
+        <DockPanel>
+            <Label Style="{StaticResource  LblSettingTitle}" Content="{StaticResource T_SamplingInterval}"></Label>
+            <Label Style="{StaticResource  LblSettingUnit}" Content="ms"></Label>
+            <control:NumericUpDown Value="{Binding Interval}" Minimum="500" Maximum="5000"  Interval="100"></control:NumericUpDown>
+        </DockPanel>
+        <DockPanel>
+            <Label Style="{StaticResource  LblSettingTitle}" Content="{StaticResource T_Progress}"></Label>
+            <Label Style="{StaticResource  LblSettingUnit}" Content="{Binding Status}"></Label>
+            <control:MetroProgressBar Maximum="{Binding DataCount}" Value="{Binding CurrentIndex}" BorderBrush="LightGray" BorderThickness="1"></control:MetroProgressBar>
+        </DockPanel>
+        <DockPanel>
+            <Label Style="{StaticResource  LblSettingTitle}" Content="{StaticResource T_StopAction}"></Label>
+            <CheckBox IsChecked="{Binding IsAlert}" Content="{StaticResource T_StopConfirm}"></CheckBox>
+        </DockPanel>
+        <UniformGrid Columns="4">
+            <UniformGrid.Resources>
+                <Style TargetType="Button" BasedOn="{StaticResource MetroButton}">
+                    <Setter Property="Margin" Value="3"/>
+                </Style>
+            </UniformGrid.Resources>
+            <Button Name="Pause" Content="{StaticResource T_Pause}" />
+            <Button Name="Continue" Content="{StaticResource T_Continue}"/>
+            <Button Name="Stop" Content="{StaticResource T_Stop}"/>
+            <Button Name="Replay" Content="{StaticResource T_Replay}"/>
+        </UniformGrid>
+    </StackPanel>
+</UserControl>

@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Media;
 
 namespace AirMonitor.Map
 {
@@ -89,5 +90,22 @@ namespace AirMonitor.Map
         }
         [JsonIgnore]
         public double[] ValueStep { get; private set; }
+
+        public string GetColor(double value)
+        {
+            if (value > maxValue) return colorEnd;
+            if (value < minValue) return colorBegin;
+            var percent = (value - minValue) / (maxValue - minValue);
+            var begin = (Color)ColorConverter.ConvertFromString(colorBegin);
+            var end = (Color)ColorConverter.ConvertFromString(colorEnd);
+            var r = GetColorValue(percent, begin.R, end.R);
+            var g = GetColorValue(percent, begin.G, end.G);
+            var b = GetColorValue(percent, begin.B, end.B);
+            return "#" + r + g + b;
+        }
+        private string GetColorValue(double percent, double begin, double end)
+        {
+            return ((int)((end - begin) * percent + begin)).ToString("x2");
+        }
     }
 }

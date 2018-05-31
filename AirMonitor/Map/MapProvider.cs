@@ -56,12 +56,15 @@ namespace AirMonitor.Map
             {
                 if (methodName.Contains("."))
                 {
-
                     for (int i = 0; i < args.Length; i++)
                     {
                         if (args[i] is string)
                         {
                             args[i] = $"'{args[i]}'";
+                        }
+                        if (args[i] is bool)
+                        {
+                            args[i] = args[i].ToString().ToLower();
                         }
                     }
                     var tmpArg = $"{methodName}({string.Join(",", args)})";

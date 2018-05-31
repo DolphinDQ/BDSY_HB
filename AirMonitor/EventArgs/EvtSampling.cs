@@ -21,6 +21,8 @@ namespace AirMonitor.EventArgs
     {
         Stop,
         Start,
-        Clear
+        ClearAll,
+        StartSim,
+        StopSim,
     }
 }

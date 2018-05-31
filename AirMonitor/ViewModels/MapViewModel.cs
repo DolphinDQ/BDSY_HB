@@ -22,6 +22,9 @@ namespace AirMonitor.ViewModels
         IHandle<EvtSetting>,
         IHandle<EvtMapHorizontalAspect>,
         IHandle<EvtMapVerticalAspect>,
+        IHandle<EvtMapSelectAnalysisArea>,
+        IHandle<EvtMapClearAnalysisArea>,
+        IHandle<EvtMapSavePoints>,
         IHandle<EvtMapClearAspect>
     {
         private IMapProvider m_mapProvider;
@@ -58,10 +61,6 @@ namespace AirMonitor.ViewModels
         /// </summary>
         public bool IsUavFocus { get; set; } = true;
         /// <summary>
-        /// 开始数据分析。
-        /// </summary>
-        public bool EnableAnalysis { get; set; } = false;
-        /// <summary>
         /// 污染物名称。
         /// </summary>
         public Tuple<string, string> DataName { get; set; }
@@ -73,6 +72,30 @@ namespace AirMonitor.ViewModels
         /// 属性框。
         /// </summary>
         public object PropertyPanel { get; set; }
+
+        public object FullScreenPanel { get; set; }
+
+        public bool Show3DView { get; set; }
+
+        public bool FullScreen { get; set; }
+
+        private void SetPropertyPanel(object obj)
+        {
+            if (!(obj is Screen) && obj != null)
+            {
+                return;
+            }
+            if (PropertyPanel is Screen s)
+            {
+                s.TryClose();
+            }
+            PropertyPanel = obj;
+        }
+
+        /// <summary>
+        /// 比较框。
+        /// </summary>
+        public object ComparePanel { get; set; }
 
         public MapViewModel(
             IEventAggregator eventAggregator,
@@ -158,8 +181,8 @@ namespace AirMonitor.ViewModels
                 case SamplingStatus.Start:
                     Sampling = true;
                     break;
-                case SamplingStatus.Clear:
-                    //ClearSamples(true);
+                case SamplingStatus.ClearAll:
+                    ClearSamples(true);
                     break;
                 default:
                     break;
@@ -192,27 +215,70 @@ namespace AirMonitor.ViewModels
         }
 
         public void Handle(EvtMapHorizontalAspect message)
-            => OnShowAnalysisPanel(message.blocks, SampleAnalysisViewModel.AnalysisMode.Horizontal);
+            => OnShowAnalysisPanel(message.blocks, AnalysisMode.Horizontal);
 
         public void Handle(EvtMapVerticalAspect message)
-            => OnShowAnalysisPanel(message.blocks, SampleAnalysisViewModel.AnalysisMode.Vertical);
+            => OnShowAnalysisPanel(message.blocks, AnalysisMode.Vertical);
 
         public void Handle(EvtMapClearAspect message)
         {
-            EnableAnalysis = false;
+            if (PropertyPanel is SampleAnalysisViewModel)
+            {
+                SetPropertyPanel(null);
+            }
         }
 
-        private void OnShowAnalysisPanel(MapBlock[] blocks, SampleAnalysisViewModel.AnalysisMode mode)
+        public void Handle(EvtMapSelectAnalysisArea message)
+        {
+            if (!(PropertyPanel is DynamicAnalysisViewModel view))
+            {
+                view = m_factory.Create<DynamicAnalysisViewModel>();
+            }
+            view.MapView = this;
+            view.Bounds = message;
+            SetPropertyPanel(view);
+        }
+
+        public void Handle(EvtMapClearAnalysisArea message)
+        {
+            if (PropertyPanel is DynamicAnalysisViewModel)
+            {
+                SetPropertyPanel(null);
+            }
+        }
+
+        public void Handle(EvtMapSavePoints message)
+        {
+            OnSaveSamples(message.points.Cast<EvtAirSample>().ToArray());
+        }
+
+        private void OnSaveSamples(EvtAirSample[] airSamples)
+        {
+            OnUIThread(() =>
+            {
+                try
+                {
+                    var file = m_saveManager.ShowSaveFileDialog();
+                    if (file == null) return;
+                    m_saveManager.Save(file, airSamples);
+                }
+                catch (Exception e)
+                {
+                    MessageBox.Show(m_res.GetText("T_SaveSamplesFailed") + e.Message);
+                }
+            });
+        }
+
+        private void OnShowAnalysisPanel(MapBlock[] blocks, AnalysisMode mode)
         {
             if (!(PropertyPanel is SampleAnalysisViewModel view))
             {
                 view = m_factory.Create<SampleAnalysisViewModel>();
             }
-            view.Mode = mode;
             view.MapView = this;
+            view.Mode = mode;
             view.MapBlocks = blocks;
-            PropertyPanel = view;
-            EnableAnalysis = true;
+            SetPropertyPanel(view);
         }
 
         private void OnUpdateUavPosition(EvtAirSample sample)
@@ -226,7 +292,7 @@ namespace AirMonitor.ViewModels
                 }
                 else
                 {
-                    m_mapProvider.UavMove(new Uav { name = name, data = sample, lat = sample.ActualLat, lng = sample.ActualLng });
+                    m_mapProvider.UavMove(new MapUav { name = name, data = sample, lat = sample.ActualLat, lng = sample.ActualLng });
                     m_mapProvider.GridRefresh();
                     m_mapProvider.UavPath(name, ShowUavPath);
                 }
@@ -237,15 +303,41 @@ namespace AirMonitor.ViewModels
             }
         }
 
+        public async void OnFullScreenChanged()
+        {
+            if (FullScreen)
+            {
+                if (ComparePanel != null)
+                {
+                    var p = ComparePanel;
+                    ComparePanel = null;
+                    await Task.Delay(100);
+                    FullScreenPanel = p;
+                }
+            }
+            else
+            {
+                if (FullScreenPanel != null)
+                {
+                    var p = FullScreenPanel;
+                    FullScreenPanel = null;
+                    await Task.Delay(100);
+                    ComparePanel = p;
+                }
+            }
+        }
+
         private void LoadHistoryData(string name)
         {
+            Show3DView = false;
+            SetPropertyPanel(null);
             var s = Samples.Where(o => o.ActualLat != 0 && o.ActualLng != 0).ToList();
             var first = s.FirstOrDefault();
             if (first == null) return;
-            m_mapProvider.UavAdd(new Uav { name = name, data = first, lat = first.ActualLat, lng = first.ActualLng });
+            m_mapProvider.UavAdd(new MapUav { name = name, data = first, lat = first.ActualLat, lng = first.ActualLng });
             foreach (var item in s)
             {
-                m_mapProvider.UavMove(new Uav() { name = name, data = item, lat = item.ActualLat, lng = item.ActualLng });
+                m_mapProvider.UavMove(new MapUav() { name = name, data = item, lat = item.ActualLat, lng = item.ActualLng });
             }
             m_mapProvider.GridInit(MapGridOptions);
             m_mapProvider.UavFocus(name);
@@ -257,31 +349,35 @@ namespace AirMonitor.ViewModels
         public void RefreshMap()
         {
             MapLoad = false;
+            SetPropertyPanel(null);
             m_mapProvider.LoadMap(MapContainer);
         }
 
         public void Test()
         {
-            //Task.Factory.StartNew(() =>
-            //{
-            //    var random = new Random();
-            //    var lat = 23.016791666666666667;
-            //    var lng = 113.077023333333333333;
-            //    do
-            //    {
-            //        OnUIThread(() =>
-            //        {
-            //            Handle(new EvtAirSample()
-            //            {
-            //                co = 60 + random.NextDouble() * 40,
-            //                lat = lat -= 0.0001,
-            //                lon = lng -= 0.0001
-            //            });
-            //        });
-            //        Task.Delay(1000).Wait();
-            //    } while (true);
-            //});
-            //m_mapProvider.Invoke("mapPointConvert", 1, JsonConvert.SerializeObject(new[] { new MapPoint() { lat = 23.016791666666666667, lng = 113.077023333333333333 } }));
+            //Show3D(true);
+        }
+
+        public void OnShow3DViewChanged() => Show3D(Show3DView);
+
+        public void Show3D(bool display)
+        {
+            if (ComparePanel is Screen s)
+            {
+                s.TryClose();
+            }
+            if (display)
+            {
+                var view = m_factory.Create<Map3DViewModel>();
+                view.MapView = this;
+                ComparePanel = view;
+                OnFullScreenChanged();
+            }
+            else
+            {
+                ComparePanel = null;
+                FullScreenPanel = null;
+            }
         }
 
         public void UavLocation()
@@ -294,7 +390,7 @@ namespace AirMonitor.ViewModels
 
         public void ClearSamples(bool focus = false)
         {
-            if (Samples.Any() && (focus || MessageBox.Show(m_res.GetText("T_ClearSamplesWarning"), "", MessageBoxButton.YesNo) == MessageBoxResult.Yes))
+            if (Samples.Any() && (focus || MessageBox.Show(m_res.GetText("T_ClearMapWarning"), "", MessageBoxButton.YesNo) == MessageBoxResult.Yes))
             {
                 Samples.Clear();
                 NotifyOfPropertyChange(nameof(Samples));
@@ -307,17 +403,7 @@ namespace AirMonitor.ViewModels
         public void SaveSamples()
         {
             if (!Samples.Any()) return;
-            try
-            {
-                var file = m_saveManager.ShowSaveFileDialog();
-                if (file == null) return;
-                m_saveManager.Save(file, Samples);
-            }
-            catch (Exception e)
-            {
-                MessageBox.Show(m_res.GetText("T_SaveSamplesFailed") + e.Message);
-            }
-
+            OnSaveSamples(Samples.ToArray());
         }
 
         public void LoadSamples()
@@ -327,7 +413,6 @@ namespace AirMonitor.ViewModels
                 MessageBox.Show(m_res.GetText("T_LoadSamplesWarning"));
                 return;
             }
-
             try
             {
                 var file = m_saveManager.ShowOpenFileDialog();
@@ -364,7 +449,6 @@ namespace AirMonitor.ViewModels
                     NotifyOfPropertyChange(nameof(Samples));
                     RefreshMap();
                 }
-
             }
             catch (Exception e)
             {
@@ -380,7 +464,5 @@ namespace AirMonitor.ViewModels
             m_mapProvider.GridRefresh();
             m_mapProvider.UavPath(GetUavName(null), ShowUavPath);
         }
-
-
     }
 }

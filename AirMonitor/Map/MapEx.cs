@@ -21,6 +21,21 @@ namespace AirMonitor.Map
         {
             map.Invoke("map.mapPointConvert", seq, JsonConvert.SerializeObject(points));
         }
+        /// <summary>
+        /// 显示地图报表。
+        /// </summary>
+        /// <param name="map"></param>
+        /// <param name="points"></param>
+        public static void MapShowTempReport(this IMapProvider map, MapPointData[] points)
+        {
+            map.Invoke("map.mapShowTempReport", JsonConvert.SerializeObject(points));
+        }
+
+        public static void MapClearTempReport(this IMapProvider map)
+        {
+            map.Invoke("map.mapClearTempReport");
+        }
+
 
         ///// <summary>
         ///// 地图边界变更事件。
@@ -69,7 +84,7 @@ namespace AirMonitor.Map
         /// </summary>
         /// <param name="map"></param>
         /// <param name="uav"></param>
-        public static void UavAdd(this IMapProvider map, Uav uav)
+        public static void UavAdd(this IMapProvider map, MapUav uav)
         {
             map.Invoke("map.uavAdd", uav.name, uav.lng, uav.lat, JsonConvert.SerializeObject(uav.data));
         }
@@ -78,7 +93,7 @@ namespace AirMonitor.Map
         /// </summary>
         /// <param name="map"></param>
         /// <param name="uav"></param>
-        public static void UavMove(this IMapProvider map, Uav uav)
+        public static void UavMove(this IMapProvider map, MapUav uav)
         {
             map.Invoke("map.uavMove", uav.name, uav.lng, uav.lat, JsonConvert.SerializeObject(uav.data));
         }
@@ -116,7 +131,6 @@ namespace AirMonitor.Map
         {
             return map.Invoke("map.uavExist", o => bool.Parse(o.ToString()), name);
         }
-
         /// <summary>
         /// 无人机跟踪。
         /// </summary>
@@ -126,6 +140,14 @@ namespace AirMonitor.Map
         {
             map.Invoke("map.uavFocus", name);
         }
+
+        public static T Subscribe<T>(this IMapProvider map, MapEvents events, bool enable)
+        {
+            return map.Invoke<T>("map.subscribe", events.ToString(), enable);
+        }
         #endregion
+
+
+        
     }
 }

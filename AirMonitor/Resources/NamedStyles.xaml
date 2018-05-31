@@ -5,4 +5,5 @@
         <Setter Property="FontWeight" Value="Bold"/>
         <Setter Property="FontSize" Value="20"/>
     </Style>
+    <BitmapImage  x:Key="App_Logo" UriSource="./Images/logo.png"></BitmapImage>
 </ResourceDictionary>

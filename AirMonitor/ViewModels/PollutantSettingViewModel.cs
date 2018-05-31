@@ -20,6 +20,7 @@ namespace AirMonitor.ViewModels
         {
             m_configManager = configManager;
             m_eventAggregator = eventAggregator;
+            Settings = m_configManager.GetConfig<AirStandardSetting>();
         }
 
         public AirStandardSetting Settings { get; set; }
@@ -34,7 +35,6 @@ namespace AirMonitor.ViewModels
             if (Settings != null)
             {
                 m_configManager.SaveConfig(Settings);
-                m_eventAggregator.PublishOnBackgroundThread(new EvtSetting() { Command = SettingCommands.Changed, SettingObject = Settings });
             }
         }
 

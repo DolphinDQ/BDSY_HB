@@ -9,7 +9,7 @@ namespace AirMonitor.Map
     /// <summary>
     /// 无人机。
     /// </summary>
-    public class Uav
+    public class MapUav
     {
         /// <summary>
         /// 无人机名称或标识。

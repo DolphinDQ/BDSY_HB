@@ -40,9 +40,9 @@ namespace AirMonitor
             container.PerRequest<MapViewModel>();
             container.PerRequest<PollutantSettingViewModel>();
             container.PerRequest<SampleAnalysisViewModel>();
-            
-            LogManager.GetLog = o => container.GetInstance<ILog>();
-            container.GetInstance<IDataManager>().Init();
+            container.PerRequest<DynamicAnalysisViewModel>();
+            container.PerRequest<Map3DViewModel>();
+            container.Singleton<SimulatorViewModel>();
         }
 
         protected override void OnUnhandledException(object sender, DispatcherUnhandledExceptionEventArgs e)

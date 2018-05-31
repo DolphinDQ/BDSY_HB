@@ -7,16 +7,19 @@ using System.IO;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using AirMonitor.EventArgs;
+using Caliburn.Micro;
 
 namespace AirMonitor.Config
 {
     public class ConfigManager : IConfigManager
     {
         private IResourceManager m_res;
+        private IEventAggregator m_eventAggregator;
 
-        public ConfigManager(IResourceManager res)
+        public ConfigManager(IResourceManager res, IEventAggregator eventAggregator)
         {
             m_res = res;
+            m_eventAggregator = eventAggregator;
         }
 
         private string Dir
@@ -65,6 +68,9 @@ namespace AirMonitor.Config
         {
             return new AirStandardSetting()
             {
+                CorrectAltitude = 160,
+                MaxAltitude = 300,
+                AltitudeUnit = "m",
                 Pollutant = new[] {
                     new AirPollutant(){ Name=nameof( EvtAirSample.temp), MinValue = 0 , MaxValue = 100, DisplayName= m_res.GetText("T_Temperature") , Unit="℃"},
                     new AirPollutant(){ Name=nameof( EvtAirSample.humi), MinValue = 0 , MaxValue = 100, DisplayName= m_res.GetText("T_Humidity") , Unit="%" },
@@ -83,6 +89,7 @@ namespace AirMonitor.Config
         {
             if (config == null) throw new ArgumentNullException(nameof(config));
             File.WriteAllText(Dir + typeof(T).Name, JsonConvert.SerializeObject(config));
+            m_eventAggregator.PublishOnBackgroundThread(new EvtSetting() { Command = SettingCommands.Changed, SettingObject = config });
         }
     }
 }

@@ -20,7 +20,10 @@
                 <ModelVisual3D.Content >
                     <GeometryModel3D >
                         <GeometryModel3D.Geometry>
-                            <MeshGeometry3D Positions="-1 -1 -4, 1 -1 -4, 1 1 -4,-1 1 -4,-1 -1 -5, 1 -1 -5, 1 1 -5,-1 1 -5" TriangleIndices="0 1 2 ,0 2 3,4 5 6 ,4 6 7" TextureCoordinates="0 1, 1 1, 1 0,0 0,0 1, 1 1, 1 0,0 0" />
+                            <MeshGeometry3D 
+                                Positions="-1 -1 -4, 1 -1 -4, 1 1 -4,-1 1 -4,-1 -1 -5, 1 -1 -5, 1 1 -5,-1 1 -5" 
+                                TriangleIndices="0 1 2 ,0 2 3,4 5 6 ,4 6 7" 
+                                TextureCoordinates="0 1,1 1,1 0,0 0,0 1,1 1,1 0,0 0" />
                         </GeometryModel3D.Geometry>
                         <GeometryModel3D.Material >
                             <MaterialGroup >
@@ -51,8 +54,8 @@
             </ModelVisual3D>
         </Viewport3D >
         <Button Height="39.998" Click="Button_Click" VerticalAlignment="Bottom" HorizontalAlignment="Right" Width="125.179"/>
-
-        <WebBrowser  Name="Broswer" Source="https://www.baidu.com"  Height="169.464" VerticalAlignment="Bottom" HorizontalAlignment="Left" Width="239.332" ></WebBrowser>
+        <CheckBox Margin="407,515,323,0" Checked="CheckBox_Checked"></CheckBox>
+        <WebBrowser  Name="Broswer" Source="https://map.baidu.com"  Height="169.464" VerticalAlignment="Bottom" HorizontalAlignment="Left" Width="239.332" ></WebBrowser>
         <!--<Border Background="Yellow" Height="169.464" VerticalAlignment="Bottom" HorizontalAlignment="Left" Width="239.332"  >
             <Button Name="Broswer" Margin="0,0,114.153,97.448" Content="12345"/>
         </Border>-->
