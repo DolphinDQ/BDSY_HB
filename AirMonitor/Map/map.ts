@@ -83,67 +83,6 @@ if (!Array.prototype.selectMany) {
         return arr;
     }
 }
-interface IMapProvider {
-    mapInit(container: string);
-    mapPointConvert(seq: number, p: Point[]);
-    mapShowTempReport(d: any);
-    mapClearTempReport();
-    gridInit(opt: MapGridOptions);
-    gridRefresh();
-    gridClear();
-    uavAdd(name: string, lng: number, lat: number, d: any);
-    uavMove(name: string, lng: number, lat: number, d: any);
-    uavShowPath(name: string);
-    uavHidePath(name: string);
-    uavRemove(name: string);
-    uavExist(name: string): boolean;
-    uavFocus(name: string);
-    subscribe(eventName: MapEvents, enable: boolean): any;
-}
-interface MenuItem {
-    setText(text: String);
-    enable();
-    disable();
-    name: MapMenuItems;
-}
-interface ContextMenu {
-    addItem(item: MenuItem);
-    getItem(index: Number): MenuItem
-    removeItem(item: MenuItem);
-    addSeparator();
-    addEventListener(name, call);
-}
-
-interface Point {
-    lat: number;
-    lng: number;
-    data: any;//采样数据
-}
-interface Bound {
-    getSouthWest(): Point;
-    getNorthEast(): Point;
-    containsPoint(point: Point): boolean;
-    getCenter(): Point;
-}
-
-interface InfoWindow {
-    setContent(text: string);
-    setWidth(width: Number);
-    setHeight(height: Number);
-    addEventListener(name: string, callFn: Function);
-    targetBorder: any;
-}
-//方块
-interface Block {
-    context: BlockContext;
-    getBounds(): Bound;
-    setFillColor(color: String);
-    setStrokeColor(color: String);
-    setStrokeStyle(style: String);
-    setStrokeWeight(weight: Number);
-    setStrokeOpacity(opacity: Number);
-}
-
 
 class BlockContext {
     constructor(center: Point, pollutants: Pollutant[]) {
@@ -236,13 +175,10 @@ class Uav {
     marker: any;
     pathMarker: any;
 }
+
 class EventSubscribe {
     name: MapEvents;
     enable: boolean;
-}
-
-interface IEventAggregator {
-    on(eventName: MapEvents, arg?: any);
 }
 
 abstract class MapBase implements IMapProvider, IEventAggregator {
@@ -308,44 +244,6 @@ abstract class MapBase implements IMapProvider, IEventAggregator {
     }
 }
 
-enum MapEvents {
-    load = "load",
-    pointConvert = "pointConvert",
-    horizontalAspect = "horizontalAspect",
-    verticalAspect = "verticalAspect",
-    clearAspect = "clearAspect",
-    selectAnalysisArea = "selectAnalysisArea",
-    clearAnalysisArea = "clearAnalysisArea",
-    savePoints = "savePoints",
-    boundChanged = "boundChanged",
-    blockChanged = "blockChanged",
-    uavChanged = "uavChanged",
-}
-
-enum MapMenuItems {
-    compare = "对比数据",
-    reports = "统计报表",
-    savePoints = "保存",
-    horizontal = "横向切面",
-    vertical = "纵向切面",
-    selectAnalysisArea = "选择分析区域",
-    clearAnalysisArea = "清除分析区域",
-    clear = "清除",
-}
-/**地图方块选择动作 */
-enum MapBlockSelectAction {
-    //开关
-    switch,
-    //强制选择
-    focusSelect,
-    //强制反选
-    focusUnselect,
-}
-
-
-declare var BMap;
-declare var BMAP_NORMAL_MAP;
-declare var BMAP_HYBRID_MAP;
 /**
  *百度地图选择器。用于界面元素框选。 
  */
@@ -478,6 +376,43 @@ class BaiduMapAnalysisArea {
         }
     }
 }
+
+
+ enum MapEvents {
+    load = "load",
+    pointConvert = "pointConvert",
+    horizontalAspect = "horizontalAspect",
+    verticalAspect = "verticalAspect",
+    clearAspect = "clearAspect",
+    selectAnalysisArea = "selectAnalysisArea",
+    clearAnalysisArea = "clearAnalysisArea",
+    savePoints = "savePoints",
+    boundChanged = "boundChanged",
+    blockChanged = "blockChanged",
+    uavChanged = "uavChanged",
+}
+
+ enum MapMenuItems {
+    compare = "对比数据",
+    reports = "统计报表",
+    savePoints = "保存",
+    horizontal = "横向切面",
+    vertical = "纵向切面",
+    selectAnalysisArea = "选择分析区域",
+    clearAnalysisArea = "清除分析区域",
+    clear = "清除",
+}
+/**地图方块选择动作 */
+ enum MapBlockSelectAction {
+    //开关
+    switch,
+    //强制选择
+    focusSelect,
+    //强制反选
+    focusUnselect,
+}
+
+
 
 class BaiduMapProvider extends MapBase {
     private map: any;

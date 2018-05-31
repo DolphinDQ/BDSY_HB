@@ -237,41 +237,6 @@ var MapBase = /** @class */ (function () {
     };
     return MapBase;
 }());
-var MapEvents;
-(function (MapEvents) {
-    MapEvents["load"] = "load";
-    MapEvents["pointConvert"] = "pointConvert";
-    MapEvents["horizontalAspect"] = "horizontalAspect";
-    MapEvents["verticalAspect"] = "verticalAspect";
-    MapEvents["clearAspect"] = "clearAspect";
-    MapEvents["selectAnalysisArea"] = "selectAnalysisArea";
-    MapEvents["clearAnalysisArea"] = "clearAnalysisArea";
-    MapEvents["savePoints"] = "savePoints";
-    MapEvents["boundChanged"] = "boundChanged";
-    MapEvents["blockChanged"] = "blockChanged";
-    MapEvents["uavChanged"] = "uavChanged";
-})(MapEvents || (MapEvents = {}));
-var MapMenuItems;
-(function (MapMenuItems) {
-    MapMenuItems["compare"] = "\u5BF9\u6BD4\u6570\u636E";
-    MapMenuItems["reports"] = "\u7EDF\u8BA1\u62A5\u8868";
-    MapMenuItems["savePoints"] = "\u4FDD\u5B58";
-    MapMenuItems["horizontal"] = "\u6A2A\u5411\u5207\u9762";
-    MapMenuItems["vertical"] = "\u7EB5\u5411\u5207\u9762";
-    MapMenuItems["selectAnalysisArea"] = "\u9009\u62E9\u5206\u6790\u533A\u57DF";
-    MapMenuItems["clearAnalysisArea"] = "\u6E05\u9664\u5206\u6790\u533A\u57DF";
-    MapMenuItems["clear"] = "\u6E05\u9664";
-})(MapMenuItems || (MapMenuItems = {}));
-/**地图方块选择动作 */
-var MapBlockSelectAction;
-(function (MapBlockSelectAction) {
-    //开关
-    MapBlockSelectAction[MapBlockSelectAction["switch"] = 0] = "switch";
-    //强制选择
-    MapBlockSelectAction[MapBlockSelectAction["focusSelect"] = 1] = "focusSelect";
-    //强制反选
-    MapBlockSelectAction[MapBlockSelectAction["focusUnselect"] = 2] = "focusUnselect";
-})(MapBlockSelectAction || (MapBlockSelectAction = {}));
 /**
  *百度地图选择器。用于界面元素框选。
  */
@@ -391,6 +356,41 @@ var BaiduMapAnalysisArea = /** @class */ (function () {
     };
     return BaiduMapAnalysisArea;
 }());
+var MapEvents;
+(function (MapEvents) {
+    MapEvents["load"] = "load";
+    MapEvents["pointConvert"] = "pointConvert";
+    MapEvents["horizontalAspect"] = "horizontalAspect";
+    MapEvents["verticalAspect"] = "verticalAspect";
+    MapEvents["clearAspect"] = "clearAspect";
+    MapEvents["selectAnalysisArea"] = "selectAnalysisArea";
+    MapEvents["clearAnalysisArea"] = "clearAnalysisArea";
+    MapEvents["savePoints"] = "savePoints";
+    MapEvents["boundChanged"] = "boundChanged";
+    MapEvents["blockChanged"] = "blockChanged";
+    MapEvents["uavChanged"] = "uavChanged";
+})(MapEvents || (MapEvents = {}));
+var MapMenuItems;
+(function (MapMenuItems) {
+    MapMenuItems["compare"] = "\u5BF9\u6BD4\u6570\u636E";
+    MapMenuItems["reports"] = "\u7EDF\u8BA1\u62A5\u8868";
+    MapMenuItems["savePoints"] = "\u4FDD\u5B58";
+    MapMenuItems["horizontal"] = "\u6A2A\u5411\u5207\u9762";
+    MapMenuItems["vertical"] = "\u7EB5\u5411\u5207\u9762";
+    MapMenuItems["selectAnalysisArea"] = "\u9009\u62E9\u5206\u6790\u533A\u57DF";
+    MapMenuItems["clearAnalysisArea"] = "\u6E05\u9664\u5206\u6790\u533A\u57DF";
+    MapMenuItems["clear"] = "\u6E05\u9664";
+})(MapMenuItems || (MapMenuItems = {}));
+/**地图方块选择动作 */
+var MapBlockSelectAction;
+(function (MapBlockSelectAction) {
+    //开关
+    MapBlockSelectAction[MapBlockSelectAction["switch"] = 0] = "switch";
+    //强制选择
+    MapBlockSelectAction[MapBlockSelectAction["focusSelect"] = 1] = "focusSelect";
+    //强制反选
+    MapBlockSelectAction[MapBlockSelectAction["focusUnselect"] = 2] = "focusUnselect";
+})(MapBlockSelectAction || (MapBlockSelectAction = {}));
 var BaiduMapProvider = /** @class */ (function (_super) {
     __extends(BaiduMapProvider, _super);
     function BaiduMapProvider() {
