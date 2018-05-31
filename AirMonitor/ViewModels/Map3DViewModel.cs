@@ -112,8 +112,8 @@ namespace AirMonitor.ViewModels
                                 Lng = item.sw.lng,
                             }
                         },
-                        Color = "#0f0",
-                        Opacity = 1,
+                        Color = item.color,
+                        Opacity = item.opacity,
                     });
                 }
             }

@@ -17,5 +17,9 @@ namespace AirMonitor.Map
         public MapPointData[] points { get; set; }
 
         public MapBlockReport[] reports { get; set; }
+
+        public string color { get; set; }
+
+        public double opacity { get; set; }
     }
 }

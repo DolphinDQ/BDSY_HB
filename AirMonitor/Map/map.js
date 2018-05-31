@@ -740,14 +740,17 @@ var BaiduMapProvider = /** @class */ (function (_super) {
     };
     /**获取所有在地图上的方块数据。 */
     BaiduMapProvider.prototype.getBlocksData = function (blocks) {
-        return blocks.select(function (o) {
+        var _this = this;
+        return blocks.filter(function (o) { return o.context.color; }).select(function (o) {
             var b = o.getBounds();
             return {
                 sw: b.getSouthWest(),
                 ne: b.getNorthEast(),
                 center: o.context.center,
                 points: o.context.getPoints(function (i) { return true; }).select(function (i) { return i.data; }),
-                reports: o.context.getReports(function (i) { return true; })
+                reports: o.context.getReports(function (i) { return true; }),
+                color: o.context.color,
+                opacity: _this.blockGrid.options.opacity
             };
         });
     };
@@ -938,7 +941,6 @@ var BaiduMapProvider = /** @class */ (function (_super) {
                 block = _this.createBlock(point, opt);
                 blockGrid.blocks.push(block);
                 _this.map.addOverlay(block);
-                _this.on(MapEvents.blockChanged, { blocks: _this.getBlocksData(_this.blockGrid.blocks) });
             }
             else {
                 block.context.addPoint(point);
@@ -947,7 +949,12 @@ var BaiduMapProvider = /** @class */ (function (_super) {
         blockGrid.blocks.forEach(function (block) {
             var report = block.context.getReports(function (o) { return o.pollutant.Name == opt.dataName; }).first(function (o) { return true; });
             if (report) {
-                block.setFillColor(_this.getColor(report.avg));
+                var color = _this.getColor(report.avg);
+                if (block.context.color != color) {
+                    block.context.color = color;
+                    _this.on(MapEvents.blockChanged, { blocks: _this.getBlocksData(_this.blockGrid.blocks) });
+                }
+                block.setFillColor(block.context.color);
             }
         });
     };

@@ -2,6 +2,7 @@
 using System;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 using System.Windows.Media.Media3D;
 
 namespace AirMonitor.Controls
@@ -48,6 +49,7 @@ namespace AirMonitor.Controls
                  view.MouseUp -= View_MouseUp;
                  view.MouseWheel -= View_MouseWheel;
                  view.MouseMove -= View_MouseMove;
+
                  if (e.OldValue is ModelVisual3D oldModel)
                  {
                      oldModel.Transform = null;
@@ -94,7 +96,7 @@ namespace AirMonitor.Controls
             }
         }
 
-        private static void View_MouseMove(object sender, System.Windows.Input.MouseEventArgs e)
+        private static void View_MouseMove(object sender, MouseEventArgs e)
         {
             IsViewport3D(sender, (view, context) =>
             {
@@ -102,23 +104,27 @@ namespace AirMonitor.Controls
                 {
                     var delta = context.MouseDownPoint - e.MouseDevice.GetPosition(view);
                     delta /= 2;
-                    if (e.LeftButton == System.Windows.Input.MouseButtonState.Pressed) //tranlate
+                    if (e.LeftButton == MouseButtonState.Pressed) //tranlate
                     {
                         //delta /= 20;
                         context.Translate.OffsetX = context.MouseDownTranslate.OffsetX - delta.X;
                         context.Translate.OffsetY = context.MouseDownTranslate.OffsetY + delta.Y;
                     }
-                    else if (e.RightButton == System.Windows.Input.MouseButtonState.Pressed) //rotate
+                    else if (e.RightButton == MouseButtonState.Pressed) //rotate
                     {
-                        //Vector3D mouse = new Vector3D(delta.X, -delta.Y, 0);
-                        //Vector3D axis = Vector3D.CrossProduct(mouse, new Vector3D(0, 0, 1));
-                        //double len = axis.Length;
+                        if (delta.X == 0 && delta.Y == 0) return;
                         if (context.Rotate.Rotation is AxisAngleRotation3D a)
                         {
                             var a1 = context.MouseDownRotate.Rotation as AxisAngleRotation3D;
-                            //var q = new Quaternion(axis, len) * new Quaternion(a1.Axis, a1.Angle);
+                            var lockx = Keyboard.IsKeyDown(Key.LeftShift) || Keyboard.IsKeyDown(Key.RightShift);
+                            var locky = Keyboard.IsKeyDown(Key.LeftCtrl) || Keyboard.IsKeyDown(Key.RightCtrl);
+                            var mouse = new Vector3D(lockx ? 0 : -delta.Y, locky ? 1 : -delta.X, 1);
+                            //var axis = Vector3D.CrossProduct(mouse, a1.Axis);
+                            //double len = axis.Length;
+                            var q = new Quaternion(mouse, mouse.Length) * new Quaternion(a1.Axis, a1.Angle);
                             //a.Axis = q.Axis;
-                            a.Angle = (a1.Angle - delta.X) % 360;
+                            a.Axis = q.Axis;
+                            a.Angle = q.Angle;// (a1.Angle - delta.X) % 360;
                             //view.Info("x={0},y={1},z={2},l={4},a={3}", a.Axis.X, a.Axis.Y, a.Axis.Z, a.Angle, a.Axis.Length);
                         }
                     }
@@ -126,7 +132,7 @@ namespace AirMonitor.Controls
             });
         }
 
-        private static void View_MouseUp(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        private static void View_MouseUp(object sender, MouseButtonEventArgs e)
         {
             IsViewport3D(sender, (view, context) =>
             {
@@ -134,14 +140,21 @@ namespace AirMonitor.Controls
             });
         }
 
-        private static void View_MouseDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        private static void View_MouseDown(object sender, MouseButtonEventArgs e)
         {
             IsViewport3D(sender, (view, context) =>
             {
-                context.MouseDownPoint = e.MouseDevice.GetPosition(view);
-                context.MouseDownTranslate = context.Translate.Clone();
-                context.MouseDownRotate = context.Rotate.Clone();
-                view.CaptureMouse();
+                if (e.MiddleButton == MouseButtonState.Pressed)
+                {
+                    context.Rotate.Rotation = new AxisAngleRotation3D(new Vector3D(0, 1, 0), 0);
+                }
+                else
+                {
+                    context.MouseDownPoint = e.MouseDevice.GetPosition(view);
+                    context.MouseDownTranslate = context.Translate.Clone();
+                    context.MouseDownRotate = context.Rotate.Clone();
+                    view.CaptureMouse();
+                }
             });
         }
     }

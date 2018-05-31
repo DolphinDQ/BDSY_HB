@@ -155,6 +155,7 @@ class BlockContext {
         })
     }
     readonly center: Point;
+    color: string;
     time: string;
     private points: Point[] = [];
     private reports: PollutantReport[] = [];
@@ -821,14 +822,16 @@ class BaiduMapProvider extends MapBase {
     }
     /**获取所有在地图上的方块数据。 */
     private getBlocksData(blocks: Block[]) {
-        return blocks.select(o => {
+        return blocks.filter(o => o.context.color).select(o => {
             var b = o.getBounds();
             return {
                 sw: b.getSouthWest(),
                 ne: b.getNorthEast(),
                 center: o.context.center,
                 points: o.context.getPoints(i => true).select(i => i.data),
-                reports: o.context.getReports(i => true)
+                reports: o.context.getReports(i => true),
+                color: o.context.color,
+                opacity: this.blockGrid.options.opacity
             }
         })
     }
@@ -1003,7 +1006,6 @@ class BaiduMapProvider extends MapBase {
                 block = this.createBlock(point, opt);
                 blockGrid.blocks.push(block);
                 this.map.addOverlay(block);
-                this.on(MapEvents.blockChanged, { blocks: this.getBlocksData(this.blockGrid.blocks) });
             } else {
                 block.context.addPoint(point);
             }
@@ -1011,7 +1013,12 @@ class BaiduMapProvider extends MapBase {
         blockGrid.blocks.forEach(block => {
             var report = block.context.getReports(o => o.pollutant.Name == opt.dataName).first(o => true);
             if (report) {
-                block.setFillColor(this.getColor(report.avg));
+                var color = this.getColor(report.avg);
+                if (block.context.color != color) {
+                    block.context.color = color;
+                    this.on(MapEvents.blockChanged, { blocks: this.getBlocksData(this.blockGrid.blocks) });
+                }
+                block.setFillColor(block.context.color);
             }
         });
     }
