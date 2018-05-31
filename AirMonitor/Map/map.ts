@@ -853,8 +853,8 @@ class BaiduMapProvider extends MapBase {
                     BMAP_HYBRID_MAP
                 ]
             }));
-            map.addControl(new BMap.ScaleControl());
-            map.addControl(new BMap.NavigationControl());
+            //map.addControl(new BMap.ScaleControl());
+            //map.addControl(new BMap.NavigationControl());
             map.addControl(new BMap.OverviewMapControl());
             //map.addControl(new BMap.GeolocationControl());
             map.enableScrollWheelZoom(true);     //开启鼠标滚轮缩放
@@ -909,6 +909,16 @@ class BaiduMapProvider extends MapBase {
             this.subscribe(MapEvents.selectAnalysisArea, true);
             this.subscribe(MapEvents.verticalAspect, true);
             this.on(MapEvents.load);
+            var h = setInterval(() => {
+                var i = $("a[title='到百度地图查看此区域']");
+                var b = $("span[_cid='1']");
+                if (!i.hasClass("hide") || !b.hasClass("hide")) {
+                    i.addClass("hide");
+                    b.addClass("hide");
+                } else {
+                    clearInterval(h);
+                }
+            }, 100);
             map.addEventListener("moveend", o => this.onMapBoundChanged());
             map.addEventListener("zoomend", o => this.onMapBoundChanged());
 

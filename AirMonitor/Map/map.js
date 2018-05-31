@@ -773,8 +773,8 @@ var BaiduMapProvider = /** @class */ (function (_super) {
                     BMAP_HYBRID_MAP
                 ]
             }));
-            map.addControl(new BMap.ScaleControl());
-            map.addControl(new BMap.NavigationControl());
+            //map.addControl(new BMap.ScaleControl());
+            //map.addControl(new BMap.NavigationControl());
             map.addControl(new BMap.OverviewMapControl());
             //map.addControl(new BMap.GeolocationControl());
             map.enableScrollWheelZoom(true); //开启鼠标滚轮缩放
@@ -831,6 +831,17 @@ var BaiduMapProvider = /** @class */ (function (_super) {
             _this.subscribe(MapEvents.selectAnalysisArea, true);
             _this.subscribe(MapEvents.verticalAspect, true);
             _this.on(MapEvents.load);
+            var h = setInterval(function () {
+                var i = $("a[title='到百度地图查看此区域']");
+                var b = $("span[_cid='1']");
+                if (!i.hasClass("hide") || !b.hasClass("hide")) {
+                    i.addClass("hide");
+                    b.addClass("hide");
+                }
+                else {
+                    clearInterval(h);
+                }
+            }, 100);
             map.addEventListener("moveend", function (o) { return _this.onMapBoundChanged(); });
             map.addEventListener("zoomend", function (o) { return _this.onMapBoundChanged(); });
         });

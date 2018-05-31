@@ -6,7 +6,6 @@
              xmlns:local="clr-namespace:AirMonitor.Views"
              xmlns:ctrl="clr-namespace:AirMonitor.Controls"
              mc:Ignorable="d" 
-             Width="500"
              d:DesignHeight="450" d:DesignWidth="800">
     <Grid>
         <ctrl:Map3D MapContainer="{Binding MapView.MapContainer}"  MapBound="{Binding MapBound}" UavCollection="{Binding UavList}"  BlockCollection="{Binding BlockList}"/>

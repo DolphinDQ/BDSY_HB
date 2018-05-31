@@ -53,7 +53,7 @@
                                                 <MaterialGroup>
                                                     <DiffuseMaterial>
                                                         <DiffuseMaterial.Brush>
-                                                            <ImageBrush x:Name="MapImage" ImageSource="/AirHunter;component/Resources/Images/map.png"/>
+                                                            <ImageBrush x:Name="MapImage" Opacity="0.3" ImageSource="/AirHunter;component/Resources/Images/map.png"/>
                                                         </DiffuseMaterial.Brush>
                                                     </DiffuseMaterial>
                                                 </MaterialGroup >

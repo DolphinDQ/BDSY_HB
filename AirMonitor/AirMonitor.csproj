@@ -124,6 +124,7 @@
     <Compile Include="Converter\AnyVisiableConverter.cs" />
     <Compile Include="Converter\IsNullConverter.cs" />
     <Compile Include="Converter\IsVisibleConverter.cs" />
+    <Compile Include="Converter\MultipleConverter.cs" />
     <Compile Include="Converter\WarningConverter.cs" />
     <Compile Include="Chart\ChartManager.cs" />
     <Compile Include="Core\Logger.cs" />
@@ -284,6 +285,9 @@
     <Resource Include="FodyWeavers.xml" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Map\jquery.min.js">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="Map\map.js">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
@@ -302,8 +306,9 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <TypeScriptCompile Include="Map\map.d.ts" />
     <TypeScriptCompile Include="Map\map.ts" />
+    <TypeScriptCompile Include="Map\typing\index.d.ts" />
+    <TypeScriptCompile Include="Map\typing\map.d.ts" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

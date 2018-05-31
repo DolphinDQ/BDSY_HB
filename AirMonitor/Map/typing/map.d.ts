@@ -9,3 +9,7 @@
 interface External {
     On(eventName: string, arg: any);
 }
+
+interface Window {
+    $: any;
+}

@@ -207,7 +207,7 @@ namespace AirMonitor.Controls
                 var max = bound.Max.Height;
                 var min = bound.Min.Height;
                 var diff = max - min;
-                return diff == 0 ? double.NaN : WallHeight / diff * height;
+                return diff == 0 ? double.NaN : WallHeight / diff * height - min;
             }
             return 0;
         }
@@ -257,6 +257,17 @@ namespace AirMonitor.Controls
                 DrawWallGrid(WallSouthPanel, bound.Max.Lng, bound.Min.Lng, bound.Max.Height, bound.Min.Height, true);
                 DrawWallGrid(WallEastPanel, bound.Max.Lat, bound.Min.Lat, bound.Max.Height, bound.Min.Height, true);
                 DrawWallGrid(WallWestPanel, bound.Max.Lat, bound.Min.Lat, bound.Max.Height, bound.Min.Height);
+                Dispatcher.Invoke(() =>
+                {
+                    var block = BlockGroup.Children.ToArray();
+                    if (block != null && block.Any())
+                    {
+                        foreach (var item in block)
+                        {
+                            InitGeometryModel3D(item as GeometryModel3D);
+                        }
+                    }
+                });
             }
         }
 
@@ -342,11 +353,11 @@ namespace AirMonitor.Controls
 
         private void OnReloadBlock()
         {
-            var uav = BlockCollection.ToArray();//copy
-            if (uav != null && MapBound != null)
+            var block = BlockCollection.ToArray();//copy
+            if (block != null && MapBound != null)
             {
                 UavGroup.Children.Clear();
-                foreach (var item in uav)
+                foreach (var item in block)
                 {
                     UavGroup.Children.Add(CreateBlock(item));
                 }
@@ -355,21 +366,33 @@ namespace AirMonitor.Controls
 
         private Model3D CreateBlock(BlockMarker3D item)
         {
-            var x1 = LngConvert(item.Bound.Min.Lng);
-            var z1 = LatConvert(item.Bound.Min.Lat);
-            var y1 = HeightConvert(item.Bound.Min.Height);
-            var x2 = LngConvert(item.Bound.Max.Lng);
-            var z2 = LatConvert(item.Bound.Max.Lat);
-            var y2 = HeightConvert(item.Bound.Max.Height);
             var geometry = View3D.FindResource("BlockGeometry") as MeshGeometry3D;
-            geometry.Positions = Point3DCollection.Parse(string.Format("{1} {0} {2},{1} {0} {4},{3} {0} {4},{3} {0} {2},{1} {5} {2},{1} {5} {4},{3} {5} {4},{3} {5} {2}", y1, x1, z1, x2, z2, y2));
             var material = View3D.FindResource("BlockMaterial") as DiffuseMaterial;
-            var color = new BrushConverter().ConvertFromString(item.Color) as System.Windows.Media.Brush;
-            color.Opacity = item.Opacity;
-            material.Brush = color;
             var result = new GeometryModel3D(geometry.Clone(), material.Clone());
             result.SetValue(MapMarker3D.MapMarkerProperty, item);
+            InitGeometryModel3D(result);
             return result;
+        }
+
+        private void InitGeometryModel3D(GeometryModel3D model3D)
+        {
+            var item = model3D.GetValue(MapMarker3D.MapMarkerProperty) as BlockMarker3D;
+            if (item != null)
+            {
+                var x1 = LngConvert(item.Bound.Min.Lng);
+                var z1 = LatConvert(item.Bound.Min.Lat);
+                var y1 = HeightConvert(item.Bound.Min.Height);
+                var x2 = LngConvert(item.Bound.Max.Lng);
+                var z2 = LatConvert(item.Bound.Max.Lat);
+                var y2 = HeightConvert(item.Bound.Max.Height);
+                var geometry = model3D.Geometry as MeshGeometry3D;
+                geometry.Positions = Point3DCollection.Parse(string.Format("{1} {0} {2},{1} {0} {4},{3} {0} {4},{3} {0} {2},{1} {5} {2},{1} {5} {4},{3} {5} {4},{3} {5} {2}", y1, x1, z1, x2, z2, y2));
+                var color = new BrushConverter().ConvertFromString(item.Color) as System.Windows.Media.Brush;
+                color.Opacity = item.Opacity;
+                var material = model3D.Material as DiffuseMaterial;
+                material.Brush = color;
+            }
+
         }
 
         private void Block_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
@@ -385,14 +408,14 @@ namespace AirMonitor.Controls
                             {
                                 Dispatcher.Invoke(() =>
                                 {
-                                    UavGroup.Children.Add(CreateBlock(block));
+                                    BlockGroup.Children.Add(CreateBlock(block));
                                 });
                             }
                         }
                     }
                     break;
                 case System.Collections.Specialized.NotifyCollectionChangedAction.Reset:
-                    Dispatcher.Invoke(() => UavGroup.Children.Clear());
+                    Dispatcher.Invoke(() => BlockGroup.Children.Clear());
                     break;
             }
         }
@@ -409,7 +432,7 @@ namespace AirMonitor.Controls
                 for (int i = 0; i < lines; i++)
                 {
                     canvas.Children.Add(new Line() { Stroke = color, X1 = i * unitWidth, Y1 = 0, X2 = i * unitWidth, Y2 = canvas.Height });
-                    var lbl = new Label() { Foreground = color, Content = (i == 0 ? maxHeight + "m/" : "") + (unitWidthValue * (reversed ? lines - i : i) + minWidth) + "°" };
+                    var lbl = new Label() { Foreground = color, Content = (i == 0 ? maxHeight - minHeight + "m/" : "") + (unitWidthValue * (reversed ? lines - i : i) + minWidth) + "°" };
                     lbl.SetValue(Canvas.LeftProperty, i * unitWidth);
                     canvas.Children.Add(lbl);
                 }
@@ -424,7 +447,7 @@ namespace AirMonitor.Controls
                     canvas.Children.Add(new Line() { Stroke = color, X1 = 0, Y1 = i * unitHeight, X2 = canvas.Width, Y2 = i * unitHeight });
                     if (i > 0)
                     {
-                        var lbl = new Label() { Foreground = color, Content = unitHeightValue * (lines - i) + minHeight + "m" };
+                        var lbl = new Label() { Foreground = color, Content = unitHeightValue * (lines - i) + "m" };
                         lbl.SetValue(Canvas.TopProperty, i * unitHeight);
                         canvas.Children.Add(lbl);
                     }

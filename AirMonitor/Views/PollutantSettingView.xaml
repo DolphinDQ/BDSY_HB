@@ -9,7 +9,6 @@
              Padding="5"
              d:DesignHeight="800" d:DesignWidth="300">
     <UserControl.Resources>
-
         <Style x:Key="LblSettingTitle" TargetType="Label" BasedOn="{StaticResource MetroLabel}">
             <Setter Property="DockPanel.Dock" Value="Left"/>
             <Setter Property="Width" Value="80"/>

@@ -131,7 +131,6 @@ namespace AirMonitor.Map
         {
             return map.Invoke("map.uavExist", o => bool.Parse(o.ToString()), name);
         }
-
         /// <summary>
         /// 无人机跟踪。
         /// </summary>
@@ -147,5 +146,8 @@ namespace AirMonitor.Map
             return map.Invoke<T>("map.subscribe", events.ToString(), enable);
         }
         #endregion
+
+
+        
     }
 }

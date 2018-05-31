@@ -60,7 +60,6 @@ namespace AirMonitor.ViewModels
         /// 无人机跟踪
         /// </summary>
         public bool IsUavFocus { get; set; } = true;
-
         /// <summary>
         /// 污染物名称。
         /// </summary>
@@ -73,6 +72,12 @@ namespace AirMonitor.ViewModels
         /// 属性框。
         /// </summary>
         public object PropertyPanel { get; set; }
+
+        public object FullScreenPanel { get; set; }
+
+        public bool Show3DView { get; set; }
+
+        public bool FullScreen { get; set; }
 
         private void SetPropertyPanel(object obj)
         {
@@ -298,8 +303,34 @@ namespace AirMonitor.ViewModels
             }
         }
 
+        public async void OnFullScreenChanged()
+        {
+            if (FullScreen)
+            {
+                if (ComparePanel != null)
+                {
+                    var p = ComparePanel;
+                    ComparePanel = null;
+                    await Task.Delay(100);
+                    FullScreenPanel = p;
+                }
+            }
+            else
+            {
+                if (FullScreenPanel != null)
+                {
+                    var p = FullScreenPanel;
+                    FullScreenPanel = null;
+                    await Task.Delay(100);
+                    ComparePanel = p;
+                }
+            }
+        }
+
         private void LoadHistoryData(string name)
         {
+            Show3DView = false;
+            SetPropertyPanel(null);
             var s = Samples.Where(o => o.ActualLat != 0 && o.ActualLng != 0).ToList();
             var first = s.FirstOrDefault();
             if (first == null) return;
@@ -324,9 +355,29 @@ namespace AirMonitor.ViewModels
 
         public void Test()
         {
-            var view = m_factory.Create<Map3DViewModel>();
-            view.MapView = this;
-            ComparePanel = view;
+            //Show3D(true);
+        }
+
+        public void OnShow3DViewChanged() => Show3D(Show3DView);
+
+        public void Show3D(bool display)
+        {
+            if (ComparePanel is Screen s)
+            {
+                s.TryClose();
+            }
+            if (display)
+            {
+                var view = m_factory.Create<Map3DViewModel>();
+                view.MapView = this;
+                ComparePanel = view;
+                OnFullScreenChanged();
+            }
+            else
+            {
+                ComparePanel = null;
+                FullScreenPanel = null;
+            }
         }
 
         public void UavLocation()
@@ -362,7 +413,6 @@ namespace AirMonitor.ViewModels
                 MessageBox.Show(m_res.GetText("T_LoadSamplesWarning"));
                 return;
             }
-
             try
             {
                 var file = m_saveManager.ShowOpenFileDialog();
@@ -399,7 +449,6 @@ namespace AirMonitor.ViewModels
                     NotifyOfPropertyChange(nameof(Samples));
                     RefreshMap();
                 }
-
             }
             catch (Exception e)
             {
@@ -415,7 +464,5 @@ namespace AirMonitor.ViewModels
             m_mapProvider.GridRefresh();
             m_mapProvider.UavPath(GetUavName(null), ShowUavPath);
         }
-
-
     }
 }

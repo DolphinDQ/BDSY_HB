@@ -14,9 +14,8 @@ using AirMonitor.Config;
 namespace AirMonitor.ViewModels
 {
     class Map3DViewModel : Screen,
-        //IHandle<EvtMapBlockChanged>,
-        IHandle<EvtMapBoundChanged>
-    //IHandle<EvtMapUavChanged>
+        IHandle<EvtMapBoundChanged>,
+        IHandle<EvtMapPointConverted>
     {
         private IEventAggregator m_eventAggregator;
 
@@ -58,8 +57,6 @@ namespace AirMonitor.ViewModels
         public AirStandardSetting Setting { get; }
 
         public MapBound Bound { get; private set; }
-        public MapBlock[] Blocks { get; private set; }
-        public MapUav[] Uavs { get; private set; }
 
         public void OnBoundChanged()
         {
@@ -80,95 +77,8 @@ namespace AirMonitor.ViewModels
                         Height = Setting.CorrectAltitude
                     }
                 };
-                var b = BlockList;
-                BlockList = null;
-                BlockList = b;
             }
         }
-
-
-        //public async void OnUavsChanged()
-        //{
-        //    IEnumerable<MapUav> uavs = Uavs;
-        //    await Task.Delay(200);
-        //    OnUIThread(() => UavList.Clear());
-        //    if (uavs != Uavs) return;
-        //    if (Uavs != null && Uavs.Any() && Bound != null)
-        //    {
-        //        uavs = uavs.Where(o =>
-        //                 o.lat > Bound.sw.lat &&
-        //                 o.lng > Bound.sw.lng &&
-        //                 o.lat < Bound.ne.lat &&
-        //                 o.lng < Bound.ne.lng);
-        //        if (!uavs.Any()) return;
-        //        OnUIThread(() =>
-        //        {
-        //            foreach (var item in uavs)
-        //            {
-        //                UavList.Add(new UavMarker3D()
-        //                {
-        //                    Name = item.name,
-        //                    Bound = new Map3DBound()
-        //                    {
-        //                        Max = new Map3DPoint()
-        //                        {
-        //                            Lat= item.lat
-        //                        },
-        //                        Min = new Map3DPoint() { }
-        //                    },
-        //                });
-        //            }
-        //        });
-        //    }
-        //}
-
-
-        //public async void OnBlocksChanged()
-        //{
-        //    if (Blocks != null && Blocks.Any())
-        //    {
-        //        var len = Blocks.Length;
-        //        await Task.Delay(200);
-        //        if (len < Blocks.Length) return;
-        //        BlockList.Clear();
-        //        foreach (var item in Blocks)
-        //        {
-        //            var maxHeight = item.points.Max(o => o.hight) + 1;
-        //            var minHeight = item.points.Min(o => o.hight) - 1;
-        //            BlockList.Add(new BlockMarker3D()
-        //            {
-        //                Bound = new Map3DBound()
-        //                {
-        //                    Max = new Map3DPoint()
-        //                    {
-        //                        Height = maxHeight,
-        //                        Lat = item.ne.lat,
-        //                        Lng = item.ne.lng,
-        //                    },
-        //                    Min = new Map3DPoint()
-        //                    {
-        //                        Height = minHeight,
-        //                        Lat = item.sw.lat,
-        //                        Lng = item.sw.lng,
-        //                    }
-        //                },
-        //                Color = item.color,
-        //                Opacity = item.opacity,
-        //            });
-        //        }
-        //    }
-        //}
-
-        //public void Handle(EvtMapBlockChanged message)
-        //{
-        //    Blocks = message.blocks;
-        //}
-
-        //public void Handle(EvtMapUavChanged message)
-        //{
-        //    Uavs = message.uav;
-        //}
-
 
         public async void OnMapViewChanged()
         {
@@ -178,8 +88,14 @@ namespace AirMonitor.ViewModels
             if (view != null)
             {
                 Bound = view.MapProvider.Subscribe<EvtMapBoundChanged>(MapEvents.boundChanged, true)?.bound;
-                //Blocks = MapView.MapProvider.Subscribe<EvtMapBlockChanged>(MapEvents.blockChanged, true)?.blocks;
-                //Uavs = MapView.MapProvider.Subscribe<EvtMapUavChanged>(MapEvents.uavChanged, true)?.uav;
+                var samples = MapView.Samples.ToArray();
+                OnUIThread(() =>
+                {
+                    foreach (var item in samples)
+                    {
+                        BlockList.Add(SampleToBlock3D(item));
+                    }
+                });
             }
         }
 
@@ -188,5 +104,42 @@ namespace AirMonitor.ViewModels
             Bound = message.bound;
         }
 
+        public void Handle(EvtMapPointConverted message)
+        {
+            var sample = MapView.Samples.FirstOrDefault(o => o.GetHashCode() == message.Seq);
+            if (sample != null)
+            {
+                OnUIThread(() => BlockList.Add(SampleToBlock3D(sample)));
+            }
+        }
+
+        private double GetSampleValue(EvtAirSample sample) => (double)typeof(EvtAirSample).GetProperty(MapView.DataName.Item1).GetValue(sample);
+
+        private BlockMarker3D SampleToBlock3D(EvtAirSample sample)
+        {
+            var blockSize = 0.00001;
+            var color = MapView.MapGridOptions.GetColor(GetSampleValue(sample));
+            return new BlockMarker3D()
+            {
+                Bound = new Map3DBound()
+                {
+                    Max = new Map3DPoint()
+                    {
+                        Height = sample.hight - Setting.CorrectAltitude + 1,
+                        Lat = sample.ActualLat + blockSize,
+                        Lng = sample.ActualLng + blockSize,
+                    },
+                    Min = new Map3DPoint()
+                    {
+                        Height = sample.hight - Setting.CorrectAltitude - 1,
+                        Lat = sample.ActualLat - blockSize,
+                        Lng = sample.ActualLng - blockSize,
+                    },
+
+                },
+                Color = color,
+                Opacity = 1
+            };
+        }
     }
 }
