@@ -93,9 +93,11 @@
     <Reference Include="System.Xaml">
       <RequiredTargetFramework>4.0</RequiredTargetFramework>
     </Reference>
+    <Reference Include="UIAutomationProvider" />
     <Reference Include="WindowsBase" />
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
+    <Reference Include="WindowsFormsIntegration" />
   </ItemGroup>
   <ItemGroup>
     <ApplicationDefinition Include="App.xaml">
@@ -103,6 +105,7 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="AppBootstrapper.cs" />
+    <Compile Include="Camera\BVCUCameraManager.cs" />
     <Compile Include="Chart\ChartOptions.cs" />
     <Compile Include="Chart\LinerOptions.cs" />
     <Compile Include="Chart\ScatterData.cs" />
@@ -150,6 +153,7 @@
     <Compile Include="EventArgs\EvtSampling.cs" />
     <Compile Include="EventArgs\EvtMapLoad.cs" />
     <Compile Include="EventArgs\EvtSetting.cs" />
+    <Compile Include="Interfaces\ICameraManager.cs" />
     <Compile Include="Interfaces\IChartManager.cs" />
     <Compile Include="Interfaces\IDataManager.cs" />
     <Compile Include="Interfaces\IFactory.cs" />
@@ -327,6 +331,12 @@
     <TypeScriptCompile Include="Map\typing\map.d.ts" />
   </ItemGroup>
   <ItemGroup />
+  <ItemGroup>
+    <ProjectReference Include="..\BVCU\BVCU.csproj">
+      <Project>{e9bb641b-4271-48fe-ac5f-3b7ce90f72e8}</Project>
+      <Name>BVCU</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\packages\Fody.3.0.3\build\Fody.targets" Condition="Exists('..\packages\Fody.3.0.3\build\Fody.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

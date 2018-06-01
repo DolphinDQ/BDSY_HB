@@ -6,6 +6,7 @@
              xmlns:local="clr-namespace:AirMonitor.Views"
              mc:Ignorable="d" 
              xmlns:cal="http://www.caliburnproject.org"
+             xmlns:form="clr-namespace:System.Windows.Forms;assembly=System.Windows.Forms"
              xmlns:control="http://metro.mahapps.com/winfx/xaml/controls"
              d:DesignHeight="450" d:DesignWidth="800">
 
@@ -87,7 +88,7 @@
                 <ToggleButton IsChecked="{Binding ShowUavPath}" Content="{StaticResource T_UavPath}"></ToggleButton>
                 <Button Name="UavLocation" Content="{StaticResource T_UavLocation}"></Button>
                 <Button Name="RefreshMap" Content="{StaticResource T_RefreshMap}"></Button>
-                <!--<Button Name="Test" >测试</Button>-->
+                <Button Name="Test" >测试</Button>
             </StackPanel>
         </Border>
         <Border DockPanel.Dock="Left">
@@ -133,7 +134,10 @@
         </Border>
         <Border>
             <Grid>
-                <WebBrowser  Name="Map" Tag="{Binding MapContainer,Mode=OneWayToSource}"/>
+                <WebBrowser Name="Map" Tag="{Binding MapContainer,Mode=OneWayToSource}"/>
+                <WindowsFormsHost Name="CameraHost" HorizontalAlignment="Right" Width="400"  Height="300" VerticalAlignment="Top"  Tag="{Binding CameraPanel ,Mode=OneWayToSource}">
+                    <form:Panel x:Name="CameraView" Width="400" BorderStyle="FixedSingle"  Height="300" BackColor="#f00"/>
+                </WindowsFormsHost>
                 <Popup Placement="Top"  VerticalOffset="{Binding ElementName=Map,Path=ActualHeight}" IsOpen="True" AllowsTransparency="True" >
                     <Grid Width="{Binding ElementName=Map,Path=ActualWidth}" Height="{Binding ElementName=Map,Path=ActualHeight}">
                         <Border  VerticalAlignment="Bottom"
@@ -164,7 +168,9 @@
                             </Grid>
                         </Border>
                     </Grid>
+
                 </Popup>
+
             </Grid>
         </Border>
     </DockPanel>

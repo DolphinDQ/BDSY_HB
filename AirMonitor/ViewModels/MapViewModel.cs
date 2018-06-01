@@ -27,8 +27,8 @@ namespace AirMonitor.ViewModels
         IHandle<EvtMapSavePoints>,
         IHandle<EvtMapClearAspect>
     {
-        private IMapProvider m_mapProvider;
         private IEventAggregator m_eventAggregator;
+        private ICameraManager m_cameraManager;
         private IResourceManager m_res;
         private IFactory m_factory;
         private ISaveManager m_saveManager;
@@ -67,7 +67,8 @@ namespace AirMonitor.ViewModels
         /// <summary>
         /// 地图提供者。
         /// </summary>
-        public IMapProvider MapProvider => m_mapProvider;
+        public IMapProvider MapProvider { get; }
+
         /// <summary>
         /// 属性框。
         /// </summary>
@@ -92,8 +93,11 @@ namespace AirMonitor.ViewModels
             PropertyPanel = obj;
         }
 
-    
+
         public object Map3DPanel { get; set; }
+
+        public IntPtr CameraPanel { get; set; }
+
 
         public MapViewModel(
             IEventAggregator eventAggregator,
@@ -101,10 +105,12 @@ namespace AirMonitor.ViewModels
             ISaveManager saveManager,
             IConfigManager configManager,
             IFactory factory,
+            ICameraManager cameraManager,
             IResourceManager res)
         {
-            m_mapProvider = mapProvider;
+            MapProvider = mapProvider;
             m_eventAggregator = eventAggregator;
+            m_cameraManager = cameraManager;
             m_res = res;
             m_factory = factory;
             m_saveManager = saveManager;
@@ -132,7 +138,7 @@ namespace AirMonitor.ViewModels
 
         public void OnMapContainerChanged()
         {
-            m_mapProvider.LoadMap(MapContainer);
+            MapProvider.LoadMap(MapContainer);
         }
 
         public void OnMapLoadChanged()
@@ -163,7 +169,7 @@ namespace AirMonitor.ViewModels
                     NotifyOfPropertyChange(nameof(Samples));
                     if (MapLoad)
                     {
-                        m_mapProvider.MapPointConvert(message.GetHashCode(), new[] { new MapPoint() { lat = message.GpsLat, lng = message.GpsLng } });
+                        MapProvider.MapPointConvert(message.GetHashCode(), new[] { new MapPoint() { lat = message.GpsLat, lng = message.GpsLng } });
                     }
                 }
             }
@@ -284,19 +290,19 @@ namespace AirMonitor.ViewModels
             if (MapLoad)
             {
                 var name = GetUavName(sample);
-                if (!m_mapProvider.UavExist(name))
+                if (!MapProvider.UavExist(name))
                 {
                     LoadHistoryData(name);
                 }
                 else
                 {
-                    m_mapProvider.UavMove(new MapUav { name = name, data = sample, lat = sample.ActualLat, lng = sample.ActualLng });
-                    m_mapProvider.GridRefresh();
-                    m_mapProvider.UavPath(name, ShowUavPath);
+                    MapProvider.UavMove(new MapUav { name = name, data = sample, lat = sample.ActualLat, lng = sample.ActualLng });
+                    MapProvider.GridRefresh();
+                    MapProvider.UavPath(name, ShowUavPath);
                 }
                 if (IsUavFocus)
                 {
-                    m_mapProvider.UavFocus(name);
+                    MapProvider.UavFocus(name);
                 }
             }
         }
@@ -332,14 +338,14 @@ namespace AirMonitor.ViewModels
             var s = Samples.Where(o => o.ActualLat != 0 && o.ActualLng != 0).ToList();
             var first = s.FirstOrDefault();
             if (first == null) return;
-            m_mapProvider.UavAdd(new MapUav { name = name, data = first, lat = first.ActualLat, lng = first.ActualLng });
+            MapProvider.UavAdd(new MapUav { name = name, data = first, lat = first.ActualLat, lng = first.ActualLng });
             foreach (var item in s)
             {
-                m_mapProvider.UavMove(new MapUav() { name = name, data = item, lat = item.ActualLat, lng = item.ActualLng });
+                MapProvider.UavMove(new MapUav() { name = name, data = item, lat = item.ActualLat, lng = item.ActualLng });
             }
-            m_mapProvider.GridInit(MapGridOptions);
-            m_mapProvider.UavFocus(name);
-            m_mapProvider.GridRefresh();
+            MapProvider.GridInit(MapGridOptions);
+            MapProvider.UavFocus(name);
+            MapProvider.GridRefresh();
         }
 
         private string GetUavName(EvtAirSample sample) => "default";
@@ -348,11 +354,15 @@ namespace AirMonitor.ViewModels
         {
             MapLoad = false;
             SetPropertyPanel(null);
-            m_mapProvider.LoadMap(MapContainer);
+            MapProvider.LoadMap(MapContainer);
         }
 
         public void Test()
         {
+            if (CameraPanel != IntPtr.Zero)
+            {
+                m_cameraManager.Open(CameraPanel);
+            }
             //Show3D(true);
         }
 
@@ -388,7 +398,7 @@ namespace AirMonitor.ViewModels
         {
             if (MapLoad)
             {
-                m_mapProvider.UavFocus(GetUavName(null));
+                MapProvider.UavFocus(GetUavName(null));
             }
         }
 
@@ -463,10 +473,10 @@ namespace AirMonitor.ViewModels
 
         public void RefreshBlock()
         {
-            m_mapProvider.GridInit(MapGridOptions);
-            m_mapProvider.GridClear();
-            m_mapProvider.GridRefresh();
-            m_mapProvider.UavPath(GetUavName(null), ShowUavPath);
+            MapProvider.GridInit(MapGridOptions);
+            MapProvider.GridClear();
+            MapProvider.GridRefresh();
+            MapProvider.UavPath(GetUavName(null), ShowUavPath);
             if (Show3DView)
             {
                 Show3D(true);

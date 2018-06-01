@@ -48,6 +48,9 @@ namespace AirMonitor.ViewModels
             }
         };
 
+       
+
+
         public ObservableCollection<UavMarker3D> UavList { get; set; } = new ObservableCollection<UavMarker3D>();
 
         public ObservableCollection<BlockMarker3D> BlockList { get; set; } = new ObservableCollection<BlockMarker3D>();

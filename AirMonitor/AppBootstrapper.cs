@@ -3,6 +3,7 @@ namespace AirMonitor
     using System;
     using System.Collections.Generic;
     using System.Windows.Threading;
+    using AirMonitor.Camera;
     using AirMonitor.Chart;
     using AirMonitor.Config;
     using AirMonitor.Core;
@@ -33,6 +34,7 @@ namespace AirMonitor
             container.Singleton<IDataManager, MqttDataManager>();
             container.Singleton<IConfigManager, ConfigManager>();
             container.Singleton<IChartManager, ChartManager>();
+            container.Singleton<ICameraManager, BVCUCameraManager>();
             container.PerRequest<IShell, ShellViewModel>();
             container.PerRequest<IMapProvider, MapProvider>();
             container.RegisterInstance(typeof(IFactory), null, this);
@@ -42,6 +44,7 @@ namespace AirMonitor
             container.PerRequest<AnalysisStaticViewModel>();
             container.PerRequest<AnalysisDynamicViewModel>();
             container.PerRequest<Map3DViewModel>();
+
             container.Singleton<SimulatorViewModel>();
         }
 
