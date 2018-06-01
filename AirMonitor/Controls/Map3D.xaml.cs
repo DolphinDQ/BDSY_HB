@@ -206,8 +206,8 @@ namespace AirMonitor.Controls
             {
                 var max = bound.Max.Height;
                 var min = bound.Min.Height;
-                var diff = max - min;
-                return diff == 0 ? double.NaN : WallHeight / diff * height - min;
+                var diff = max;
+                return diff == 0 ? double.NaN : WallHeight / diff * height;
             }
             return 0;
         }
@@ -308,7 +308,6 @@ namespace AirMonitor.Controls
             var geometry = View3D.FindResource("UavGeometry") as MeshGeometry3D;
             geometry.Positions = Point3DCollection.Parse(string.Format("{1} {0} {2},{1} {0} {4},{3} {0} {4},{3} {0} {2}", h, x1, y1, x2, y2));
             var result = new GeometryModel3D(geometry, View3D.FindResource("UavMaterial") as Material);
-            result.Transform = new ScaleTransform3D(0.9, 1, 0.9);
             result.SetValue(MapMarker3D.MapMarkerProperty, item);
             return result;
         }
@@ -376,8 +375,7 @@ namespace AirMonitor.Controls
 
         private void InitGeometryModel3D(GeometryModel3D model3D)
         {
-            var item = model3D.GetValue(MapMarker3D.MapMarkerProperty) as BlockMarker3D;
-            if (item != null)
+            if (model3D.GetValue(MapMarker3D.MapMarkerProperty) is BlockMarker3D item)
             {
                 var x1 = LngConvert(item.Bound.Min.Lng);
                 var z2 = LatConvert(item.Bound.Min.Lat);
@@ -441,7 +439,7 @@ namespace AirMonitor.Controls
                 for (int i = 0; i < lines; i++)
                 {
                     canvas.Children.Add(new Line() { Stroke = color, X1 = i * unitWidth, Y1 = 0, X2 = i * unitWidth, Y2 = canvas.Height });
-                    var lbl = new Label() { Foreground = color, Content = (i == 0 ? maxHeight - minHeight + "m/" : "") + (unitWidthValue * (reversed ? lines - i : i) + minWidth) + "°" };
+                    var lbl = new Label() { Foreground = color, Content = (i == 0 ? maxHeight + "m/" : "") + (unitWidthValue * (reversed ? lines - i : i) + minWidth) + "°" };
                     lbl.SetValue(Canvas.LeftProperty, i * unitWidth);
                     canvas.Children.Add(lbl);
                 }
@@ -450,7 +448,7 @@ namespace AirMonitor.Controls
             if (canvas.Height > 0)
             {
                 var unitHeight = canvas.Height / lines;
-                var unitHeightValue = (maxHeight - minHeight) / lines;
+                var unitHeightValue = (maxHeight) / lines;
                 for (int i = 0; i < 5; i++)
                 {
                     canvas.Children.Add(new Line() { Stroke = color, X1 = 0, Y1 = i * unitHeight, X2 = canvas.Width, Y2 = i * unitHeight });

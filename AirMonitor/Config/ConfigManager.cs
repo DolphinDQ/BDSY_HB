@@ -68,8 +68,8 @@ namespace AirMonitor.Config
         {
             return new AirStandardSetting()
             {
-                CorrectAltitude = 160,
-                MaxAltitude = 300,
+                CorrectAltitude = 100,
+                MaxAltitude = 200,
                 AltitudeUnit = "m",
                 Pollutant = new[] {
                     new AirPollutant(){ Name=nameof( EvtAirSample.temp), MinValue = 0 , MaxValue = 100, DisplayName= m_res.GetText("T_Temperature") , Unit="℃"},
