@@ -48,6 +48,20 @@ namespace AirMonitor.Controls
         }
 
 
+
+
+        public double MapOpacity
+        {
+            get { return (double)GetValue(MapOpacityProperty); }
+            set { SetValue(MapOpacityProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for MapOpacity.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty MapOpacityProperty =
+            DependencyProperty.Register("MapOpacity", typeof(double), typeof(Map3D), new PropertyMetadata(0.5));
+
+
+
         public double WallHeight
         {
             get { return (double)GetValue(WallHeightProperty); }
@@ -159,10 +173,10 @@ namespace AirMonitor.Controls
                 if (img != null)
                 {
                     Map.Positions = Point3DCollection.Parse(string.Format("-{0} 0 -{1},{0} 0 -{1},{0} 0 {1},-{0} 0 {1}", img.Width / 2, img.Height / 2));
-                    var longer = img.Width > img.Height ? img.Width : img.Height;
+                    var longer = Math.Sqrt(img.Width * img.Width + img.Height * img.Height);
                     Camera.Position = Point3D.Parse(string.Format("0 {0} {1}", longer, longer));
                     Camera.UpDirection = Vector3D.Parse("0,1,0");
-                    Camera.LookDirection = Vector3D.Parse(string.Format("0 -{0} -{1}", longer, longer + longer / 2));
+                    Camera.LookDirection = Vector3D.Parse(string.Format("0 -{0} -{1}", longer, longer + img.Height / 2));
                     OnWallHeightChanged();
                 }
             }
@@ -206,8 +220,8 @@ namespace AirMonitor.Controls
             {
                 var max = bound.Max.Height;
                 var min = bound.Min.Height;
-                var diff = max - min;
-                return diff == 0 ? double.NaN : WallHeight / diff * height - min;
+                var diff = max;
+                return diff == 0 ? double.NaN : WallHeight / diff * height;
             }
             return 0;
         }
@@ -287,10 +301,10 @@ namespace AirMonitor.Controls
 
         private void OnReloadUav()
         {
+            UavGroup.Children.Clear();
             var uav = UavCollection.ToArray();//copy
             if (uav != null && MapBound != null)
             {
-                UavGroup.Children.Clear();
                 foreach (var item in uav)
                 {
                     UavGroup.Children.Add(CreateUav(item));
@@ -308,7 +322,6 @@ namespace AirMonitor.Controls
             var geometry = View3D.FindResource("UavGeometry") as MeshGeometry3D;
             geometry.Positions = Point3DCollection.Parse(string.Format("{1} {0} {2},{1} {0} {4},{3} {0} {4},{3} {0} {2}", h, x1, y1, x2, y2));
             var result = new GeometryModel3D(geometry, View3D.FindResource("UavMaterial") as Material);
-            result.Transform = new ScaleTransform3D(0.9, 1, 0.9);
             result.SetValue(MapMarker3D.MapMarkerProperty, item);
             return result;
         }
@@ -353,13 +366,13 @@ namespace AirMonitor.Controls
 
         private void OnReloadBlock()
         {
+            BlockGroup.Children.Clear();
             var block = BlockCollection.ToArray();//copy
             if (block != null && MapBound != null)
             {
-                UavGroup.Children.Clear();
                 foreach (var item in block)
                 {
-                    UavGroup.Children.Add(CreateBlock(item));
+                    BlockGroup.Children.Add(CreateBlock(item));
                 }
             }
         }
@@ -376,21 +389,29 @@ namespace AirMonitor.Controls
 
         private void InitGeometryModel3D(GeometryModel3D model3D)
         {
-            var item = model3D.GetValue(MapMarker3D.MapMarkerProperty) as BlockMarker3D;
-            if (item != null)
+            if (model3D.GetValue(MapMarker3D.MapMarkerProperty) is BlockMarker3D item)
             {
                 var x1 = LngConvert(item.Bound.Min.Lng);
-                var z1 = LatConvert(item.Bound.Min.Lat);
+                var z2 = LatConvert(item.Bound.Min.Lat);
                 var y1 = HeightConvert(item.Bound.Min.Height);
                 var x2 = LngConvert(item.Bound.Max.Lng);
-                var z2 = LatConvert(item.Bound.Max.Lat);
-                var y2 = HeightConvert(item.Bound.Max.Height);
+                var z1 = LatConvert(item.Bound.Max.Lat);
+                var y2 = y1 + x2 - x1;
                 var geometry = model3D.Geometry as MeshGeometry3D;
-                geometry.Positions = Point3DCollection.Parse(string.Format("{1} {0} {2},{1} {0} {4},{3} {0} {4},{3} {0} {2},{1} {5} {2},{1} {5} {4},{3} {5} {4},{3} {5} {2}", y1, x1, z1, x2, z2, y2));
-                var color = new BrushConverter().ConvertFromString(item.Color) as System.Windows.Media.Brush;
-                color.Opacity = item.Opacity;
+                var sharpFormat = " {0} {4} {2},{0} {4} {5},{3} {4} {5},{3} {4} {2}," +
+                                  " {0} {1} {5},{0} {1} {2},{3} {1} {2},{3} {1} {5}," +
+                                  " {3} {4} {5},{3} {1} {5},{3} {1} {2},{3} {4} {2}," +
+                                  " {0} {4} {2},{0} {1} {2},{0} {1} {5},{0} {4} {5}," +
+                                  " {3} {4} {2},{3} {1} {2},{0} {1} {2},{0} {4} {2}," +
+                                  " {0} {4} {5},{0} {1} {5},{3} {1} {5},{3} {4} {5} ";
+                geometry.Positions = Point3DCollection.Parse(string.Format(sharpFormat, x1, y1, z1, x2, y2, z2));
+                var color = (System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString(item.Color);
+                color.A = (byte)(item.Opacity * 255);
                 var material = model3D.Material as DiffuseMaterial;
-                material.Brush = color;
+                if (material.Brush is RadialGradientBrush b)
+                {
+                    (b.GradientStops[0] as GradientStop).Color = color;
+                }
             }
 
         }
@@ -432,7 +453,7 @@ namespace AirMonitor.Controls
                 for (int i = 0; i < lines; i++)
                 {
                     canvas.Children.Add(new Line() { Stroke = color, X1 = i * unitWidth, Y1 = 0, X2 = i * unitWidth, Y2 = canvas.Height });
-                    var lbl = new Label() { Foreground = color, Content = (i == 0 ? maxHeight - minHeight + "m/" : "") + (unitWidthValue * (reversed ? lines - i : i) + minWidth) + "°" };
+                    var lbl = new Label() { Foreground = color, Content = (i == 0 ? maxHeight + "m/" : "") + (unitWidthValue * (reversed ? lines - i : i) + minWidth) + "°" };
                     lbl.SetValue(Canvas.LeftProperty, i * unitWidth);
                     canvas.Children.Add(lbl);
                 }
@@ -441,7 +462,7 @@ namespace AirMonitor.Controls
             if (canvas.Height > 0)
             {
                 var unitHeight = canvas.Height / lines;
-                var unitHeightValue = (maxHeight - minHeight) / lines;
+                var unitHeightValue = (maxHeight) / lines;
                 for (int i = 0; i < 5; i++)
                 {
                     canvas.Children.Add(new Line() { Stroke = color, X1 = 0, Y1 = i * unitHeight, X2 = canvas.Width, Y2 = i * unitHeight });

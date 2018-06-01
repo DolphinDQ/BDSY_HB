@@ -5,14 +5,10 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:AirMonitor.Controls"
              mc:Ignorable="d" 
+             x:Name="Root"
              d:DesignHeight="768" d:DesignWidth="1366">
     <Grid>
-        <Grid.OpacityMask>
-            <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
-                <GradientStop Color="Black" Offset="0"/>
-                <GradientStop Color="LightGray" Offset="1"/>
-            </LinearGradientBrush>
-        </Grid.OpacityMask>
+
         <Viewport3D Focusable="True" Name="View3D" local:Trackball3D.TransformModel="{Binding ElementName=M}" >
             <Viewport3D.Resources>
                 <MeshGeometry3D x:Key="UavGeometry" Positions="-1 10 -1,-1 10 1,1 10 1, 1 10 -1" TriangleIndices="0 1 2,0 2 3" TextureCoordinates="0 0 ,0 1 ,1 1, 1 0"/>
@@ -22,20 +18,30 @@
                     </DiffuseMaterial.Brush>
                 </DiffuseMaterial>
                 <MeshGeometry3D x:Key="BlockGeometry"
-                                Positions="-1 1 -1,-1 1 1,1 1 1, 1 1 -1,-1 0 -1,-1 0 1,1 0 1, 1 0 -1" 
-                                TriangleIndices="4 5 1,4 1 0 , 4 0 3 ,4 3 7 ,0 1 2,0 2 3 ,1 5 6 ,1 6 2 ,3 2 6 ,3 6 7 ,5 4 7 ,5 7 6"
-                                TextureCoordinates="0 0 ,0 1 ,1 1, 1 0" />
-                <DiffuseMaterial x:Key="BlockMaterial" Brush="#7F00FF00"/>
-
+                                Positions=" 1 5 3,1 5 6,4 5 6,4 5 3,
+                                            1 2 6,1 2 3,4 2 3,4 2 6,
+                                            4 5 6,4 2 6,4 2 3,4 5 3,
+                                            1 5 3,1 2 3,1 2 6,1 5 6,
+                                            4 5 3,4 2 3,1 2 3,1 5 3,
+                                            1 5 6,1 2 6,4 2 6,4 5 6" 
+                                TriangleIndices="0 1 2,0 2 3, 4 5 6,4 6 7, 8 9 10,8 10 11, 12 13 14,12 14 15, 16 17 18, 16 18 19, 20 21 22 ,20 22 23"
+                                TextureCoordinates="0 0 ,0 1 ,1 1, 1 0
+                                                    , 0 0 ,0 1 ,1 1, 1 0
+                                                    , 0 0 ,0 1 ,1 1, 1 0
+                                                    , 0 0 ,0 1 ,1 1, 1 0
+                                                    , 0 0 ,0 1 ,1 1, 1 0
+                                                    , 0 0 ,0 1 ,1 1, 1 0" />
+                <DiffuseMaterial x:Key="BlockMaterial">
+                    <DiffuseMaterial.Brush>
+                        <RadialGradientBrush RadiusX="0.7" RadiusY="0.7" >
+                            <GradientStop Color="Lime" Offset="0.5"/>
+                            <GradientStop Offset="1" Color="#FFFFFFFF"/>
+                        </RadialGradientBrush>
+                    </DiffuseMaterial.Brush>
+                </DiffuseMaterial>
             </Viewport3D.Resources>
-            <Viewport3D.OpacityMask>
-                <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
-                    <GradientStop Color="Black" Offset="0"/>
-                    <GradientStop Color="White" Offset="1"/>
-                </LinearGradientBrush>
-            </Viewport3D.OpacityMask>
             <Viewport3D.Camera>
-                <PerspectiveCamera x:Name="Camera" Position="0,25,40" LookDirection="0,-9,-18"/>
+                <PerspectiveCamera x:Name="Camera" Position="0,40,-59" LookDirection="0,-9,18"/>
             </Viewport3D.Camera>
             <ModelVisual3D x:Name="M">
                 <ModelVisual3D>
@@ -53,7 +59,7 @@
                                                 <MaterialGroup>
                                                     <DiffuseMaterial>
                                                         <DiffuseMaterial.Brush>
-                                                            <ImageBrush x:Name="MapImage" Opacity="0.3" ImageSource="/AirHunter;component/Resources/Images/map.png"/>
+                                                            <ImageBrush x:Name="MapImage" Opacity="{Binding ElementName=Root,Path=MapOpacity}" ImageSource="/AirHunter;component/Resources/Images/map.png"/>
                                                         </DiffuseMaterial.Brush>
                                                     </DiffuseMaterial>
                                                 </MaterialGroup >
@@ -68,7 +74,10 @@
                                 </Model3DGroup>
                                 <Model3DGroup x:Name="BlockGroup" >
                                     <Model3DGroup.Children>
-                                        <GeometryModel3D Geometry="{DynamicResource BlockGeometry}" Material="{StaticResource BlockMaterial}"/>
+                                        <GeometryModel3D Geometry="{DynamicResource BlockGeometry}" Material="{StaticResource BlockMaterial}">
+
+                                        </GeometryModel3D>
+
                                     </Model3DGroup.Children>
                                 </Model3DGroup>
                             </Model3DGroup.Children>
@@ -83,7 +92,7 @@
                                 <DiffuseMaterial Viewport2DVisual3D.IsVisualHostMaterial="True"/>
                             </Viewport2DVisual3D.Material>
                             <Viewport2DVisual3D.Visual>
-                                <Canvas x:Name="WallNorthPanel" Background="#aaa">
+                                <Canvas x:Name="WallNorthPanel" Opacity="{Binding ElementName=Root,Path=MapOpacity}" Background="#aaa">
                                     <Label>
                                         North
                                     </Label>
@@ -98,7 +107,7 @@
                                 <DiffuseMaterial Viewport2DVisual3D.IsVisualHostMaterial="True"/>
                             </Viewport2DVisual3D.Material>
                             <Viewport2DVisual3D.Visual>
-                                <Canvas x:Name="WallSouthPanel"  Background="#aaa">
+                                <Canvas x:Name="WallSouthPanel" Opacity="{Binding ElementName=Root,Path=MapOpacity}"  Background="#aaa">
                                     <Label>
                                         South
                                     </Label>
@@ -113,7 +122,7 @@
                                 <DiffuseMaterial Viewport2DVisual3D.IsVisualHostMaterial="True"/>
                             </Viewport2DVisual3D.Material>
                             <Viewport2DVisual3D.Visual>
-                                <Canvas x:Name="WallEastPanel"  Background="#888">
+                                <Canvas x:Name="WallEastPanel"  Opacity="{Binding ElementName=Root,Path=MapOpacity}" Background="#888">
                                     <Label>
                                         East
                                     </Label>
@@ -128,7 +137,7 @@
                                 <DiffuseMaterial Viewport2DVisual3D.IsVisualHostMaterial="True"/>
                             </Viewport2DVisual3D.Material>
                             <Viewport2DVisual3D.Visual>
-                                <Canvas x:Name="WallWestPanel"  Background="#888">
+                                <Canvas x:Name="WallWestPanel" Opacity="{Binding ElementName=Root,Path=MapOpacity}" Background="#888">
                                     <Label>
                                         West
                                     </Label>
@@ -139,7 +148,6 @@
                 </ModelVisual3D>
             </ModelVisual3D>
         </Viewport3D>
-
 
     </Grid>
 </UserControl>

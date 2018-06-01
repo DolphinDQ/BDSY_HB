@@ -78,7 +78,7 @@ namespace AirMonitor.Controls
             {
                 e.Handled = true;
                 var d = context.Scale.ScaleX + e.Delta / 1000d;
-                if (d < 0.8 || d > 5)
+                if (d < 0.1 || d > 5)
                 {
                     return;
                 }
