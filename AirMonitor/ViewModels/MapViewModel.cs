@@ -73,11 +73,11 @@ namespace AirMonitor.ViewModels
         /// </summary>
         public object PropertyPanel { get; set; }
 
-        public object FullScreenPanel { get; set; }
+        public object Map3DFullPanel { get; set; }
 
         public bool Show3DView { get; set; }
 
-        public bool FullScreen { get; set; }
+        public bool Map3DFullScreen { get; set; }
 
         private void SetPropertyPanel(object obj)
         {
@@ -92,10 +92,8 @@ namespace AirMonitor.ViewModels
             PropertyPanel = obj;
         }
 
-        /// <summary>
-        /// 比较框。
-        /// </summary>
-        public object ComparePanel { get; set; }
+    
+        public object Map3DPanel { get; set; }
 
         public MapViewModel(
             IEventAggregator eventAggregator,
@@ -303,26 +301,26 @@ namespace AirMonitor.ViewModels
             }
         }
 
-        public async void OnFullScreenChanged()
+        public async void OnMap3DFullScreenChanged()
         {
-            if (FullScreen)
+            if (Map3DFullScreen)
             {
-                if (ComparePanel != null)
+                if (Map3DPanel != null)
                 {
-                    var p = ComparePanel;
-                    ComparePanel = null;
+                    var p = Map3DPanel;
+                    Map3DPanel = null;
                     await Task.Delay(100);
-                    FullScreenPanel = p;
+                    Map3DFullPanel = p;
                 }
             }
             else
             {
-                if (FullScreenPanel != null)
+                if (Map3DFullPanel != null)
                 {
-                    var p = FullScreenPanel;
-                    FullScreenPanel = null;
+                    var p = Map3DFullPanel;
+                    Map3DFullPanel = null;
                     await Task.Delay(100);
-                    ComparePanel = p;
+                    Map3DPanel = p;
                 }
             }
         }
@@ -362,7 +360,7 @@ namespace AirMonitor.ViewModels
 
         public void Show3D(bool display)
         {
-            if (ComparePanel is Screen s)
+            if (Map3DPanel is Screen s)
             {
                 s.TryClose();
             }
@@ -370,13 +368,19 @@ namespace AirMonitor.ViewModels
             {
                 var view = m_factory.Create<Map3DViewModel>();
                 view.MapView = this;
-                ComparePanel = view;
-                OnFullScreenChanged();
+                if (Map3DFullScreen)
+                {
+                    Map3DFullPanel = view;
+                }
+                else
+                {
+                    Map3DPanel = view;
+                }
             }
             else
             {
-                ComparePanel = null;
-                FullScreenPanel = null;
+                Map3DPanel = null;
+                Map3DFullPanel = null;
             }
         }
 
@@ -463,6 +467,10 @@ namespace AirMonitor.ViewModels
             m_mapProvider.GridClear();
             m_mapProvider.GridRefresh();
             m_mapProvider.UavPath(GetUavName(null), ShowUavPath);
+            if (Show3DView)
+            {
+                Show3D(true);
+            }
         }
     }
 }

@@ -159,10 +159,10 @@ namespace AirMonitor.Controls
                 if (img != null)
                 {
                     Map.Positions = Point3DCollection.Parse(string.Format("-{0} 0 -{1},{0} 0 -{1},{0} 0 {1},-{0} 0 {1}", img.Width / 2, img.Height / 2));
-                    var longer = img.Width > img.Height ? img.Width : img.Height;
+                    var longer = Math.Sqrt(img.Width * img.Width + img.Height * img.Height);
                     Camera.Position = Point3D.Parse(string.Format("0 {0} {1}", longer, longer));
                     Camera.UpDirection = Vector3D.Parse("0,1,0");
-                    Camera.LookDirection = Vector3D.Parse(string.Format("0 -{0} -{1}", longer, longer + longer / 2));
+                    Camera.LookDirection = Vector3D.Parse(string.Format("0 -{0} -{1}", longer, longer + img.Height / 2));
                     OnWallHeightChanged();
                 }
             }
@@ -287,10 +287,10 @@ namespace AirMonitor.Controls
 
         private void OnReloadUav()
         {
+            UavGroup.Children.Clear();
             var uav = UavCollection.ToArray();//copy
             if (uav != null && MapBound != null)
             {
-                UavGroup.Children.Clear();
                 foreach (var item in uav)
                 {
                     UavGroup.Children.Add(CreateUav(item));
@@ -353,13 +353,13 @@ namespace AirMonitor.Controls
 
         private void OnReloadBlock()
         {
+            BlockGroup.Children.Clear();
             var block = BlockCollection.ToArray();//copy
             if (block != null && MapBound != null)
             {
-                UavGroup.Children.Clear();
                 foreach (var item in block)
                 {
-                    UavGroup.Children.Add(CreateBlock(item));
+                    BlockGroup.Children.Add(CreateBlock(item));
                 }
             }
         }
@@ -380,17 +380,26 @@ namespace AirMonitor.Controls
             if (item != null)
             {
                 var x1 = LngConvert(item.Bound.Min.Lng);
-                var z1 = LatConvert(item.Bound.Min.Lat);
+                var z2 = LatConvert(item.Bound.Min.Lat);
                 var y1 = HeightConvert(item.Bound.Min.Height);
                 var x2 = LngConvert(item.Bound.Max.Lng);
-                var z2 = LatConvert(item.Bound.Max.Lat);
-                var y2 = HeightConvert(item.Bound.Max.Height);
+                var z1 = LatConvert(item.Bound.Max.Lat);
+                var y2 = y1 + x2 - x1;
                 var geometry = model3D.Geometry as MeshGeometry3D;
-                geometry.Positions = Point3DCollection.Parse(string.Format("{1} {0} {2},{1} {0} {4},{3} {0} {4},{3} {0} {2},{1} {5} {2},{1} {5} {4},{3} {5} {4},{3} {5} {2}", y1, x1, z1, x2, z2, y2));
-                var color = new BrushConverter().ConvertFromString(item.Color) as System.Windows.Media.Brush;
-                color.Opacity = item.Opacity;
+                var sharpFormat = " {0} {4} {2},{0} {4} {5},{3} {4} {5},{3} {4} {2}," +
+                                  " {0} {1} {5},{0} {1} {2},{3} {1} {2},{3} {1} {5}," +
+                                  " {3} {4} {5},{3} {1} {5},{3} {1} {2},{3} {4} {2}," +
+                                  " {0} {4} {2},{0} {1} {2},{0} {1} {5},{0} {4} {5}," +
+                                  " {3} {4} {2},{3} {1} {2},{0} {1} {2},{0} {4} {2}," +
+                                  " {0} {4} {5},{0} {1} {5},{3} {1} {5},{3} {4} {5} ";
+                geometry.Positions = Point3DCollection.Parse(string.Format(sharpFormat, x1, y1, z1, x2, y2, z2));
+                var color = (System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString(item.Color);
+                color.A = (byte)(item.Opacity * 255);
                 var material = model3D.Material as DiffuseMaterial;
-                material.Brush = color;
+                if (material.Brush is RadialGradientBrush b)
+                {
+                    (b.GradientStops[0] as GradientStop).Color = color;
+                }
             }
 
         }

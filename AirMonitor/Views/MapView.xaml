@@ -147,18 +147,18 @@
                             HorizontalAlignment="Left">
                             <Grid>
                                 <control:TransitioningContentControl  
-                                    Visibility="{Binding ComparePanel,Converter={StaticResource AnyVisiable}}" 
+                                    Visibility="{Binding Map3DPanel,Converter={StaticResource AnyVisiable}}" 
                                     Width="{Binding ElementName=Map,Path=ActualWidth,Converter={StaticResource Multiple}, ConverterParameter=0.4}" 
                                     Height="{Binding ElementName=Map,Path=ActualHeight,Converter={StaticResource Multiple}, ConverterParameter=0.4}"  
-                                    cal:View.Model="{Binding ComparePanel}"/>
+                                    cal:View.Model="{Binding Map3DPanel}"/>
                                 <control:TransitioningContentControl  
                                     Width="{Binding ElementName=Map,Path=ActualWidth}" 
                                     Height="{Binding ElementName=Map,Path=ActualHeight}"  
-                                    Visibility="{Binding FullScreenPanel,Converter={StaticResource AnyVisiable}}" 
-                                    cal:View.Model="{Binding FullScreenPanel}"/>
+                                    Visibility="{Binding Map3DFullPanel,Converter={StaticResource AnyVisiable}}" 
+                                    cal:View.Model="{Binding Map3DFullPanel}"/>
                                 <ToggleButton IsChecked="{Binding Show3DView}" Width="30" Height="30" 
                                               Style="{DynamicResource MetroCircleButtonStyle}" VerticalAlignment="Top" HorizontalAlignment="Left">3D</ToggleButton>
-                                <ToggleButton IsChecked="{Binding FullScreen}" Width="30" Height="30" 
+                                <ToggleButton IsChecked="{Binding Map3DFullScreen}" Width="30" Height="30" 
                                               Visibility="{Binding Show3DView,Converter={StaticResource IsVisible}}" 
                                               Style="{DynamicResource MetroCircleButtonStyle}" VerticalAlignment="Top" HorizontalAlignment="Right">〓</ToggleButton>
                             </Grid>
