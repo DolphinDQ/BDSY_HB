@@ -48,6 +48,20 @@ namespace AirMonitor.Controls
         }
 
 
+
+
+        public double MapOpacity
+        {
+            get { return (double)GetValue(MapOpacityProperty); }
+            set { SetValue(MapOpacityProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for MapOpacity.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty MapOpacityProperty =
+            DependencyProperty.Register("MapOpacity", typeof(double), typeof(Map3D), new PropertyMetadata(0.5));
+
+
+
         public double WallHeight
         {
             get { return (double)GetValue(WallHeightProperty); }

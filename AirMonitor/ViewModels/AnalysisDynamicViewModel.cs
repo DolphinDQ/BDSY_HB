@@ -17,14 +17,14 @@ namespace AirMonitor.ViewModels
     /// <summary>
     /// 区域动态分析。
     /// </summary>
-    public class DynamicAnalysisViewModel : Screen,
+    public class AnalysisDynamicViewModel : Screen,
         IHandle<EvtMapPointConverted>,
         IHandle<EvtAirSample>
     {
         private IChartManager m_chartManager;
         private IEventAggregator m_eventAggregator;
 
-        public DynamicAnalysisViewModel(
+        public AnalysisDynamicViewModel(
             IEventAggregator eventAggregator,
             IConfigManager configManager,
             IChartManager chartManager)

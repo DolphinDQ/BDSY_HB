@@ -110,6 +110,7 @@
     <Compile Include="Chart\ScatterSelectManipulator.cs" />
     <Compile Include="Config\AirPollutant.cs" />
     <Compile Include="Config\AirStandardSetting.cs" />
+    <Compile Include="Config\CameraSetting.cs" />
     <Compile Include="Config\MqttSetting.cs" />
     <Compile Include="Controls\BlockMarker3D.cs" />
     <Compile Include="Controls\MapMarker3D.cs" />
@@ -175,20 +176,28 @@
     <Compile Include="Config\ConfigManager.cs" />
     <Compile Include="Interfaces\IConfigManager.cs" />
     <Compile Include="ViewModels\AnalysisMode.cs" />
-    <Compile Include="ViewModels\DynamicAnalysisViewModel.cs" />
-    <Compile Include="ViewModels\DataDisplayViewModel.cs" />
+    <Compile Include="ViewModels\AnalysisDynamicViewModel.cs" />
+    <Compile Include="ViewModels\ConfigCameraViewModel.cs" />
+    <Compile Include="ViewModels\ConfigPushServerViewModel.cs" />
+    <Compile Include="ViewModels\DataPushViewModel.cs" />
     <Compile Include="Interfaces\IMapView.cs" />
     <Compile Include="ViewModels\Map3DViewModel.cs" />
     <Compile Include="ViewModels\MapViewModel.cs" />
-    <Compile Include="ViewModels\PollutantSettingViewModel.cs" />
-    <Compile Include="ViewModels\SampleAnalysisViewModel.cs" />
+    <Compile Include="ViewModels\ConfigAirPollutantViewModel.cs" />
+    <Compile Include="ViewModels\AnalysisStaticViewModel.cs" />
     <Compile Include="ViewModels\SimulatorStatus.cs" />
     <Compile Include="ViewModels\SimulatorViewModel.cs" />
-    <Compile Include="Views\DynamicAnalysisView.xaml.cs">
-      <DependentUpon>DynamicAnalysisView.xaml</DependentUpon>
+    <Compile Include="Views\AnalysisDynamicView.xaml.cs">
+      <DependentUpon>AnalysisDynamicView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\DataDisplayView.xaml.cs">
-      <DependentUpon>DataDisplayView.xaml</DependentUpon>
+    <Compile Include="Views\ConfigCameraView.xaml.cs">
+      <DependentUpon>ConfigCameraView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\ConfigPushServerView.xaml.cs">
+      <DependentUpon>ConfigPushServerView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\DataPushView.xaml.cs">
+      <DependentUpon>DataPushView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\Map3DView.xaml.cs">
       <DependentUpon>Map3DView.xaml</DependentUpon>
@@ -196,16 +205,15 @@
     <Compile Include="Views\MapView.xaml.cs">
       <DependentUpon>MapView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\PollutantSettingView.xaml.cs">
-      <DependentUpon>PollutantSettingView.xaml</DependentUpon>
+    <Compile Include="Views\ConfigAirPollutantView.xaml.cs">
+      <DependentUpon>ConfigAirPollutantView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\SampleAnalysisView.xaml.cs">
-      <DependentUpon>SampleAnalysisView.xaml</DependentUpon>
+    <Compile Include="Views\AnalysisStaticView.xaml.cs">
+      <DependentUpon>AnalysisStaticView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\SimulatorView.xaml.cs">
       <DependentUpon>SimulatorView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\trackball.cs" />
     <Page Include="Controls\Map3D.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -222,11 +230,19 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Views\DynamicAnalysisView.xaml">
+    <Page Include="Views\AnalysisDynamicView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\DataDisplayView.xaml">
+    <Page Include="Views\ConfigCameraView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\ConfigPushServerView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\DataPushView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -238,11 +254,11 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\PollutantSettingView.xaml">
+    <Page Include="Views\ConfigAirPollutantView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\SampleAnalysisView.xaml">
+    <Page Include="Views\AnalysisStaticView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

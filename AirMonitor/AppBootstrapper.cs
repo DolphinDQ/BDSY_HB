@@ -36,11 +36,11 @@ namespace AirMonitor
             container.PerRequest<IShell, ShellViewModel>();
             container.PerRequest<IMapProvider, MapProvider>();
             container.RegisterInstance(typeof(IFactory), null, this);
-            container.PerRequest<DataDisplayViewModel>();
+            container.PerRequest<DataPushViewModel>();
             container.PerRequest<MapViewModel>();
-            container.PerRequest<PollutantSettingViewModel>();
-            container.PerRequest<SampleAnalysisViewModel>();
-            container.PerRequest<DynamicAnalysisViewModel>();
+            container.PerRequest<ConfigAirPollutantViewModel>();
+            container.PerRequest<AnalysisStaticViewModel>();
+            container.PerRequest<AnalysisDynamicViewModel>();
             container.PerRequest<Map3DViewModel>();
             container.Singleton<SimulatorViewModel>();
         }

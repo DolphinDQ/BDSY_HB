@@ -13,12 +13,12 @@ using System.Threading.Tasks;
 
 namespace AirMonitor.ViewModels
 {
-    public class SampleAnalysisViewModel : Screen, IHandle<EvtChartScatterSelectChanged>
+    public class AnalysisStaticViewModel : Screen, IHandle<EvtChartScatterSelectChanged>
     {
         private IChartManager m_chartManager;
         private IEventAggregator m_eventAggregator;
 
-        public SampleAnalysisViewModel(IChartManager chartManager,
+        public AnalysisStaticViewModel(IChartManager chartManager,
             IConfigManager configManager,
             IEventAggregator eventAggregator)
         {

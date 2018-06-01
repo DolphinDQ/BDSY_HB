@@ -18,9 +18,9 @@ namespace AirMonitor.Views
     /// <summary>
     /// DataDisplayViewer.xaml 的交互逻辑
     /// </summary>
-    public partial class DataDisplayView : UserControl
+    public partial class DataPushView : UserControl
     {
-        public DataDisplayView()
+        public DataPushView()
         {
             InitializeComponent();
         }

@@ -18,7 +18,7 @@ using AirMonitor.Chart;
 
 namespace AirMonitor.ViewModels
 {
-    class DataDisplayViewModel : Screen, IHandle<EvtAirSample>, IHandle<EvtSetting>, IHandle<EvtSampling>
+    class DataPushViewModel : Screen, IHandle<EvtAirSample>, IHandle<EvtSetting>, IHandle<EvtSampling>
     {
         [AddINotifyPropertyChangedInterface]
         public class SampleChart
@@ -110,7 +110,7 @@ namespace AirMonitor.ViewModels
         public AirStandardSetting StandardSetting { get; private set; }
         #endregion
 
-        public DataDisplayViewModel(
+        public DataPushViewModel(
             IEventAggregator eventAggregator,
             IChartManager chartManager,
             IConfigManager configManager,

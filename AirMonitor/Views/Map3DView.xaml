@@ -8,6 +8,19 @@
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
     <Grid>
-        <ctrl:Map3D MapContainer="{Binding MapView.MapContainer}"  MapBound="{Binding MapBound}" UavCollection="{Binding UavList}"  BlockCollection="{Binding BlockList}"/>
+        <ctrl:Map3D 
+            MapContainer="{Binding MapView.MapContainer}"  
+            MapBound="{Binding MapBound}" 
+            UavCollection="{Binding UavList}"  
+            BlockCollection="{Binding BlockList}"
+            MapOpacity="{Binding ElementName=MapOpacity,Path=Value}"
+            WallHeight="{Binding ElementName=WallHeight,Path=Value}"
+            />
+        <StackPanel Orientation="Horizontal" VerticalAlignment="Bottom">
+            <Label>地图透明</Label>
+            <Slider Width="100" Name="MapOpacity" Minimum="0" Maximum="1" Value="0.5"></Slider>
+            <Label>测量高度</Label>
+            <Slider Width="100" Name="WallHeight" Minimum="100" Maximum="2000" Value="500"></Slider>
+        </StackPanel>
     </Grid>
 </UserControl>

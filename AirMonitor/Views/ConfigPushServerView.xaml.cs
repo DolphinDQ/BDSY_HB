@@ -16,11 +16,11 @@ using System.Windows.Shapes;
 namespace AirMonitor.Views
 {
     /// <summary>
-    /// SampleAnalysisView.xaml 的交互逻辑
+    /// ConfigPushServerView.xaml 的交互逻辑
     /// </summary>
-    public partial class SampleAnalysisView : UserControl
+    public partial class ConfigPushServerView : UserControl
     {
-        public SampleAnalysisView()
+        public ConfigPushServerView()
         {
             InitializeComponent();
         }

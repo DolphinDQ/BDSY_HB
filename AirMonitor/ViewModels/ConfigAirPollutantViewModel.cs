@@ -11,12 +11,12 @@ using System.Threading.Tasks;
 
 namespace AirMonitor.ViewModels
 {
-    class PollutantSettingViewModel : Screen
+    class ConfigAirPollutantViewModel : Screen
     {
         private IConfigManager m_configManager;
         private IEventAggregator m_eventAggregator;
 
-        public PollutantSettingViewModel(IConfigManager configManager, IEventAggregator eventAggregator)
+        public ConfigAirPollutantViewModel(IConfigManager configManager, IEventAggregator eventAggregator)
         {
             m_configManager = configManager;
             m_eventAggregator = eventAggregator;

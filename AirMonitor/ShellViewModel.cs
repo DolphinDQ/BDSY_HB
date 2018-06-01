@@ -61,13 +61,13 @@ namespace AirMonitor
         protected override void OnViewAttached(object view, object context)
         {
             base.OnViewAttached(view, context);
-            Sider = m_factory.Create<DataDisplayViewModel>();
+            Sider = m_factory.Create<DataPushViewModel>();
             Container = m_factory.Create<MapViewModel>();
         }
 
         public void OpenSetting()
         {
-            Setting = m_factory.Create<PollutantSettingViewModel>();
+            Setting = m_factory.Create<ConfigAirPollutantViewModel>();
             SettingTitle = m_res.GetText("T_Setting");
             EnableSetting = true;
         }

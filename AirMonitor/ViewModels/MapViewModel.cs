@@ -220,7 +220,7 @@ namespace AirMonitor.ViewModels
 
         public void Handle(EvtMapClearAspect message)
         {
-            if (PropertyPanel is SampleAnalysisViewModel)
+            if (PropertyPanel is AnalysisStaticViewModel)
             {
                 SetPropertyPanel(null);
             }
@@ -228,9 +228,9 @@ namespace AirMonitor.ViewModels
 
         public void Handle(EvtMapSelectAnalysisArea message)
         {
-            if (!(PropertyPanel is DynamicAnalysisViewModel view))
+            if (!(PropertyPanel is AnalysisDynamicViewModel view))
             {
-                view = m_factory.Create<DynamicAnalysisViewModel>();
+                view = m_factory.Create<AnalysisDynamicViewModel>();
             }
             view.MapView = this;
             view.Bounds = message;
@@ -239,7 +239,7 @@ namespace AirMonitor.ViewModels
 
         public void Handle(EvtMapClearAnalysisArea message)
         {
-            if (PropertyPanel is DynamicAnalysisViewModel)
+            if (PropertyPanel is AnalysisDynamicViewModel)
             {
                 SetPropertyPanel(null);
             }
@@ -269,9 +269,9 @@ namespace AirMonitor.ViewModels
 
         private void OnShowAnalysisPanel(MapBlock[] blocks, AnalysisMode mode)
         {
-            if (!(PropertyPanel is SampleAnalysisViewModel view))
+            if (!(PropertyPanel is AnalysisStaticViewModel view))
             {
-                view = m_factory.Create<SampleAnalysisViewModel>();
+                view = m_factory.Create<AnalysisStaticViewModel>();
             }
             view.MapView = this;
             view.Mode = mode;

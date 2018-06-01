@@ -16,11 +16,11 @@ using System.Windows.Shapes;
 namespace AirMonitor.Views
 {
     /// <summary>
-    /// PollutantSettingView.xaml 的交互逻辑
+    /// ConfigCameraView.xaml 的交互逻辑
     /// </summary>
-    public partial class PollutantSettingView : UserControl
+    public partial class ConfigCameraView : UserControl
     {
-        public PollutantSettingView()
+        public ConfigCameraView()
         {
             InitializeComponent();
         }
