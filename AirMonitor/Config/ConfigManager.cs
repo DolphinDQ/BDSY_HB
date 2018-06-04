@@ -57,12 +57,28 @@ namespace AirMonitor.Config
             {
                 case nameof(AirStandardSetting):
                     return (T)CreateAirStandardSetting();
+                case nameof(CameraSetting):
+                    return (T)CreateCameraSetting();
                 default:
                     return new T();
             }
 
         }
 
+        private object CreateCameraSetting()
+        {
+            return new CameraSetting()
+            {
+                Host = "47.92.130.204",
+                Port = 9701,
+                UserName = "20180208",
+                Password = "123456",
+                ConnectionTimeout = 30,
+                Volumes = 80,
+                CameraId = null,
+                VideoChanel = 0,
+            };
+        }
 
         private object CreateAirStandardSetting()
         {

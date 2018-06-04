@@ -76,5 +76,17 @@
     <sys:String x:Key="T_StopAction">停止动作</sys:String>
     <sys:String x:Key="T_StopConfirm">停止时显示提示框</sys:String>
     <sys:String x:Key="T_SimulationSessionCompleted">模拟飞行任务完成！</sys:String>
+    <sys:String x:Key="T_VideoServiceSetting">服务配置</sys:String>
+    <sys:String x:Key="T_ServiceHost">服务地址</sys:String>
+    <sys:String x:Key="T_ServicePost">服务端口</sys:String>
+    <sys:String x:Key="T_ServiceAccount">服务账号</sys:String>
+    <sys:String x:Key="T_ServicePassword">服务密码</sys:String>
+    <sys:String x:Key="T_CameraSetting">摄像头配置</sys:String>
+    <sys:String x:Key="T_CameraName">摄像头名称</sys:String>
+    <sys:String x:Key="T_CameraChannel">摄像头通道</sys:String>
+    <sys:String x:Key="T_Volumes">音量</sys:String>
+    <sys:String x:Key="T_ServiceStatus">服务状态</sys:String>
+    <sys:String x:Key="T_ClickToReconnect">点击重连</sys:String>
+    <sys:String x:Key="T_RefreshList">刷新列表</sys:String>
 
 </ResourceDictionary>

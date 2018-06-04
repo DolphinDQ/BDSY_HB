@@ -9,14 +9,25 @@ using System.Text;
 
 namespace BVCUSDK
 {
-
+    public delegate void BVCU_Server_ProcChannelInfo(IntPtr session, IntPtr puId, IntPtr puName, int status, ref BVCU_PUOneChannelInfo channel, int finished);
+    public delegate void BVCU_Server_OnEvent(IntPtr session, int eventCode, ref BVCU_Event_Common eventCommon);
+    public delegate void BVCU_Cmd_OnGetPuList(IntPtr session, IntPtr puId, IntPtr puName, int status, ref BVCU_PUOneChannelInfo channel, int finished);
+    public delegate void BVCU_Dialog_OnDialogEvent(IntPtr dialog, int eventCode, int errorCode, int mediaDir);
+    public delegate void BVCU_Dialog_OnStorageEvent(IntPtr dialog, int eventCode, int errorCode, IntPtr fileName, int strLen, Int64 timeStamp);
+    public delegate void BVCU_GpsDialog_OnEvent(IntPtr dialog, int eventCode, Int32 errorCode);
+    public delegate void BVCU_GpsDialog_OnData(IntPtr dialog, IntPtr pGpsData, Int32 len);
+    public delegate void BVCU_Cmd_OnGetPuPtzAttr(IntPtr session, IntPtr puId, int ptzIndex, IntPtr ptzAttr);
+    public delegate void BVCU_TspDialog_OnEvent(IntPtr dialog, int eventCode, Int32 errorCode);
+    public delegate void BVCU_TspDialog_OnData(IntPtr dialog, string pTspData, int len);
+    public delegate void BVCU_Cmd_ControlResult(IntPtr session, IntPtr puId, Int32 device, Int32 subMethod, Int32 result);
     /// <summary>
     /// 主要功能是对ManagedLayer.dll, bvdisplay.dll中提供功能的提取
     /// </summary>
     public partial class BVCU
     {
-        private const string LIB_PATH = "libBVCU\\ManagedLayer.dll";
-        private const string LIB_DISPLAY = "libBVCU\\bvdisplay.dll";
+        private const string LIB_PATH = "ManagedLayer.dll";
+        private const string LIB_DISPLAY = "bvdisplay.dll";
+
 
         /// <summary>
         /// 动态库ManagedLayer.dll，包括ManagedLayer.h中提供给C#的所有接口【注：现未添加完全(2013-12-12 08:58)】
@@ -48,6 +59,11 @@ namespace BVCUSDK
         [DllImport(LIB_PATH, CallingConvention = CallingConvention.Cdecl)]
         public static extern void ManagedLayer_CuRelease(IntPtr handle);
 
+        public static object ManagedLayer_CuLogin(IntPtr m_sdkHandle, ref object m_sessionHandler, byte[] v1, int port, byte[] v2, byte[] v3, int timeout, object m_serverEvent, object m_serverProcChannelInfo)
+        {
+            throw new NotImplementedException();
+        }
+
         /// <summary>
         /// Cu 登录
         ///     使用示例：
@@ -55,11 +71,11 @@ namespace BVCUSDK
         ///            ref m_server.sessionHandle, Encoding.UTF8.GetBytes(ip), 
         ///            port, Encoding.UTF8.GetBytes(usrName),
         ///            Encoding.UTF8.GetBytes(psw), SERVER_TIME_OUT_SECOND,
-        ///            m_bvsdkEventHandler.server_OnEvent, m_bvsdkEventHandler.server_ProcChannelInfo);
+        ///            m_bvsdkserver_OnEvent, m_bvsdkserver_ProcChannelInfo);
         ///
         ///        BVCU.FAILED(ret);
-        /// 两个事件回调处理函数EventHandler.Server_ProcNotifyChannelInfo(...)、
-        ///                 EventHandler.Server_OnEvent(...)
+        /// 两个事件回调处理函数Server_ProcNotifyChannelInfo(...)、
+        ///                 Server_OnEvent(...)
         /// </summary>
         /// <param name="handle">IntPtr</param>
         /// <param name="session">out 登录/连接</param>
@@ -68,14 +84,14 @@ namespace BVCUSDK
         /// <param name="usrName">用户名</param>
         /// <param name="usrPsw">用户密码</param>
         /// <param name="timeOutSec">超时时间，单位秒</param>
-        /// <param name="onEvent">见EventHandler.Server_OnEvent(...)，响应BVCU_EVENT_SESSION_OPEN、BVCU_EVENT_SESSION_CLOSE</param>
-        /// <param name="procChannelInfo">见EventHandler.Server_ProcNotifyChannelInfo(...)</param>
+        /// <param name="onEvent">见Server_OnEvent(...)，响应BVCU_EVENT_SESSION_OPEN、BVCU_EVENT_SESSION_CLOSE</param>
+        /// <param name="procChannelInfo">见Server_ProcNotifyChannelInfo(...)</param>
         /// <returns></returns>
         [DllImport(LIB_PATH, CallingConvention = CallingConvention.Cdecl)]
         public static extern int ManagedLayer_CuLogin(IntPtr handle, ref IntPtr session, Byte[] serverIp, Int32 serverPort,
             Byte[] usrName, Byte[] usrPsw, int timeOutSec,
-            EventHandler.BVCU_Server_OnEvent onEvent,
-            EventHandler.BVCU_Server_ProcChannelInfo procChannelInfo);
+            BVCU_Server_OnEvent onEvent,
+            BVCU_Server_ProcChannelInfo procChannelInfo);
 
         /// <summary>
         /// Cu 退出登录
@@ -97,7 +113,7 @@ namespace BVCUSDK
         /// <returns></returns>
         [DllImport(LIB_PATH, CallingConvention = CallingConvention.Cdecl)]
         public static extern int ManagedLayer_CuGetPuList(IntPtr handle, IntPtr session,
-            EventHandler.BVCU_Cmd_OnGetPuList getPuList);
+            BVCU_Cmd_OnGetPuList getPuList);
 
         /// <summary>
         /// 功能：视频预览
@@ -106,16 +122,16 @@ namespace BVCUSDK
         ///                        m_session.Handle, Encoding.UTF8.GetBytes(pu.id), channelNo,
         ///                        panel.Handle, ref dispRect,
         ///                        volume, 0, Encoding.UTF8.GetBytes(""), true, ref net,
-        ///                        m_bvsdkEventHandler.dialog_OnDialogEvent,
-        ///                        m_bvsdkEventHandler.dialog_OnStorageEvent));       
+        ///                        m_bvsdkdialog_OnDialogEvent,
+        ///                        m_bvsdkdialog_OnStorageEvent));       
         /// </summary>
         [DllImport(LIB_PATH, CallingConvention = CallingConvention.Cdecl)]
         public static extern int ManagedLayer_CuBrowsePu(IntPtr handle, ref IntPtr dialog,
             IntPtr session, Byte[] puId, int channelNo, IntPtr hWnd, ref BVRect dispRect,
             int volume, int singleRecFileSec, Byte[] recFileDir, bool videoTrans,
             ref BVCU_DialogControlParam_Network netWork,
-            EventHandler.BVCU_Dialog_OnDialogEvent onDlgEvent,
-            EventHandler.BVCU_Dialog_OnStorageEvent onStoreEvent);
+            BVCU_Dialog_OnDialogEvent onDlgEvent,
+            BVCU_Dialog_OnStorageEvent onStoreEvent);
 
         /// <summary>
         /// 语音对讲
@@ -127,8 +143,8 @@ namespace BVCUSDK
         public static extern int ManagedLayer_CuNewTalk(IntPtr handle, ref IntPtr dialog,
             IntPtr session, Byte[] puId, int channelNo, int captureVolume, int audioVolume,
             ref BVCU_DialogControlParam_Network netWork,
-            EventHandler.BVCU_Dialog_OnDialogEvent onDlgEvent,
-            EventHandler.BVCU_Dialog_OnStorageEvent onStoreEvent);
+            BVCU_Dialog_OnDialogEvent onDlgEvent,
+            BVCU_Dialog_OnStorageEvent onStoreEvent);
 
 
         /// <summary>
@@ -187,15 +203,15 @@ namespace BVCUSDK
         /// 设置Pu控制的响应事件
         /// </summary>
         /// <param name="handle"></param>
-        /// <param name="onCtrlRes">功能暂时未完成EventHandler.OnControlResult</param>
+        /// <param name="onCtrlRes">功能暂时未完成OnControlResult</param>
         [DllImport(LIB_PATH, CallingConvention = CallingConvention.Cdecl)]
-        public static extern void ManagedLayer_CuSetPuControlResultProcFunc(IntPtr handle, EventHandler.BVCU_Cmd_ControlResult onCtrlRes);
+        public static extern void ManagedLayer_CuSetPuControlResultProcFunc(IntPtr handle, BVCU_Cmd_ControlResult onCtrlRes);
 
         [DllImport(LIB_PATH, CallingConvention = CallingConvention.Cdecl)]
         public static extern int ManagedLayer_CuSetPuPtzControl(IntPtr handle, IntPtr session, Byte[] puId, int device, IntPtr ptzCtrl);
 
         [DllImport(LIB_PATH, CallingConvention = CallingConvention.Cdecl)]
-        public static extern int ManagedLayer_CuOpenTspDialog(IntPtr handle, ref IntPtr dialog, IntPtr session, Byte[] puId, int channelNo, EventHandler.BVCU_TspDialog_OnEvent onDlgEvent, EventHandler.BVCU_TspDialog_OnData onDlgData);
+        public static extern int ManagedLayer_CuOpenTspDialog(IntPtr handle, ref IntPtr dialog, IntPtr session, Byte[] puId, int channelNo, BVCU_TspDialog_OnEvent onDlgEvent, BVCU_TspDialog_OnData onDlgData);
 
         /// <summary>
         /// 串口发送数据
@@ -213,7 +229,7 @@ namespace BVCUSDK
         /// <param name="onEvent"></param>
         /// <returns></returns>
         [DllImport(LIB_PATH, CallingConvention = CallingConvention.Cdecl)]
-        public static extern int ManagedLayer_CuGetPuPtzAttr(IntPtr handle, IntPtr session, Byte[] puId, int device, EventHandler.BVCU_Cmd_OnGetPuPtzAttr onEvent);
+        public static extern int ManagedLayer_CuGetPuPtzAttr(IntPtr handle, IntPtr session, Byte[] puId, int device, BVCU_Cmd_OnGetPuPtzAttr onEvent);
 
         /// <summary>
         /// Open Gps Dialog, 在Dialog中调用
@@ -229,8 +245,8 @@ namespace BVCUSDK
         [DllImport(LIB_PATH, CallingConvention = CallingConvention.Cdecl)]
         public static extern int ManagedLayer_CuOpenGpsDialog(IntPtr handle, ref IntPtr dialog, IntPtr session,
             Byte[] puId, int channelNo,
-            EventHandler.BVCU_GpsDialog_OnEvent onDlgEvent,
-            EventHandler.BVCU_GpsDialog_OnData onDlgData);
+            BVCU_GpsDialog_OnEvent onDlgEvent,
+            BVCU_GpsDialog_OnData onDlgData);
 
         // 手动设置PU停止/开始录像
         [DllImport(LIB_PATH, CallingConvention = CallingConvention.Cdecl)]
@@ -393,26 +409,6 @@ namespace BVCUSDK
 
         #endregion 显示字体
 
-
-        public class EventHandler
-        {
-            /// <summary>
-            /// Session Event
-            /// </summary>
-            public const int BVCU_ONLINE_STATUS_OFFLINE = 0;
-            public const int BVCU_ONLINE_STATUS_ONLINE = 1;
-            public delegate void BVCU_Server_ProcChannelInfo(IntPtr session, IntPtr puId, IntPtr puName, int status, ref BVCU_PUOneChannelInfo channel, int finished);
-            public delegate void BVCU_Server_OnEvent(IntPtr session, int eventCode, ref BVCU_Event_Common eventCommon);
-            public delegate void BVCU_Cmd_OnGetPuList(IntPtr session, IntPtr puId, IntPtr puName, int status, ref BVCU_PUOneChannelInfo channel, int finished);
-            public delegate void BVCU_Dialog_OnDialogEvent(IntPtr dialog, int eventCode, int errorCode, int mediaDir);
-            public delegate void BVCU_Dialog_OnStorageEvent(IntPtr dialog, int eventCode, int errorCode, IntPtr fileName, int strLen, Int64 timeStamp);
-            public delegate void BVCU_GpsDialog_OnEvent(IntPtr dialog, int eventCode, Int32 errorCode);
-            public delegate void BVCU_GpsDialog_OnData(IntPtr dialog, IntPtr pGpsData, Int32 len);
-            public delegate void BVCU_Cmd_OnGetPuPtzAttr(IntPtr session, IntPtr puId, int ptzIndex, IntPtr ptzAttr);
-            public delegate void BVCU_TspDialog_OnEvent(IntPtr dialog, int eventCode, Int32 errorCode);
-            public delegate void BVCU_TspDialog_OnData(IntPtr dialog, string pTspData, int len);
-            public delegate void BVCU_Cmd_ControlResult(IntPtr session, IntPtr puId, Int32 device, Int32 subMethod, Int32 result);
-            public BVCU_Server_OnEvent server_OnEvent;
-        }
+     
     }
 }

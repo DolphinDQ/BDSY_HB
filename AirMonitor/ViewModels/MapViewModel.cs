@@ -31,6 +31,7 @@ namespace AirMonitor.ViewModels
         private ICameraManager m_cameraManager;
         private IResourceManager m_res;
         private IFactory m_factory;
+        private IConfigManager m_configManager;
         private ISaveManager m_saveManager;
 
         public object MapContainer { get; set; }
@@ -96,7 +97,7 @@ namespace AirMonitor.ViewModels
 
         public object Map3DPanel { get; set; }
 
-        public IntPtr CameraPanel { get; set; }
+        public object CameraPanel { get; set; }
 
 
         public MapViewModel(
@@ -109,10 +110,11 @@ namespace AirMonitor.ViewModels
             IResourceManager res)
         {
             MapProvider = mapProvider;
-            m_eventAggregator = eventAggregator;
             m_cameraManager = cameraManager;
+            m_eventAggregator = eventAggregator;
             m_res = res;
             m_factory = factory;
+            m_configManager = configManager;
             m_saveManager = saveManager;
             m_eventAggregator.Subscribe(this);
             var setting = configManager.GetConfig<AirStandardSetting>();
@@ -359,13 +361,17 @@ namespace AirMonitor.ViewModels
 
         public void Test()
         {
-            if (CameraPanel != IntPtr.Zero)
-            {
-                m_cameraManager.Open(CameraPanel);
-            }
+            m_eventAggregator.PublishOnBackgroundThread(new EvtSetting() { Command = SettingCommands.Request, SettingObject = m_configManager.GetConfig<CameraSetting>() });
             //Show3D(true);
         }
 
+        public void OpenVideo()
+        {
+            if (CameraPanel != null)
+            {
+                m_cameraManager.OpenVideo(CameraPanel);
+            }
+        }
         public void OnShow3DViewChanged() => Show3D(Show3DView);
 
         public void Show3D(bool display)

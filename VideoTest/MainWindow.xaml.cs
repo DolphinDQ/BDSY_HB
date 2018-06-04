@@ -1,56 +1,49 @@
-﻿using AirMonitor.Config;
-using AirMonitor.EventArgs;
-using AirMonitor.Interfaces;
+﻿using AirMonitor.Camera;
 using BVCUSDK;
-using Caliburn.Micro;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
-using System.Windows.Forms;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Data;
+using System.Windows.Documents;
+using System.Windows.Input;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
+using System.Windows.Navigation;
+using System.Windows.Shapes;
 
-namespace AirMonitor.Camera
+namespace VideoTest
 {
-    public class BVCUCameraManager : ICameraManager
+    /// <summary>
+    /// MainWindow.xaml 的交互逻辑
+    /// </summary>
+    public partial class MainWindow : Window
     {
-        private readonly IntPtr m_sdkHandle;
-        private readonly BVCU_Cmd_OnGetPuList m_getPuList;
-        private readonly BVCU_Server_OnEvent m_serverEvent;
-        private readonly BVCU_Server_ProcChannelInfo m_serverProcChannelInfo;
-        private readonly BVCU_Dialog_OnDialogEvent m_dialog_OnDialogEvent;
-        private readonly BVCU_Dialog_OnStorageEvent m_dialog_OnStorageEvent;
-        private readonly BVCU.DisplayFont m_afterRenderDisplayFont;
-        private readonly IEventAggregator m_eventAggregator;
+        private IntPtr m_sdkHandle;
         private IntPtr m_sessionHandler;
+        private BVCU_Cmd_OnGetPuList m_getPuList;
+        private BVCU_Server_OnEvent m_serverEvent;
+        private BVCU_Server_ProcChannelInfo m_serverProcChannelInfo;
+        private BVCU_Dialog_OnDialogEvent m_dialog_OnDialogEvent;
+        private BVCU_Dialog_OnStorageEvent m_dialog_OnStorageEvent;
         private IntPtr m_dialogHandle;
         private List<CameraDevice> m_devices;
         private bool m_gettingDevice;
-
-        private IConfigManager m_configManager;
-
         public CameraSetting Setting { get; private set; }
 
-        public BVCUCameraManager(IConfigManager configManager, IEventAggregator eventAggregator)
+        public MainWindow()
         {
-            BVCU.FAILED(BVCU.ManagedLayer_CuInit(ref m_sdkHandle));
-            m_eventAggregator = eventAggregator;
-            m_configManager = configManager;
+            InitializeComponent();
             m_serverEvent = new BVCU_Server_OnEvent(OnServerEvent);
             m_serverProcChannelInfo = new BVCU_Server_ProcChannelInfo(OnProcChannelInfo);
             m_getPuList = new BVCU_Cmd_OnGetPuList(OnGetPuList);
             m_dialog_OnDialogEvent = new BVCU_Dialog_OnDialogEvent(OnDialogEvent);
             m_dialog_OnStorageEvent = new BVCU_Dialog_OnStorageEvent(OnStorageEvent);
-            m_afterRenderDisplayFont = new BVCU.DisplayFont(OnRander);
-            BVCU.ManagedLayer_DispSetDisplayFontFunc(m_afterRenderDisplayFont);//设置渲染回调，不然会报错。
-            Setting = m_configManager.GetConfig<CameraSetting>();
-            Reconnect();
-        }
-
-        private void OnRander(IntPtr dialog, long timeStamp)
-        {
-
+            Onload();
         }
 
         private void OnStorageEvent(IntPtr dialog, int eventCode, int errorCode, IntPtr fileName, int strLen, long timeStamp)
@@ -82,13 +75,19 @@ namespace AirMonitor.Camera
                 }
                 if (channel.iMediaDir.HasFlag(BVCU_MEDIADIR.BVCU_MEDIADIR_VIDEORECV))
                 {
-                    (dev.Channel as List<VideoChannel>).Add(new VideoChannel() { Camera = dev, Channel = channel.iChannelIndex, Name = channel.szName, Tag = channel });
+                    (dev.Channel as List<VideoChannel>).Add(new VideoChannel()
+                    {
+                        Camera = dev,
+                        Channel = channel.iChannelIndex,
+                        Name = channel.szName,
+                        IsOnline = status != BVCU.BVCU_ONLINE_STATUS_OFFLINE,
+                        Tag = channel
+                    });
                 }
             }
             if (finished != 0)
             {
                 m_gettingDevice = false;
-                m_eventAggregator.PublishOnBackgroundThread(new EvtCameraGetDevices() { Devices = m_devices });
             }
         }
 
@@ -109,35 +108,20 @@ namespace AirMonitor.Camera
 
         public void OpenVideo(object winPanel, VideoChannel channel = null)
         {
-            if (winPanel is Control control)
+            if (winPanel is System.Windows.Forms.Control control)
             {
-                if (channel == null && m_devices != null && m_devices.Any())
-                {
-                    var camera = m_devices.FirstOrDefault(o => o.Id == Setting.CameraId);
-                    if (camera != null)
-                    {
-                        channel = camera.Channel.FirstOrDefault();
-                    }
-                }
-                var chnl = Setting.VideoChanel;
-                var puId = Setting.CameraId;
-                if (channel != null)
-                {
-                    chnl = channel.Channel;
-                    puId = channel.Camera.Id;
-                }
                 var width = control.Width;
                 var height = control.Height;
-                var dispRect = new BVRect(0, 0, width, height);
+                var dispRect = new BVRect(0, 0, 400, 300);
                 var net = new BVCU_DialogControlParam_Network(0, 5, 1, 3);
                 var ret = BVCU.ManagedLayer_CuBrowsePu(m_sdkHandle,//sdk handle
                                   ref m_dialogHandle,//dialog handle
                                   m_sessionHandler,//session handle
-                                  Encoding.UTF8.GetBytes(puId),//pu id
-                                  chnl, //channel no                            
+                                  Encoding.UTF8.GetBytes("PU_7116"),//pu id
+                                  0, //channel no                            
                                   control.Handle, //pannel handle
                                   ref dispRect,//上下左右，矩形
-                                  Setting.Volumes,//音量
+                                  0,//音量
                                   0,//single Rec File Sec
                                   Encoding.UTF8.GetBytes(""), //rec File Dir
                                   true,//videoTrans
@@ -145,6 +129,7 @@ namespace AirMonitor.Camera
                                   m_dialog_OnDialogEvent,
                                   m_dialog_OnStorageEvent);
                 BVCU.FAILED(ret);
+
             }
             else
             {
@@ -164,7 +149,44 @@ namespace AirMonitor.Camera
             var ret = BVCU.ManagedLayer_CuGetPuList(m_sdkHandle, m_sessionHandler, m_getPuList);
             BVCU.FAILED(ret);
         }
+        private async void Onload()
+        {
 
+            BVCU.FAILED(BVCU.ManagedLayer_CuInit(ref m_sdkHandle));
+            Setting = CreateCameraSetting();
+            await Task.Delay(1000);
+            Reconnect();
+            await Task.Delay(1000);
+            OpenVideo(Cam);
+        }
+
+
+        private CameraSetting CreateCameraSetting()
+        {
+            return new CameraSetting()
+            {
+                Host = "47.92.130.204",
+                Port = 9701,
+                UserName = "20180208",
+                Password = "123456",
+                ConnectionTimeout = 30,
+                Volumes = 80,
+                CameraId = null,
+                VideoChanel = 0,
+            };
+        }
+
+        public class CameraSetting
+        {
+            public string Host { get; set; }
+            public int Port { get; set; }
+            public string UserName { get; set; }
+            public string Password { get; set; }
+            public int ConnectionTimeout { get; set; }
+            public int Volumes { get; set; }
+            public int VideoChanel { get; set; }
+            public string CameraId { get; set; }
+        }
         public async void Reconnect()
         {
             var ip = Setting.Host;

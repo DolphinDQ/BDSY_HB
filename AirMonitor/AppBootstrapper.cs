@@ -43,8 +43,9 @@ namespace AirMonitor
             container.PerRequest<ConfigAirPollutantViewModel>();
             container.PerRequest<AnalysisStaticViewModel>();
             container.PerRequest<AnalysisDynamicViewModel>();
+            container.PerRequest<ConfigCameraViewModel>();
             container.PerRequest<Map3DViewModel>();
-
+            
             container.Singleton<SimulatorViewModel>();
         }
 

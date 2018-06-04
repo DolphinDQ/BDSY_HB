@@ -3,6 +3,7 @@ using AirMonitor.EventArgs;
 using AirMonitor.Interfaces;
 using AirMonitor.ViewModels;
 using Caliburn.Micro;
+using System;
 using System.Windows;
 
 namespace AirMonitor
@@ -45,9 +46,13 @@ namespace AirMonitor
             {
                 case SettingCommands.Request:
                     var obj = message.SettingObject;
-                    if (obj is AirStandardSetting setting)
+                    if (obj is AirStandardSetting airStandard)
                     {
-                        OpenSetting();
+                        OpenAirStandardSetting(airStandard);
+                    }
+                    else if (obj is CameraSetting camera)
+                    {
+                        OpenCameraSetting(camera);
                     }
                     break;
                 case SettingCommands.Changed:
@@ -58,6 +63,24 @@ namespace AirMonitor
             }
         }
 
+        private void OpenAirStandardSetting(AirStandardSetting airStandard)
+        {
+            var setting = m_factory.Create<ConfigAirPollutantViewModel>();
+            setting.Settings = airStandard;
+            SettingTitle = m_res.GetText("T_Setting");
+            Setting = setting;
+            EnableSetting = true;
+        }
+
+        private void OpenCameraSetting(CameraSetting camera)
+        {
+            var setting = m_factory.Create<ConfigCameraViewModel>();
+            setting.Setting = camera;
+            SettingTitle = m_res.GetText("T_CameraSetting");
+            Setting = setting;
+            EnableSetting = true;
+        }
+
         protected override void OnViewAttached(object view, object context)
         {
             base.OnViewAttached(view, context);
@@ -65,12 +88,6 @@ namespace AirMonitor
             Container = m_factory.Create<MapViewModel>();
         }
 
-        public void OpenSetting()
-        {
-            Setting = m_factory.Create<ConfigAirPollutantViewModel>();
-            SettingTitle = m_res.GetText("T_Setting");
-            EnableSetting = true;
-        }
 
         public void OpenSimulator()
         {

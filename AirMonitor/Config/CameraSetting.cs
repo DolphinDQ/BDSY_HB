@@ -8,5 +8,13 @@ namespace AirMonitor.Config
 {
     public class CameraSetting
     {
+        public string Host { get; set; }
+        public int Port { get; set; }
+        public string UserName { get; set; }
+        public string Password { get; set; }
+        public int ConnectionTimeout { get; set; }
+        public int Volumes { get; set; }
+        public int VideoChanel { get; set; }
+        public string CameraId { get; set; }
     }
 }

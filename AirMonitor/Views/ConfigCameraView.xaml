@@ -5,8 +5,56 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:AirMonitor.Views"
              mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="800">
-    <Grid>
-            
-    </Grid>
+             d:DesignHeight="800" d:DesignWidth="300">
+    <DockPanel>
+        <Border DockPanel.Dock="Top">
+            <StackPanel>
+                <Label Style="{StaticResource Lbl_Title}" Content="{StaticResource T_VideoServiceSetting}"></Label>
+                <DockPanel>
+                    <Label Content="{StaticResource T_ServiceHost}"></Label>
+                    <TextBox Text="{Binding Setting.Host}"></TextBox>
+                </DockPanel>
+                <DockPanel>
+                    <Label Content="{StaticResource T_ServicePost}"></Label>
+                    <TextBox Text="{Binding Setting.Port}"></TextBox>
+                </DockPanel>
+                <DockPanel>
+                    <Label Content="{StaticResource T_ServiceAccount}"></Label>
+                    <TextBox Text="{Binding Setting.UserName}"></TextBox>
+                </DockPanel>
+                <DockPanel>
+                    <Label Content="{StaticResource T_ServicePassword}"></Label>
+                    <TextBox Text="{Binding Setting.Password}"></TextBox>
+                </DockPanel>
+            </StackPanel>
+        </Border>
+        <Border DockPanel.Dock="Top">
+            <StackPanel>
+                <Label Style="{StaticResource Lbl_Title}" Content="{StaticResource T_CameraSetting}"></Label>
+                <DockPanel>
+                    <Label Content="{StaticResource T_CameraName}"></Label>
+                    <TextBox Text="{Binding Setting.CameraId}" IsReadOnly="True"></TextBox>
+                </DockPanel>
+                <DockPanel>
+                    <Label Content="{StaticResource T_CameraChannel}"></Label>
+                    <TextBox Text="{Binding VideoChannel}" IsReadOnly="True"></TextBox>
+                </DockPanel>
+                <DockPanel>
+                    <Label Content="{StaticResource T_Volumes}"></Label>
+                    <Slider Maximum="100" Minimum="0" Value="{Binding Setting.Volumes}"></Slider>
+                </DockPanel>
+            </StackPanel>
+        </Border>
+        <Border>
+            <DockPanel>
+                <StackPanel DockPanel.Dock="Top" Orientation="Horizontal">
+                    <Label Content="{StaticResource T_ServiceStatus}"></Label>
+                    <Button Name="Reconnect" ToolTip="{StaticResource T_ClickToReconnect}" Content="{Binding ManagerStatus}"></Button>
+                    <Button Name="RefreshList" Content="{StaticResource T_RefreshList}"></Button>
+                    <Button Name="Confirm" Content="{StaticResource T_Confirm}"></Button>
+                </StackPanel>
+                <ListBox ItemsSource="{Binding Devices}" DisplayMemberPath="Name" BorderBrush="LightGray" BorderThickness="1" SelectedItem="{Binding SelectedCamera}"/>
+            </DockPanel>
+        </Border>
+    </DockPanel>
 </UserControl>

@@ -20,7 +20,6 @@ namespace AirMonitor.ViewModels
         {
             m_configManager = configManager;
             m_eventAggregator = eventAggregator;
-            Settings = m_configManager.GetConfig<AirStandardSetting>();
         }
 
         public AirStandardSetting Settings { get; set; }

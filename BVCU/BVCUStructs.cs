@@ -38,6 +38,17 @@ namespace BVCUSDK
             right = r;
         }
     }
+    [Flags]
+    public enum BVCU_MEDIADIR : Byte
+    {
+        BVCU_MEDIADIR_VIDEOSEND = (1 << 0),
+        BVCU_MEDIADIR_VIDEORECV = (1 << 1),
+        BVCU_MEDIADIR_AUDIOSEND = (1 << 2),
+        BVCU_MEDIADIR_AUDIORECV = (1 << 3),
+        BVCU_MEDIADIR_TALKONLY = (BVCU_MEDIADIR_AUDIOSEND | BVCU_MEDIADIR_AUDIORECV),
+        BVCU_MEDIADIR_DATASEND = (1 << 4),
+        BVCU_MEDIADIR_DATARECV = (1 << 5),
+    }
 
     /// <summary>
     /// Pu channel information
@@ -47,7 +58,7 @@ namespace BVCUSDK
         [MarshalAs(UnmanagedType.ByValTStr, SizeConst = BVCU.BVCU_MAX_NAME_LEN + 1)]
         public string szName;
         public Int32 iChannelIndex;
-        public Byte iMediaDir;
+        public BVCU_MEDIADIR iMediaDir;
         public Byte iPTZIndex;
         Byte cReserved;
         Byte cReserved0;
