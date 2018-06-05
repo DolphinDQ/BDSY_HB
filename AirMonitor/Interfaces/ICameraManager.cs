@@ -23,6 +23,11 @@ namespace AirMonitor.Interfaces
         /// <param name="channel">视频通道。可以通过<see cref="GetDevices"/>获得，视频通道为空时，默认会读取<see cref="CameraSetting"/></param>
         void OpenVideo(object winPanel, VideoChannel channel = null);
         /// <summary>
+        /// 关闭视频。
+        /// </summary>
+        /// <param name="winPanel"></param>
+        void CloseVideo(object winPanel);
+        /// <summary>
         /// 获取设备列表。以事件方式返回。
         /// </summary>
         void GetDevices();

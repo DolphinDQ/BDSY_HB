@@ -389,7 +389,6 @@ enum MapEvents {
     boundChanged = "boundChanged",
     blockChanged = "blockChanged",
     uavChanged = "uavChanged",
-    uavVideo = "openUavVideo",
 }
 
 enum MapMenuItems {
@@ -397,7 +396,6 @@ enum MapMenuItems {
     uavPath = "无人机路径",
     uavLocation = "无人机定位",
     uavFollow = "无人机跟随",
-    uavVideo = "无人机视频",
 
     compare = "对比数据",
     reports = "统计报表",
@@ -847,7 +845,6 @@ class BaiduMapProvider extends MapBase {
                 createItem(MapMenuItems.refresh, o => this.onRefresh()),
                 false,
                 createItem(MapMenuItems.uavLocation, o => this.onUavLoaction()),
-                createItem(MapMenuItems.uavVideo, o => this.on(MapEvents.uavVideo)),
                 createItem(MapMenuItems.uavFollow, o => this.uavFollow = !this.uavFollow),
                 createItem(MapMenuItems.uavPath, o => this.uavPath = !this.uavPath),
                 false,
@@ -1026,15 +1023,19 @@ class BaiduMapProvider extends MapBase {
         this.blockGrid.blocks = [];
     }
     uavAdd(name: string, lng: number, lat: number, d: any) {
-        var data = this.parseJson(d);
+        var data: Array<any> = this.parseJson(d);
         this.uav(name, null, () => {
             var point = new BMap.Point(lng, lat);
-            point.data = data;
+            point.data = data[0];
             var icon = new BMap.Icon("marker.png", new BMap.Size(30, 30));
             var uav = new Uav();
             uav.name = name;
             uav.marker = new BMap.Marker(point, { icon: icon });
-            uav.pathPoint = [point];
+            uav.pathPoint = data.select(o => {
+                var p: Point = new BMap.Point(o.ActualLng, o.ActualLat);
+                p.data = o;
+                return p;
+            });
             this.uavList.push(uav);
             this.map.addOverlay(uav.marker);
             this.on(MapEvents.uavChanged, { uav: this.getUavData() });

@@ -28,7 +28,6 @@ namespace AirMonitor.ViewModels
         IHandle<EvtMapClearAspect>
     {
         private IEventAggregator m_eventAggregator;
-        private ICameraManager m_cameraManager;
         private IResourceManager m_res;
         private IFactory m_factory;
         private IConfigManager m_configManager;
@@ -94,11 +93,9 @@ namespace AirMonitor.ViewModels
             PropertyPanel = obj;
         }
 
-
         public object Map3DPanel { get; set; }
 
         public object CameraPanel { get; set; }
-
 
         public MapViewModel(
             IEventAggregator eventAggregator,
@@ -106,11 +103,9 @@ namespace AirMonitor.ViewModels
             ISaveManager saveManager,
             IConfigManager configManager,
             IFactory factory,
-            ICameraManager cameraManager,
             IResourceManager res)
         {
             MapProvider = mapProvider;
-            m_cameraManager = cameraManager;
             m_eventAggregator = eventAggregator;
             m_res = res;
             m_factory = factory;
@@ -352,11 +347,7 @@ namespace AirMonitor.ViewModels
             var s = Samples.Where(o => o.ActualLat != 0 && o.ActualLng != 0).ToList();
             var first = s.FirstOrDefault();
             if (first == null) return;
-            MapProvider.UavAdd(new MapUav { name = name, data = first, lat = first.ActualLat, lng = first.ActualLng });
-            foreach (var item in s)
-            {
-                MapProvider.UavMove(new MapUav() { name = name, data = item, lat = item.ActualLat, lng = item.ActualLng });
-            }
+            MapProvider.UavAdd(new MapUav { name = name, data = s, lat = first.ActualLat, lng = first.ActualLng });
             MapProvider.GridInit(MapGridOptions);
             MapProvider.UavFocus(name);
             MapProvider.GridRefresh();
@@ -376,13 +367,7 @@ namespace AirMonitor.ViewModels
             //Show3D(true);
         }
 
-        public void OpenVideo()
-        {
-            if (CameraPanel != null)
-            {
-                m_cameraManager.OpenVideo(CameraPanel);
-            }
-        }
+  
         public void OnShow3DViewChanged() => Show3D(Show3DView);
 
         public void Show3D(bool display)

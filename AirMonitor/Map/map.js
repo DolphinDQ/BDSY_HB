@@ -369,7 +369,6 @@ var MapEvents;
     MapEvents["boundChanged"] = "boundChanged";
     MapEvents["blockChanged"] = "blockChanged";
     MapEvents["uavChanged"] = "uavChanged";
-    MapEvents["uavVideo"] = "openUavVideo";
 })(MapEvents || (MapEvents = {}));
 var MapMenuItems;
 (function (MapMenuItems) {
@@ -377,7 +376,6 @@ var MapMenuItems;
     MapMenuItems["uavPath"] = "\u65E0\u4EBA\u673A\u8DEF\u5F84";
     MapMenuItems["uavLocation"] = "\u65E0\u4EBA\u673A\u5B9A\u4F4D";
     MapMenuItems["uavFollow"] = "\u65E0\u4EBA\u673A\u8DDF\u968F";
-    MapMenuItems["uavVideo"] = "\u65E0\u4EBA\u673A\u89C6\u9891";
     MapMenuItems["compare"] = "\u5BF9\u6BD4\u6570\u636E";
     MapMenuItems["reports"] = "\u7EDF\u8BA1\u62A5\u8868";
     MapMenuItems["savePoints"] = "\u4FDD\u5B58";
@@ -828,7 +826,6 @@ var BaiduMapProvider = /** @class */ (function (_super) {
                 createItem(MapMenuItems.refresh, function (o) { return _this.onRefresh(); }),
                 false,
                 createItem(MapMenuItems.uavLocation, function (o) { return _this.onUavLoaction(); }),
-                createItem(MapMenuItems.uavVideo, function (o) { return _this.on(MapEvents.uavVideo); }),
                 createItem(MapMenuItems.uavFollow, function (o) { return _this.uavFollow = !_this.uavFollow; }),
                 createItem(MapMenuItems.uavPath, function (o) { return _this.uavPath = !_this.uavPath; }),
                 false,
@@ -1029,12 +1026,16 @@ var BaiduMapProvider = /** @class */ (function (_super) {
         var data = this.parseJson(d);
         this.uav(name, null, function () {
             var point = new BMap.Point(lng, lat);
-            point.data = data;
+            point.data = data[0];
             var icon = new BMap.Icon("marker.png", new BMap.Size(30, 30));
             var uav = new Uav();
             uav.name = name;
             uav.marker = new BMap.Marker(point, { icon: icon });
-            uav.pathPoint = [point];
+            uav.pathPoint = data.select(function (o) {
+                var p = new BMap.Point(o.ActualLng, o.ActualLat);
+                p.data = o;
+                return p;
+            });
             _this.uavList.push(uav);
             _this.map.addOverlay(uav.marker);
             _this.on(MapEvents.uavChanged, { uav: _this.getUavData() });

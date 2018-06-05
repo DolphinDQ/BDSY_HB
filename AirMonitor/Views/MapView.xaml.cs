@@ -23,7 +23,6 @@ namespace AirMonitor.Views
         public MapView()
         {
             InitializeComponent();
-            CameraHost.Tag = CameraView;
             Map.Tag = Map;
         }
     }

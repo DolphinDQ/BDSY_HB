@@ -7,6 +7,7 @@
              xmlns:oxy="clr-namespace:OxyPlot.Wpf;assembly=OxyPlot.Wpf" 
              xmlns:controls="http://metro.mahapps.com/winfx/xaml/controls"
              mc:Ignorable="d" 
+             xmlns:form="clr-namespace:System.Windows.Forms;assembly=System.Windows.Forms"
              d:DesignHeight="800" d:DesignWidth="350">
 
     <DockPanel IsEnabled="{Binding DataManager.IsConnected}">
@@ -27,24 +28,56 @@
 
         <Border DockPanel.Dock="Top">
             <StackPanel>
-                <Label Style="{StaticResource Lbl_Title}" Content="{StaticResource T_UavStatus}"></Label>
-                <UniformGrid Columns="4">
-                    <Label Content="{StaticResource T_Battery}"></Label>
-                    <Label Content="90%"></Label>
-                    <Label Content="{StaticResource T_CallbackProgress}"></Label>
-                    <Label Content="0%"></Label>
-                    <Label Content="{StaticResource T_GpsAltitude}"></Label>
-                    <Label Content="{Binding NewestData.ghight}"></Label>
-                    <Label Content="{StaticResource T_PressureAltitude}"></Label>
-                    <Button Name="CorrectHeight" Content="{Binding NewestData.hight,Converter={StaticResource Round}}"></Button>
-
-                    <!--<Label Content="{StaticResource T_RelativeAltitude}"></Label>-->
-                </UniformGrid>
-                <DockPanel Margin="5">
-                    <Label DockPanel.Dock="Left" VerticalContentAlignment="Center" Content="{StaticResource T_CorrectAltitude}"></Label>
-                    <Label DockPanel.Dock="Right" Content="{Binding NewestData.RelativeHeight,Converter={StaticResource Round}}"></Label>
-                    <controls:NumericUpDown Margin="10 0" Value="{Binding CorrectAltitude,Converter={StaticResource Round}}"></controls:NumericUpDown>
+                <DockPanel>
+                    <Button Name="CloseVideo" 
+                            DockPanel.Dock="Right" 
+                            Height="Auto" 
+                            VerticalAlignment="Bottom" 
+                            Visibility="{Binding ShowVideo,Converter={StaticResource IsVisible}}" Content="{StaticResource T_CloseVideo}"></Button>
+                    <Label Style="{StaticResource Lbl_Title}" Content="{StaticResource T_UavStatus}"></Label>
                 </DockPanel>
+                <Grid Name="UavStatusPanel">
+                    <UniformGrid Columns="4">
+                        <UniformGrid.Resources>
+                            <Style TargetType="Button" BasedOn="{StaticResource MetroButton}">
+                                <Setter Property="Margin" Value="2"/>
+                            </Style>
+                        </UniformGrid.Resources>
+                        <Label Content="{StaticResource T_Battery}"></Label>
+                        <Label Content="90%"></Label>
+                        <Label Content="{StaticResource T_CallbackProgress}"></Label>
+                        <Label Content="0%"></Label>
+                        <Label Content="{StaticResource T_DataServiceStatus}"></Label>
+                        <Label HorizontalAlignment="Right" Content="{Binding DataManager.IsConnected}"></Label>
+                        <Button Name="DataServiceSetting" Content="{StaticResource T_Setting}"></Button>
+                        <Button Name="SampleSetting" Content="{StaticResource T_SampleSetting}"></Button>
+                        <Label Content="{StaticResource T_VideoServiceStatus}"></Label>
+                        <Label Content="{Binding CameraManager.IsConnected}"></Label>
+                        <Label></Label>
+                        <Button Name="VideoServiceSetting" Content="{StaticResource T_Setting}"></Button>
+                        <Label Content="{StaticResource T_CameraStatus}"></Label>
+                        <Label Content="{Binding IsCameraOnline}"></Label>
+                        <Label></Label>
+                        <Button Name="OpenVideo" IsEnabled="{Binding IsCameraOnline}" Content="{StaticResource T_OpenVideo}"></Button>
+                        <Label Content="{StaticResource T_GpsAltitude}"></Label>
+                        <Label Content="{Binding NewestData.ghight}"></Label>
+                        <Label Content="{StaticResource T_PressureAltitude}"></Label>
+                        <Button Name="CorrectHeight" Content="{Binding NewestData.hight,Converter={StaticResource Round}}"></Button>
+                        <Label VerticalContentAlignment="Center" Content="{StaticResource T_CorrectAltitude}"></Label>
+                        <controls:NumericUpDown Value="{Binding CorrectAltitude,Converter={StaticResource Round}}"></controls:NumericUpDown>
+                        <Label Content="{StaticResource T_RelativeHeight}"></Label>
+                        <Label Content="{Binding NewestData.RelativeHeight,Converter={StaticResource Round}}"></Label>
+                        <!--<Label Content="{StaticResource T_RelativeAltitude}"></Label>-->
+                    </UniformGrid>
+                    <WindowsFormsHost Name="CameraHost"  
+                                  Visibility="{Binding ShowVideo,Converter={StaticResource IsVisible}}"
+                                  Width="{Binding ElementName=UavStatusPanel,Path=ActualWidth}"
+                                  Height="{Binding ElementName=UavStatusPanel,Path=ActualHeight}"
+                                  Tag="{Binding CameraPanel ,Mode=OneWayToSource}"
+                                  HorizontalAlignment="Right" VerticalAlignment="Top" >
+                        <form:Panel x:Name="CameraView"  BorderStyle="FixedSingle" BackColor="black"/>
+                    </WindowsFormsHost>
+                </Grid>
             </StackPanel>
         </Border>
         <Border>
@@ -73,10 +106,7 @@
                         <Label Style="{StaticResource Lbl_Title}" Content="{StaticResource T_RealtimeAirSamples}"/>
                         <!--<Button Name="Config" HorizontalAlignment="Right" Margin=" 5" Width="65" Content="{StaticResource T_Setting}" ></Button>-->
                     </DockPanel>
-                    <DockPanel>
-                        <Label Content="{StaticResource T_SensorStatus}"></Label>
-                        <Label HorizontalAlignment="Right" Content="{Binding DataManager.IsConnected}"></Label>
-                    </DockPanel>
+
                     <DockPanel>
                         <Label Content="{StaticResource T_DataDisplay}"></Label>
                         <Button Name="ClearData" Width="65" Margin="0 5 5 5" Content="{StaticResource T_ClearReport}"  DockPanel.Dock="Right" ></Button>
@@ -88,7 +118,7 @@
                         <StackPanel.Resources>
                             <Style TargetType="StackPanel" x:Key="Panel_PollutantName">
                                 <Setter Property="DockPanel.Dock" Value="Left"/>
-                                <Setter Property="Width" Value="45"/>
+                                <Setter Property="Width" Value="50"/>
                                 <Setter Property="VerticalAlignment" Value="Center"/>
                                 <Setter Property="Margin" Value="5"/>
                             </Style>

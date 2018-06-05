@@ -17,5 +17,6 @@ namespace AirMonitor.Config
         public string ChannelName { get; set; }
         public int ChannelIndex { get; set; }
         public string CameraId { get; set; }
+
     }
 }

@@ -45,6 +45,8 @@ namespace AirMonitor
             switch (message.Command)
             {
                 case SettingCommands.Request:
+                    if (EnableSetting) return;
+                    CloseSetting();
                     var obj = message.SettingObject;
                     if (obj is AirStandardSetting airStandard)
                     {
@@ -60,6 +62,14 @@ namespace AirMonitor
                     Setting = null;
                     EnableSetting = false;
                     break;
+            }
+        }
+
+        private void CloseSetting()
+        {
+            if (Setting is Screen screen)
+            {
+                screen.TryClose();
             }
         }
 
@@ -91,6 +101,7 @@ namespace AirMonitor
 
         public void OpenSimulator()
         {
+            CloseSetting();
             Setting = m_factory.Create<SimulatorViewModel>();
             SettingTitle = m_res.GetText("T_Simulation");
             EnableSetting = true;

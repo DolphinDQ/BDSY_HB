@@ -23,6 +23,9 @@ namespace AirMonitor.Views
         public DataPushView()
         {
             InitializeComponent();
+            CameraHost.Tag = CameraView;
         }
+
+
     }
 }

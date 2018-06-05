@@ -9,6 +9,7 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
+using System.Collections.Concurrent;
 using System.Windows.Forms;
 
 namespace AirMonitor.Camera
@@ -24,8 +25,8 @@ namespace AirMonitor.Camera
         private readonly IEventAggregator m_eventAggregator;
         private IntPtr m_sdkHandle;
         private IntPtr m_sessionHandler;
-        private IntPtr m_dialogHandle;
         private List<CameraDevice> m_devices;
+        private ConcurrentDictionary<IntPtr, IntPtr> m_dialogs;
         private bool m_gettingDevice;
 
         private IConfigManager m_configManager;
@@ -37,10 +38,11 @@ namespace AirMonitor.Camera
         public BVCUCameraManager(IConfigManager configManager, IEventAggregator eventAggregator)
         {
             BVCU.FAILED(BVCU.ManagedLayer_CuInit(ref m_sdkHandle));
+            m_dialogs = new ConcurrentDictionary<IntPtr, IntPtr>();
             m_eventAggregator = eventAggregator;
             m_configManager = configManager;
             m_serverEvent = new BVCU_Server_OnEvent(OnServerEvent);
-            m_serverProcChannelInfo = new BVCU_Server_ProcChannelInfo(OnProcChannelInfo);
+            m_serverProcChannelInfo = new BVCU_Server_ProcChannelInfo(OnGetPuList);
             m_getPuList = new BVCU_Cmd_OnGetPuList(OnGetPuList);
             m_dialog_OnDialogEvent = new BVCU_Dialog_OnDialogEvent(OnDialogEvent);
             m_dialog_OnStorageEvent = new BVCU_Dialog_OnStorageEvent(OnStorageEvent);
@@ -82,9 +84,19 @@ namespace AirMonitor.Camera
                     };
                     m_devices.Add(dev);
                 }
-                if (channel.iMediaDir.HasFlag(BVCU_MEDIADIR.BVCU_MEDIADIR_VIDEORECV))
+                if (channel.iChannelIndex == 0)
                 {
-                    (dev.Channel as List<VideoChannel>).Add(new VideoChannel() { Camera = dev, Channel = channel.iChannelIndex, Name = channel.szName, Tag = channel });
+                    var chnl = dev.Channel.FirstOrDefault(o => o.Channel == 0);
+                    if (chnl == null)
+                    {
+                        (dev.Channel as List<VideoChannel>).Add(new VideoChannel() { Camera = dev, Channel = channel.iChannelIndex, Name = channel.szName, IsOnline = channel.iMediaDir != 0, Tag = channel });
+                    }
+                    else
+                    {
+                        chnl.Name = channel.szName;
+                        chnl.IsOnline = channel.iMediaDir != 0;
+                        chnl.Tag = channel;
+                    }
                 }
             }
             if (finished != 0)
@@ -94,10 +106,10 @@ namespace AirMonitor.Camera
             }
         }
 
-        private void OnProcChannelInfo(IntPtr session, IntPtr puId, IntPtr puName, int status, ref BVCU_PUOneChannelInfo channel, int finished)
-        {
+        //private void OnProcChannelInfo(IntPtr session, IntPtr puId, IntPtr puName, int status, ref BVCU_PUOneChannelInfo channel, int finished)
+        //{
 
-        }
+        //}
 
         private void OnServerEvent(IntPtr session, int eventCode, ref BVCU_Event_Common eventCommon)
         {
@@ -164,10 +176,13 @@ namespace AirMonitor.Camera
 
         private void Disconnect()
         {
-            if (m_dialogHandle != IntPtr.Zero)
+            var keys = m_dialogs.Keys.ToArray();
+            foreach (var item in keys)
             {
-                BVCU.ManagedLayer_CuCloseDialog(m_sdkHandle, m_dialogHandle);
-                m_dialogHandle = IntPtr.Zero;
+                if (m_dialogs.TryRemove(item, out var i))
+                {
+                    BVCU.ManagedLayer_CuCloseDialog(m_sdkHandle, i);
+                }
             }
             if (m_sessionHandler != IntPtr.Zero)
             {
@@ -224,8 +239,10 @@ namespace AirMonitor.Camera
                 var height = control.Height;
                 var dispRect = new BVRect(0, 0, width, height);
                 var net = new BVCU_DialogControlParam_Network(0, 5, 1, 3);
+                CloseVideo(winPanel);
+                IntPtr dialog = IntPtr.Zero;
                 var ret = BVCU.ManagedLayer_CuBrowsePu(m_sdkHandle,//sdk handle
-                                  ref m_dialogHandle,//dialog handle
+                                  ref dialog,//dialog handle
                                   m_sessionHandler,//session handle
                                   Encoding.UTF8.GetBytes(puId),//pu id
                                   chnl, //channel no                            
@@ -239,6 +256,7 @@ namespace AirMonitor.Camera
                                   m_dialog_OnDialogEvent,
                                   m_dialog_OnStorageEvent);
                 BVCU.FAILED(ret);
+                m_dialogs.TryAdd(control.Handle, dialog);
             }
             else
             {
@@ -265,6 +283,15 @@ namespace AirMonitor.Camera
             Connect();
             await Task.Delay(1000);
             GetDevices();
+        }
+
+        public void CloseVideo(object winPanel)
+        {
+            if (winPanel is Control control)
+                if (m_dialogs.TryRemove(control.Handle, out var dialog))
+                {
+                    Task.Factory.StartNew(() => BVCU.ManagedLayer_CuCloseDialog(m_sdkHandle, dialog));
+                }
         }
     }
 }

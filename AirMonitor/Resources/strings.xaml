@@ -8,13 +8,17 @@
     <sys:String x:Key="T_CallbackProgress">回传进度</sys:String>
     <sys:String x:Key="T_GpsAltitude">GPS海拔</sys:String>
     <sys:String x:Key="T_PressureAltitude">气压海拔</sys:String>
-    <sys:String x:Key="T_RelativeHeight">高度</sys:String>
+    <sys:String x:Key="T_RelativeHeight">相对高度</sys:String>
     <sys:String x:Key="T_CorrectAltitude">海拔修正</sys:String>
     <sys:String x:Key="T_AltitudeUnit">高度单位</sys:String>
     <sys:String x:Key="T_MaxAltitude">最高海拔</sys:String>
     <sys:String x:Key="T_Speed">速度</sys:String>
     <sys:String x:Key="T_RealtimeAirSamples">实时空气采样</sys:String>
     <sys:String x:Key="T_SensorStatus">传感器状态</sys:String>
+    <sys:String x:Key="T_DataServiceStatus">数据服务</sys:String>
+    <sys:String x:Key="T_VideoServiceStatus">视频服务</sys:String>
+    <sys:String x:Key="T_OpenVideo">打开视频</sys:String>
+    <sys:String x:Key="T_CloseVideo">关闭视频</sys:String>
     <sys:String x:Key="T_Normal">正常</sys:String>
     <sys:String x:Key="T_DataDisplay">显示数据</sys:String>
     <sys:String x:Key="T_Visualization">可视化数据显示</sys:String>
@@ -67,7 +71,8 @@
     <sys:String x:Key="T_Threshold">阈值</sys:String>
     <sys:String x:Key="T_Simulation">模拟飞行</sys:String>
     <sys:String x:Key="T_OpenSimFile">飞行数据</sys:String>
-    <sys:String x:Key="T_SamplingInterval">采样评率</sys:String>
+    <sys:String x:Key="T_SamplingInterval">采样频率</sys:String>
+    <sys:String x:Key="T_SampleSetting">采样设置</sys:String>
     <sys:String x:Key="T_Progress">模拟进度</sys:String>
     <sys:String x:Key="T_Pause">暂停</sys:String>
     <sys:String x:Key="T_Continue">继续</sys:String>
@@ -88,5 +93,6 @@
     <sys:String x:Key="T_ServiceStatus">服务状态</sys:String>
     <sys:String x:Key="T_ClickToReconnect">点击重连</sys:String>
     <sys:String x:Key="T_RefreshList">刷新列表</sys:String>
+    <sys:String x:Key="T_CameraStatus">摄像机状态</sys:String>
 
 </ResourceDictionary>

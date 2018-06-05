@@ -15,10 +15,16 @@ using System.ComponentModel;
 using AirMonitor.Config;
 using PropertyChanged;
 using AirMonitor.Chart;
+using AirMonitor.Camera;
 
 namespace AirMonitor.ViewModels
 {
-    class DataPushViewModel : Screen, IHandle<EvtAirSample>, IHandle<EvtSetting>, IHandle<EvtSampling>
+    class DataPushViewModel : Screen,
+        IHandle<EvtAirSample>,
+        IHandle<EvtSetting>,
+        IHandle<EvtCameraConnect>,
+        IHandle<EvtCameraGetDevices>,
+        IHandle<EvtSampling>
     {
         [AddINotifyPropertyChangedInterface]
         public class SampleChart
@@ -79,7 +85,7 @@ namespace AirMonitor.ViewModels
         private IResourceManager m_res;
 
         public IDataManager DataManager { get; }
-
+        public ICameraManager CameraManager { get; }
         public EvtAirSample NewestData { get; set; }
 
         public bool EnableSampling { get; set; }
@@ -90,7 +96,9 @@ namespace AirMonitor.ViewModels
         /// </summary>
         public List<Tuple<string, string>> DataNameList { get; set; }
 
+        public object CameraPanel { get; set; }
 
+        public bool ShowVideo { get; set; }
 
         #region Sample list
         public SampleChart Temperature => Plots[nameof(EvtAirSample.temp)];
@@ -106,14 +114,16 @@ namespace AirMonitor.ViewModels
         public Dictionary<string, SampleChart> Plots { get; set; }
 
         private IConfigManager m_configManager;
-
         public AirStandardSetting StandardSetting { get; private set; }
+        public CameraSetting CameraSetting { get; private set; }
+        public bool IsCameraOnline { get; private set; }
         #endregion
 
         public DataPushViewModel(
             IEventAggregator eventAggregator,
             IChartManager chartManager,
             IConfigManager configManager,
+            ICameraManager cameraManager,
             IDataManager data,
             IResourceManager res)
         {
@@ -122,19 +132,22 @@ namespace AirMonitor.ViewModels
             m_res = res;
             DataManager = data;
             m_configManager = configManager;
+            CameraManager = cameraManager;
             StandardSetting = configManager.GetConfig<AirStandardSetting>();
+            CameraSetting = configManager.GetConfig<CameraSetting>();
             CorrectAltitude = StandardSetting.CorrectAltitude;
             Plots = new Dictionary<string, SampleChart>();
             Plots.Add(nameof(EvtAirSample.RelativeHeight), new SampleChart(chartManager)
             {
                 Pollutant = GetHeightPollutant()
             });
-
             foreach (var item in StandardSetting.Pollutant)
             {
                 Plots.Add(item.Name, new SampleChart(chartManager) { Pollutant = item });
             }
+            CameraManager.Reconnect();
         }
+
         private AirPollutant GetHeightPollutant()
         {
             return new AirPollutant()
@@ -146,6 +159,7 @@ namespace AirMonitor.ViewModels
                 MaxValue = StandardSetting.MaxAltitude,
             };
         }
+
         public override void TryClose(bool? dialogResult = null)
         {
             base.TryClose(dialogResult);
@@ -193,6 +207,33 @@ namespace AirMonitor.ViewModels
             m_configManager.SaveConfig(StandardSetting);
         }
 
+        public void VideoServiceSetting()
+        {
+            m_eventAggregator.PublishOnBackgroundThread(new EvtSetting() { Command = SettingCommands.Request, SettingObject = CameraSetting });
+        }
+
+        public void DataServiceSetting()
+        {
+            m_eventAggregator.PublishOnBackgroundThread(new EvtSetting() { Command = SettingCommands.Request, SettingObject = StandardSetting });
+        }
+
+        public void OpenVideo()
+        {
+            ShowVideo = true;
+            if (CameraPanel != null)
+            {
+                CameraManager.OpenVideo(CameraPanel);
+            }
+        }
+
+        public void CloseVideo()
+        {
+            ShowVideo = false;
+            if (CameraPanel != null)
+            {
+                CameraManager.CloseVideo(CameraPanel);
+            }
+        }
 
         public void ClearData(bool focus = false)
         {
@@ -251,6 +292,29 @@ namespace AirMonitor.ViewModels
                 case SamplingStatus.ClearAll:
                     ClearData(true);
                     break;
+            }
+        }
+
+        public void Handle(EvtCameraConnect message)
+        {
+            NotifyOfPropertyChange(nameof(CameraManager));
+        }
+
+        public void Handle(EvtCameraGetDevices message)
+        {
+            if (CameraSetting != null)
+            {
+                var cam = message.Devices.FirstOrDefault(o => o.Id == CameraSetting.CameraId);
+                if (cam != null)
+                {
+                    var chnl = cam.Channel.FirstOrDefault(o => o.Channel == CameraSetting.ChannelIndex);
+                    if (chnl != null)
+                    {
+                        IsCameraOnline = chnl.IsOnline;
+                        return;
+                    }
+                }
+                VideoServiceSetting();
             }
         }
     }
