@@ -11,10 +11,9 @@ using System.Threading.Tasks;
 
 namespace AirMonitor.ViewModels
 {
-    class ConfigCameraViewModel : Screen, IHandle<EvtCameraGetDevices>
+    class ConfigCameraViewModel : Screen, IHandle<EvtCameraGetDevices>, IHandle<EvtCameraConnect>
     {
         private IConfigManager m_configManager;
-        private ICameraManager m_cameraManager;
         private IEventAggregator m_eventAggregator;
 
         public ConfigCameraViewModel(
@@ -23,7 +22,7 @@ namespace AirMonitor.ViewModels
             ICameraManager cameraManager)
         {
             m_configManager = configManager;
-            m_cameraManager = cameraManager;
+            CameraManager = cameraManager;
             m_eventAggregator = eventAggregator;
             m_eventAggregator.Subscribe(this);
         }
@@ -32,6 +31,7 @@ namespace AirMonitor.ViewModels
             base.TryClose(dialogResult);
             m_eventAggregator.Unsubscribe(this);
         }
+        public ICameraManager CameraManager { get; }
 
         public CameraSetting Setting { get; set; }
 
@@ -69,7 +69,7 @@ namespace AirMonitor.ViewModels
 
         public void RefreshList()
         {
-            m_cameraManager.GetDevices();
+            CameraManager.GetDevices();
         }
 
         public void Confirm()
@@ -82,7 +82,12 @@ namespace AirMonitor.ViewModels
 
         public void Reconnect()
         {
+            CameraManager.Reconnect();
+        }
 
+        public void Handle(EvtCameraConnect message)
+        {
+            NotifyOfPropertyChange(nameof(CameraManager));
         }
     }
 }

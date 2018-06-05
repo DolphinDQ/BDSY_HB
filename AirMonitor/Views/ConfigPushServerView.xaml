@@ -5,8 +5,45 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:AirMonitor.Views"
              mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="800">
-    <Grid>
-            
-    </Grid>
+             xmlns:control="http://metro.mahapps.com/winfx/xaml/controls"
+             d:DesignHeight="600" d:DesignWidth="300">
+    <StackPanel Margin="5">
+        <StackPanel.Resources>
+            <Style TargetType="DockPanel">
+                <Style.Resources>
+                    <Style TargetType="Label" BasedOn="{StaticResource MetroLabel}">
+                        <Setter Property="Margin" Value="3"/>
+                    </Style>
+                    <Style TargetType="TextBox" BasedOn="{StaticResource MetroTextBox}">
+                        <Setter Property="Margin" Value="3"/>
+                    </Style>
+                    <Style TargetType="control:NumericUpDown">
+                        <Setter Property="Margin" Value="3"/>
+                    </Style>
+                </Style.Resources>
+            </Style>
+        </StackPanel.Resources>
+      
+        <DockPanel>
+            <Label Content="{StaticResource T_ServiceHost}"></Label>
+            <TextBox Text="{Binding Setting.Host}"></TextBox>
+        </DockPanel>
+        <DockPanel>
+            <Label Content="{StaticResource T_ServicePort}"></Label>
+            <control:NumericUpDown Value="{Binding Setting.Port}"></control:NumericUpDown>
+        </DockPanel>
+        <DockPanel>
+            <Label Content="{StaticResource T_ServiceAccount}"></Label>
+            <TextBox Text="{Binding Setting.UserName}"></TextBox>
+        </DockPanel>
+        <DockPanel>
+            <Label Content="{StaticResource T_ServicePassword}"></Label>
+            <TextBox Text="{Binding Setting.Password}"></TextBox>
+        </DockPanel>
+        <DockPanel>
+            <Label Content="{StaticResource T_Topic}"></Label>
+            <TextBox Text="{Binding Setting.EnvironmentTopic}"></TextBox>
+        </DockPanel>
+        <Button Name="Confirm" Content="{StaticResource T_Confirm}"></Button>
+    </StackPanel>
 </UserControl>

@@ -19,13 +19,13 @@
         </DockPanel.Resources>
         <Border DockPanel.Dock="Top">
             <StackPanel>
-                <Label Style="{StaticResource Lbl_Title}" Content="{StaticResource T_VideoServiceSetting}"></Label>
+                <!--<Label Style="{StaticResource Lbl_Title}" Content="{StaticResource T_VideoServiceSetting}"></Label>-->
                 <DockPanel>
                     <Label Content="{StaticResource T_ServiceHost}"></Label>
                     <TextBox Text="{Binding Setting.Host}"></TextBox>
                 </DockPanel>
                 <DockPanel>
-                    <Label Content="{StaticResource T_ServicePost}"></Label>
+                    <Label Content="{StaticResource T_ServicePort}"></Label>
                     <TextBox Text="{Binding Setting.Port}"></TextBox>
                 </DockPanel>
                 <DockPanel>
@@ -40,7 +40,7 @@
         </Border>
         <Border DockPanel.Dock="Top">
             <StackPanel>
-                <Label Style="{StaticResource Lbl_Title}" Content="{StaticResource T_CameraSetting}"></Label>
+                <!--<Label Style="{StaticResource Lbl_Title}" Content="{StaticResource T_CameraSetting}"></Label>-->
                 <DockPanel>
                     <Label Content="{StaticResource T_CameraName}"></Label>
                     <TextBox Text="{Binding Setting.CameraId}" IsReadOnly="True"></TextBox>
@@ -58,9 +58,14 @@
         <Border>
             <DockPanel>
                 <StackPanel DockPanel.Dock="Top" Orientation="Horizontal">
-                    <Label Content="{StaticResource T_ServiceStatus}"></Label>
-                    <Button Name="Reconnect" ToolTip="{StaticResource T_ClickToReconnect}" Content="{Binding ManagerStatus}"></Button>
-                    <Button Name="RefreshList" Content="{StaticResource T_RefreshList}"></Button>
+                    <StackPanel.Resources>
+                        <Style TargetType="Button" BasedOn="{StaticResource MetroButton}">
+                            <Setter Property="Margin" Value="3 2"/>
+                        </Style>
+                    </StackPanel.Resources>
+                    <Label Content="{StaticResource T_VideoServiceStatus}"></Label>
+                    <Button Name="Reconnect" ToolTip="{StaticResource T_ClickToReconnect}" Content="{Binding CameraManager.IsConnected,Converter={StaticResource IsConnect}}"></Button>
+                    <Button Name="RefreshList" Content="{StaticResource T_RefreshList}" IsEnabled="{Binding  CameraManager.IsConnected}"></Button>
                     <Button Name="Confirm" Content="{StaticResource T_Confirm}"></Button>
                 </StackPanel>
                 <ListBox ItemsSource="{Binding Devices}" DisplayMemberPath="Name" BorderBrush="LightGray" BorderThickness="1" SelectedItem="{Binding SelectedCamera}"/>

@@ -48,15 +48,15 @@
                         <Label Content="{StaticResource T_CallbackProgress}"></Label>
                         <Label Content="0%"></Label>
                         <Label Content="{StaticResource T_DataServiceStatus}"></Label>
-                        <Label HorizontalAlignment="Right" Content="{Binding DataManager.IsConnected}"></Label>
-                        <Button Name="DataServiceSetting" Content="{StaticResource T_Setting}"></Button>
+                        <Label HorizontalAlignment="Right" Content="{Binding DataManager.IsConnected,Converter={StaticResource IsConnect}}"></Label>
+                        <Button Name="DataServiceSetting" Content="{StaticResource T_DataServiceSetting}"></Button>
                         <Button Name="SampleSetting" Content="{StaticResource T_SampleSetting}"></Button>
                         <Label Content="{StaticResource T_VideoServiceStatus}"></Label>
-                        <Label Content="{Binding CameraManager.IsConnected}"></Label>
+                        <Label Content="{Binding CameraManager.IsConnected,Converter={StaticResource IsConnect}}"></Label>
                         <Label></Label>
-                        <Button Name="VideoServiceSetting" Content="{StaticResource T_Setting}"></Button>
+                        <Button Name="VideoServiceSetting" Content="{StaticResource T_VideoServiceSetting}"></Button>
                         <Label Content="{StaticResource T_CameraStatus}"></Label>
-                        <Label Content="{Binding IsCameraOnline}"></Label>
+                        <Label Content="{Binding IsCameraOnline,Converter={StaticResource IsConnect}}"></Label>
                         <Label></Label>
                         <Button Name="OpenVideo" IsEnabled="{Binding IsCameraOnline}" Content="{StaticResource T_OpenVideo}"></Button>
                         <Label Content="{StaticResource T_GpsAltitude}"></Label>

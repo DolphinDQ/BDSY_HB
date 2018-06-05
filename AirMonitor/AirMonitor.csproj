@@ -129,6 +129,7 @@
     <Compile Include="Controls\Trackball3DContext.cs" />
     <Compile Include="Controls\UavMarker3D.cs" />
     <Compile Include="Converter\AnyVisiableConverter.cs" />
+    <Compile Include="Converter\IsConnectConvert.cs" />
     <Compile Include="Converter\IsHiddenConverter.cs" />
     <Compile Include="Converter\IsNullConverter.cs" />
     <Compile Include="Converter\IsVisibleConverter.cs" />

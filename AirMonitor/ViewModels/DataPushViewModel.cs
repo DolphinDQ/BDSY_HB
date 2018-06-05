@@ -214,6 +214,11 @@ namespace AirMonitor.ViewModels
 
         public void DataServiceSetting()
         {
+            m_eventAggregator.PublishOnBackgroundThread(new EvtSetting() { Command = SettingCommands.Request, SettingObject = m_configManager.GetConfig<MqttSetting>() });
+        }
+
+        public void SampleSetting()
+        {
             m_eventAggregator.PublishOnBackgroundThread(new EvtSetting() { Command = SettingCommands.Request, SettingObject = StandardSetting });
         }
 

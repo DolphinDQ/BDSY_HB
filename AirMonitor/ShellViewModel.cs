@@ -56,6 +56,10 @@ namespace AirMonitor
                     {
                         OpenCameraSetting(camera);
                     }
+                    else if (obj is MqttSetting mqtt)
+                    {
+                        OpenMqttSetting(mqtt);
+                    }
                     break;
                 case SettingCommands.Changed:
                 default:
@@ -63,6 +67,15 @@ namespace AirMonitor
                     EnableSetting = false;
                     break;
             }
+        }
+
+        private void OpenMqttSetting(MqttSetting mqtt)
+        {
+            var setting = m_factory.Create<ConfigPushServerViewModel>();
+            setting.Setting = mqtt;
+            SettingTitle = m_res.GetText("T_DataServiceSetting");
+            Setting = setting;
+            EnableSetting = true;
         }
 
         private void CloseSetting()
@@ -77,7 +90,7 @@ namespace AirMonitor
         {
             var setting = m_factory.Create<ConfigAirPollutantViewModel>();
             setting.Settings = airStandard;
-            SettingTitle = m_res.GetText("T_Setting");
+            SettingTitle = m_res.GetText("T_SampleSetting");
             Setting = setting;
             EnableSetting = true;
         }
