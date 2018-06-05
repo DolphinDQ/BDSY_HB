@@ -13,6 +13,10 @@ namespace AirMonitor.Interfaces
     public interface ICameraManager : IDisposable
     {
         /// <summary>
+        /// 状态。
+        /// </summary>
+        bool IsConnected { get; }
+        /// <summary>
         /// 在指定窗口打开视频通道。
         /// </summary>
         /// <param name="winPanel">Win32窗体。</param>

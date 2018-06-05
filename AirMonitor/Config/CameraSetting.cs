@@ -14,7 +14,8 @@ namespace AirMonitor.Config
         public string Password { get; set; }
         public int ConnectionTimeout { get; set; }
         public int Volumes { get; set; }
-        public int VideoChanel { get; set; }
+        public string ChannelName { get; set; }
+        public int ChannelIndex { get; set; }
         public string CameraId { get; set; }
     }
 }

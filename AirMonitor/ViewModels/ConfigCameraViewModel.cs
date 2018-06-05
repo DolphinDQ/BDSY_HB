@@ -39,22 +39,13 @@ namespace AirMonitor.ViewModels
 
         public CameraDevice SelectedCamera { get; set; }
 
-        [PropertyChanged.DependsOn(nameof(SelectedCamera))]
-        public string VideoChannel
-        {
-            get
-            {
-                var i = SelectedCamera.Channel?.FirstOrDefault();
-                return i == null ? "" : $"{i.Channel}#{i.Name}";
-            }
-        }
-
         public void OnSelectedCameraChanged()
         {
             if (SelectedCamera != null)
             {
                 Setting.CameraId = SelectedCamera.Id;
-                Setting.VideoChanel = SelectedCamera.Channel?.FirstOrDefault()?.Channel ?? 0;
+                Setting.ChannelIndex = SelectedCamera.Channel?.FirstOrDefault()?.Channel ?? 0;
+                Setting.ChannelName = SelectedCamera.Channel?.FirstOrDefault()?.Name ?? "";
                 NotifyOfPropertyChange(nameof(Setting));
             }
         }
@@ -89,5 +80,9 @@ namespace AirMonitor.ViewModels
             }
         }
 
+        public void Reconnect()
+        {
+
+        }
     }
 }

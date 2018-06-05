@@ -67,8 +67,7 @@ interface IMapProvider {
     gridClear();
     uavAdd(name: string, lng: number, lat: number, d: any);
     uavMove(name: string, lng: number, lat: number, d: any);
-    uavShowPath(name: string);
-    uavHidePath(name: string);
+    uavPathRefresh(name: string);
     uavRemove(name: string);
     uavExist(name: string): boolean;
     uavFocus(name: string);

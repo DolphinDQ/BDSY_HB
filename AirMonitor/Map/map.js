@@ -369,9 +369,15 @@ var MapEvents;
     MapEvents["boundChanged"] = "boundChanged";
     MapEvents["blockChanged"] = "blockChanged";
     MapEvents["uavChanged"] = "uavChanged";
+    MapEvents["uavVideo"] = "openUavVideo";
 })(MapEvents || (MapEvents = {}));
 var MapMenuItems;
 (function (MapMenuItems) {
+    MapMenuItems["refresh"] = "\u5237\u65B0\u5730\u56FE";
+    MapMenuItems["uavPath"] = "\u65E0\u4EBA\u673A\u8DEF\u5F84";
+    MapMenuItems["uavLocation"] = "\u65E0\u4EBA\u673A\u5B9A\u4F4D";
+    MapMenuItems["uavFollow"] = "\u65E0\u4EBA\u673A\u8DDF\u968F";
+    MapMenuItems["uavVideo"] = "\u65E0\u4EBA\u673A\u89C6\u9891";
     MapMenuItems["compare"] = "\u5BF9\u6BD4\u6570\u636E";
     MapMenuItems["reports"] = "\u7EDF\u8BA1\u62A5\u8868";
     MapMenuItems["savePoints"] = "\u4FDD\u5B58";
@@ -394,7 +400,10 @@ var MapBlockSelectAction;
 var BaiduMapProvider = /** @class */ (function (_super) {
     __extends(BaiduMapProvider, _super);
     function BaiduMapProvider() {
-        return _super !== null && _super.apply(this, arguments) || this;
+        var _this = _super !== null && _super.apply(this, arguments) || this;
+        _this.uavFollow = true;
+        _this.uavPath = false;
+        return _this;
     }
     BaiduMapProvider.prototype.getColor = function (value, min, max) {
         if (min === void 0) { min = undefined; }
@@ -560,6 +569,17 @@ var BaiduMapProvider = /** @class */ (function (_super) {
                 }
             }
         };
+        var setChecked = function (name, checked) {
+            var i = _this.menuItems.first(function (o) { return o.name == name; });
+            if (i) {
+                if (checked) {
+                    i.setText(name + " √");
+                }
+                else {
+                    i.setText(name);
+                }
+            }
+        };
         if (!blocks) {
             this.menuItems.forEach(function (o) { if (o)
                 o.disable(); });
@@ -573,6 +593,8 @@ var BaiduMapProvider = /** @class */ (function (_super) {
         }
         setEnable(MapMenuItems.selectAnalysisArea, !this.analysisArea.isEnabled());
         setEnable(MapMenuItems.clearAnalysisArea, this.analysisArea.isEnabled());
+        setChecked(MapMenuItems.uavFollow, this.uavFollow);
+        setChecked(MapMenuItems.uavPath, this.uavPath);
     };
     BaiduMapProvider.prototype.addLine = function (point, horizontalLen, verticalLen) {
         var line = new BMap.Polyline([
@@ -669,7 +691,7 @@ var BaiduMapProvider = /** @class */ (function (_super) {
         if (!blockGrid.infoWindow) {
             blockGrid.infoWindow = new BMap.InfoWindow("", {
                 width: 450,
-                height: 300
+                height: 350
             });
             blockGrid.infoWindow.targetBorder = new BMap.Polygon([], {
                 strokeColor: "blue",
@@ -693,8 +715,12 @@ var BaiduMapProvider = /** @class */ (function (_super) {
             p2,
             new BMap.Point(p2.lng, p1.lat),
         ]);
-        var content = '<div><span>实时采样数据：</span><span>({{time}})</span></div>';
+        var content = '<div><span>实时采样数据：</span><span>({{time}})</span><br /><span>东经:{{minLng}}-{{maxLng}}</span><br/><span>北纬:{{minLat}}-{{maxLat}}</span></div>';
         content = content.replace("{{time}}", time);
+        content = content.replace("{{minLng}}", p2.lng.toFixed(6));
+        content = content.replace("{{maxLng}}", p1.lng.toFixed(6));
+        content = content.replace("{{minLat}}", p2.lat.toFixed(6));
+        content = content.replace("{{maxLat}}", p1.lat.toFixed(6));
         content += this.getInfoWindowContentTemplate({
             title: "采样类型",
             min: "最小值",
@@ -719,6 +745,19 @@ var BaiduMapProvider = /** @class */ (function (_super) {
         if (blocks && blocks.length) {
             this.on(MapEvents.savePoints, { points: blocks.selectMany(function (o) { return o.context.getPoints(function (i) { return true; }).select(function (i) { return i.data; }); }) });
         }
+    };
+    /**无人机定位。 */
+    BaiduMapProvider.prototype.onUavLoaction = function () {
+        if (this.uavList) {
+            var uav = this.uavList.first(function (i) { return true; });
+            if (uav) {
+                this.uavFocus(uav.name);
+            }
+        }
+    };
+    /**刷新 */
+    BaiduMapProvider.prototype.onRefresh = function () {
+        window.location.reload(true);
     };
     /**获取地图边界。 */
     BaiduMapProvider.prototype.getMapBounds = function () {
@@ -786,6 +825,13 @@ var BaiduMapProvider = /** @class */ (function (_super) {
             };
             _this.menuItems = [
                 //createItem(MapMenuItems.compare, o => this.onShowReport()),
+                createItem(MapMenuItems.refresh, function (o) { return _this.onRefresh(); }),
+                false,
+                createItem(MapMenuItems.uavLocation, function (o) { return _this.onUavLoaction(); }),
+                createItem(MapMenuItems.uavVideo, function (o) { return _this.on(MapEvents.uavVideo); }),
+                createItem(MapMenuItems.uavFollow, function (o) { return _this.uavFollow = !_this.uavFollow; }),
+                createItem(MapMenuItems.uavPath, function (o) { return _this.uavPath = !_this.uavPath; }),
+                false,
                 createItem(MapMenuItems.selectAnalysisArea, function (o) { return _this.analysisArea.enable(); }),
                 createItem(MapMenuItems.clearAnalysisArea, function (o) { return _this.analysisArea.disable(); }),
                 false,
@@ -1003,9 +1049,12 @@ var BaiduMapProvider = /** @class */ (function (_super) {
             o.pathPoint.push(point);
             o.marker.setPosition(point);
             _this.on(MapEvents.uavChanged, { uav: _this.getUavData() });
+            if (_this.uavFollow) {
+                _this.map.panTo(point);
+            }
         }, null);
     };
-    BaiduMapProvider.prototype.uavShowPath = function (name) {
+    BaiduMapProvider.prototype.uavPathRefresh = function (name) {
         var _this = this;
         this.uav(name, function (o) {
             if (!o.pathMarker) {
@@ -1016,19 +1065,10 @@ var BaiduMapProvider = /** @class */ (function (_super) {
                     strokeOpacity: 0.5
                 });
             }
-            else {
-                _this.map.removeOverlay(o.pathMarker);
-            }
-            o.pathMarker.setPath(o.pathPoint);
-            _this.map.addOverlay(o.pathMarker);
-        }, null);
-    };
-    BaiduMapProvider.prototype.uavHidePath = function (name) {
-        var _this = this;
-        this.uav(name, function (o) {
-            if (o.pathMarker) {
-                _this.map.removeOverlay(o.pathMarker);
-                delete o.pathMarker;
+            _this.map.removeOverlay(o.pathMarker);
+            if (_this.uavPath) {
+                o.pathMarker.setPath(o.pathPoint);
+                _this.map.addOverlay(o.pathMarker);
             }
         }, null);
     };
@@ -1038,7 +1078,8 @@ var BaiduMapProvider = /** @class */ (function (_super) {
         this.uavList.forEach(function (o, index) {
             if (o.name == name) {
                 _this.map.removeOverlay(o.marker);
-                _this.uavHidePath(name);
+                _this.uavPath = false;
+                _this.uavPathRefresh(name);
                 _this.map.removeOverlay(o.pathMarker);
                 i = index;
                 delete o.marker;

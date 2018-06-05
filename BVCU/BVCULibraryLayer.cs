@@ -6,18 +6,19 @@
 using System;
 using System.Runtime.InteropServices;
 using System.Text;
+using static BVCUSDK.BVCU;
 
 namespace BVCUSDK
 {
     public delegate void BVCU_Server_ProcChannelInfo(IntPtr session, IntPtr puId, IntPtr puName, int status, ref BVCU_PUOneChannelInfo channel, int finished);
     public delegate void BVCU_Server_OnEvent(IntPtr session, int eventCode, ref BVCU_Event_Common eventCommon);
     public delegate void BVCU_Cmd_OnGetPuList(IntPtr session, IntPtr puId, IntPtr puName, int status, ref BVCU_PUOneChannelInfo channel, int finished);
-    public delegate void BVCU_Dialog_OnDialogEvent(IntPtr dialog, int eventCode, int errorCode, int mediaDir);
-    public delegate void BVCU_Dialog_OnStorageEvent(IntPtr dialog, int eventCode, int errorCode, IntPtr fileName, int strLen, Int64 timeStamp);
-    public delegate void BVCU_GpsDialog_OnEvent(IntPtr dialog, int eventCode, Int32 errorCode);
+    public delegate void BVCU_Dialog_OnDialogEvent(IntPtr dialog, int eventCode, BVCU_Result errorCode, int mediaDir);
+    public delegate void BVCU_Dialog_OnStorageEvent(IntPtr dialog, int eventCode, BVCU_Result errorCode, IntPtr fileName, int strLen, Int64 timeStamp);
+    public delegate void BVCU_GpsDialog_OnEvent(IntPtr dialog, int eventCode, BVCU_Result errorCode);
     public delegate void BVCU_GpsDialog_OnData(IntPtr dialog, IntPtr pGpsData, Int32 len);
     public delegate void BVCU_Cmd_OnGetPuPtzAttr(IntPtr session, IntPtr puId, int ptzIndex, IntPtr ptzAttr);
-    public delegate void BVCU_TspDialog_OnEvent(IntPtr dialog, int eventCode, Int32 errorCode);
+    public delegate void BVCU_TspDialog_OnEvent(IntPtr dialog, int eventCode, BVCU_Result errorCode);
     public delegate void BVCU_TspDialog_OnData(IntPtr dialog, string pTspData, int len);
     public delegate void BVCU_Cmd_ControlResult(IntPtr session, IntPtr puId, Int32 device, Int32 subMethod, Int32 result);
     /// <summary>
@@ -25,8 +26,8 @@ namespace BVCUSDK
     /// </summary>
     public partial class BVCU
     {
-        private const string LIB_PATH = "ManagedLayer.dll";
-        private const string LIB_DISPLAY = "bvdisplay.dll";
+        private const string LIB_PATH = "libBVCU\\ManagedLayer.dll";
+        private const string LIB_DISPLAY = "libBVCU\\bvdisplay.dll";
 
 
         /// <summary>

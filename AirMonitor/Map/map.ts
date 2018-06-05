@@ -186,8 +186,7 @@ abstract class MapBase implements IMapProvider, IEventAggregator {
     abstract mapClearTempReport();
     abstract mapShowTempReport(d: any);
     abstract mapPointConvert(seq: number, p: Point[]);
-    abstract uavShowPath(name: string);
-    abstract uavHidePath(name: string);
+    abstract uavPathRefresh(name: string);
     abstract uavRemove(name: string);
     abstract uavExist(name: string): boolean;
     abstract uavFocus(name: string);
@@ -378,7 +377,7 @@ class BaiduMapAnalysisArea {
 }
 
 
- enum MapEvents {
+enum MapEvents {
     load = "load",
     pointConvert = "pointConvert",
     horizontalAspect = "horizontalAspect",
@@ -390,9 +389,16 @@ class BaiduMapAnalysisArea {
     boundChanged = "boundChanged",
     blockChanged = "blockChanged",
     uavChanged = "uavChanged",
+    uavVideo = "openUavVideo",
 }
 
- enum MapMenuItems {
+enum MapMenuItems {
+    refresh = "刷新地图",
+    uavPath = "无人机路径",
+    uavLocation = "无人机定位",
+    uavFollow = "无人机跟随",
+    uavVideo = "无人机视频",
+
     compare = "对比数据",
     reports = "统计报表",
     savePoints = "保存",
@@ -401,9 +407,11 @@ class BaiduMapAnalysisArea {
     selectAnalysisArea = "选择分析区域",
     clearAnalysisArea = "清除分析区域",
     clear = "清除",
+
+
 }
 /**地图方块选择动作 */
- enum MapBlockSelectAction {
+enum MapBlockSelectAction {
     //开关
     switch,
     //强制选择
@@ -415,11 +423,15 @@ class BaiduMapAnalysisArea {
 
 
 class BaiduMapProvider extends MapBase {
+
     private map: any;
     private menuItems: MenuItem[];
     private convertor: any;
     private blockGrid: MapGrid;
     private uavList: Uav[];
+    private uavFollow: boolean = true;
+    private uavPath: boolean = false;
+    private loading: boolean;
     private analysisArea: BaiduMapAnalysisArea;
     private tempSelectedData: Array<any>;    //临时选中数据。
     private getColor(value: number, min: number = undefined, max: number = undefined): string {
@@ -578,6 +590,16 @@ class BaiduMapProvider extends MapBase {
                 }
             }
         }
+        var setChecked = (name: MapMenuItems, checked) => {
+            var i = this.menuItems.first(o => o.name == name);
+            if (i) {
+                if (checked) {
+                    i.setText(name + " √");
+                } else {
+                    i.setText(name);
+                }
+            }
+        }
         if (!blocks) {
             this.menuItems.forEach(o => { if (o) o.disable() });
         } else {
@@ -589,6 +611,8 @@ class BaiduMapProvider extends MapBase {
         }
         setEnable(MapMenuItems.selectAnalysisArea, !this.analysisArea.isEnabled())
         setEnable(MapMenuItems.clearAnalysisArea, this.analysisArea.isEnabled())
+        setChecked(MapMenuItems.uavFollow, this.uavFollow);
+        setChecked(MapMenuItems.uavPath, this.uavPath);
     }
     private addLine(point: Point, horizontalLen: number, verticalLen: number) {
         var line = new BMap.Polyline([
@@ -685,7 +709,7 @@ class BaiduMapProvider extends MapBase {
         if (!blockGrid.infoWindow) {
             blockGrid.infoWindow = new BMap.InfoWindow("", {
                 width: 450,
-                height: 300
+                height: 350
             });
 
             blockGrid.infoWindow.targetBorder = new BMap.Polygon([], {
@@ -710,8 +734,12 @@ class BaiduMapProvider extends MapBase {
             p2,
             new BMap.Point(p2.lng, p1.lat),
         ]);
-        var content = '<div><span>实时采样数据：</span><span>({{time}})</span></div>';
+        var content = '<div><span>实时采样数据：</span><span>({{time}})</span><br /><span>东经:{{minLng}}-{{maxLng}}</span><br/><span>北纬:{{minLat}}-{{maxLat}}</span></div>';
         content = content.replace("{{time}}", time);
+        content = content.replace("{{minLng}}", p2.lng.toFixed(6));
+        content = content.replace("{{maxLng}}", p1.lng.toFixed(6));
+        content = content.replace("{{minLat}}", p2.lat.toFixed(6));
+        content = content.replace("{{maxLat}}", p1.lat.toFixed(6));
         content += this.getInfoWindowContentTemplate({
             title: "采样类型",
             min: "最小值",
@@ -736,6 +764,21 @@ class BaiduMapProvider extends MapBase {
         if (blocks && blocks.length) {
             this.on(MapEvents.savePoints, { points: blocks.selectMany(o => o.context.getPoints(i => true).select(i => i.data)) })
         }
+    }
+
+
+    /**无人机定位。 */
+    private onUavLoaction(): any {
+        if (this.uavList) {
+            var uav = this.uavList.first(i => true);
+            if (uav) {
+                this.uavFocus(uav.name);
+            }
+        }
+    }
+    /**刷新 */
+    private onRefresh(): any {
+        window.location.reload(true);
     }
     /**获取地图边界。 */
     private getMapBounds() {
@@ -801,6 +844,13 @@ class BaiduMapProvider extends MapBase {
             };
             this.menuItems = [
                 //createItem(MapMenuItems.compare, o => this.onShowReport()),
+                createItem(MapMenuItems.refresh, o => this.onRefresh()),
+                false,
+                createItem(MapMenuItems.uavLocation, o => this.onUavLoaction()),
+                createItem(MapMenuItems.uavVideo, o => this.on(MapEvents.uavVideo)),
+                createItem(MapMenuItems.uavFollow, o => this.uavFollow = !this.uavFollow),
+                createItem(MapMenuItems.uavPath, o => this.uavPath = !this.uavPath),
+                false,
                 createItem(MapMenuItems.selectAnalysisArea, o => this.analysisArea.enable()),
                 createItem(MapMenuItems.clearAnalysisArea, o => this.analysisArea.disable()),
                 false,
@@ -998,9 +1048,12 @@ class BaiduMapProvider extends MapBase {
             o.pathPoint.push(point);
             o.marker.setPosition(point);
             this.on(MapEvents.uavChanged, { uav: this.getUavData() });
+            if (this.uavFollow) {
+                this.map.panTo(point);
+            }
         }, null);
     }
-    uavShowPath(name: string) {
+    uavPathRefresh(name: string) {
         this.uav(name, o => {
             if (!o.pathMarker) {
                 o.pathMarker = new BMap.Polyline([], {
@@ -1009,18 +1062,11 @@ class BaiduMapProvider extends MapBase {
                     strokeColor: "red",
                     strokeOpacity: 0.5
                 });
-            } else {
-                this.map.removeOverlay(o.pathMarker);
             }
-            o.pathMarker.setPath(o.pathPoint);
-            this.map.addOverlay(o.pathMarker);
-        }, null);
-    }
-    uavHidePath(name: string) {
-        this.uav(name, o => {
-            if (o.pathMarker) {
-                this.map.removeOverlay(o.pathMarker);
-                delete o.pathMarker;
+            this.map.removeOverlay(o.pathMarker);
+            if (this.uavPath) {
+                o.pathMarker.setPath(o.pathPoint);
+                this.map.addOverlay(o.pathMarker);
             }
         }, null);
     }
@@ -1029,7 +1075,8 @@ class BaiduMapProvider extends MapBase {
         this.uavList.forEach((o, index) => {
             if (o.name == name) {
                 this.map.removeOverlay(o.marker);
-                this.uavHidePath(name);
+                this.uavPath = false;
+                this.uavPathRefresh(name);
                 this.map.removeOverlay(o.pathMarker);
                 i = index;
                 delete o.marker;

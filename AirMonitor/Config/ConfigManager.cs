@@ -76,7 +76,7 @@ namespace AirMonitor.Config
                 ConnectionTimeout = 30,
                 Volumes = 80,
                 CameraId = null,
-                VideoChanel = 0,
+                ChannelIndex = 0,
             };
         }
 

@@ -106,7 +106,7 @@
     </ApplicationDefinition>
     <Compile Include="AppBootstrapper.cs" />
     <Compile Include="Camera\BVCUCameraManager.cs" />
-    <Compile Include="Camera\CameraManagerStatus.cs" />
+    <Compile Include="Camera\CameraError.cs" />
     <Compile Include="Camera\VideoChannel.cs" />
     <Compile Include="Camera\CameraDevice.cs" />
     <Compile Include="Chart\ChartOptions.cs" />
@@ -143,6 +143,8 @@
     <Compile Include="EventArgs\EvtAirSample.cs" />
     <Compile Include="Data\MqttDataManager.cs" />
     <Compile Include="EventArgs\EvtCameraGetDevices.cs" />
+    <Compile Include="EventArgs\EvtCameraError.cs" />
+    <Compile Include="EventArgs\EvtCameraConnect.cs" />
     <Compile Include="EventArgs\EvtChartScatterSelectChanged.cs" />
     <Compile Include="EventArgs\EvtMapBlockChanged.cs" />
     <Compile Include="EventArgs\EvtMapBoundChanged.cs" />

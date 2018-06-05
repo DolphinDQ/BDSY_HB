@@ -7,6 +7,16 @@
              mc:Ignorable="d" 
              d:DesignHeight="800" d:DesignWidth="300">
     <DockPanel>
+        <DockPanel.Resources>
+            <Style TargetType="DockPanel">
+                <Style.Resources>
+                    <Style TargetType="Label" BasedOn="{StaticResource MetroLabel}">
+                        <Setter Property="Width" Value="70"/>
+                    </Style>
+                </Style.Resources>
+                <Setter Property="Margin" Value="5"/>
+            </Style>
+        </DockPanel.Resources>
         <Border DockPanel.Dock="Top">
             <StackPanel>
                 <Label Style="{StaticResource Lbl_Title}" Content="{StaticResource T_VideoServiceSetting}"></Label>
@@ -37,7 +47,7 @@
                 </DockPanel>
                 <DockPanel>
                     <Label Content="{StaticResource T_CameraChannel}"></Label>
-                    <TextBox Text="{Binding VideoChannel}" IsReadOnly="True"></TextBox>
+                    <TextBox Text="{Binding Setting.ChannelName}" IsReadOnly="True"></TextBox>
                 </DockPanel>
                 <DockPanel>
                     <Label Content="{StaticResource T_Volumes}"></Label>

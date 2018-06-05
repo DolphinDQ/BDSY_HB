@@ -17,7 +17,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Runtime.InteropServices;
-
+using static BVCUSDK.BVCU;
 
 namespace BVCUSDK
 {
@@ -88,7 +88,7 @@ namespace BVCUSDK
     /// </summary>
     public struct BVCU_Event_Common
     {
-        public int errorCode;
+        public BVCU_Result errorCode;
     }
 
     /// <summary>

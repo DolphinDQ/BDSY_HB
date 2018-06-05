@@ -84,12 +84,12 @@
                 <Label Content="透明度"></Label>
                 <control:NumericUpDown Value="{Binding MapGridOptions.opacity}" Maximum="1" Minimum="0" Interval="0.1"/>
                 <Button Name="RefreshBlock" Content="{StaticResource T_RefreshBlock}"></Button>
-                <ToggleButton IsChecked="{Binding IsUavFocus}" Content="{StaticResource T_UavFocus}"></ToggleButton>
-                <ToggleButton IsChecked="{Binding ShowUavPath}" Content="{StaticResource T_UavPath}"></ToggleButton>
-                <Button Name="UavLocation" Content="{StaticResource T_UavLocation}"></Button>
-                <Button Name="RefreshMap" Content="{StaticResource T_RefreshMap}"></Button>
-                <Button Name="Test" >测试</Button>
-                <Button Name="OpenVideo" >打开视频</Button>
+                <!--<ToggleButton IsChecked="{Binding IsUavFocus}" Content="{StaticResource T_UavFocus}"></ToggleButton>-->
+                <!--<ToggleButton IsChecked="{Binding ShowUavPath}" Content="{StaticResource T_UavPath}"></ToggleButton>-->
+                <!--<Button Name="UavLocation" Content="{StaticResource T_UavLocation}"></Button>-->
+                <!--<Button Name="RefreshMap" Content="{StaticResource T_RefreshMap}"></Button>-->
+                <!--<Button Name="Test" >测试</Button>
+                <Button Name="OpenVideo" >打开视频</Button>-->
             </StackPanel>
         </Border>
         <Border DockPanel.Dock="Left">
@@ -136,7 +136,7 @@
         <Border>
             <Grid>
                 <WebBrowser Name="Map" Tag="{Binding MapContainer,Mode=OneWayToSource}"/>
-                <WindowsFormsHost Name="CameraHost" HorizontalAlignment="Right" Width="400"  Height="300" VerticalAlignment="Top"  Tag="{Binding CameraPanel ,Mode=OneWayToSource}">
+                <WindowsFormsHost Visibility="Hidden" Name="CameraHost" HorizontalAlignment="Right" Width="400"  Height="300" VerticalAlignment="Top"  Tag="{Binding CameraPanel ,Mode=OneWayToSource}">
                     <form:Panel x:Name="CameraView" Width="400" BorderStyle="FixedSingle"  Height="300" BackColor="#f00"/>
                 </WindowsFormsHost>
                 <Popup Placement="Top"  VerticalOffset="{Binding ElementName=Map,Path=ActualHeight}" IsOpen="True" AllowsTransparency="True" >

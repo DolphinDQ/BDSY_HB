@@ -53,14 +53,14 @@ namespace AirMonitor.ViewModels
         /// 地图网格参数。
         /// </summary>
         public MapGridOptions MapGridOptions { get; private set; }
-        /// <summary>
-        /// 显示无人机路径。
-        /// </summary>
-        public bool ShowUavPath { get; set; } = true;
-        /// <summary>
-        /// 无人机跟踪
-        /// </summary>
-        public bool IsUavFocus { get; set; } = true;
+        ///// <summary>
+        ///// 显示无人机路径。
+        ///// </summary>
+        //public bool ShowUavPath { get; set; } = true;
+        ///// <summary>
+        ///// 无人机跟踪
+        ///// </summary>
+        //public bool IsUavFocus { get; set; } = true;
         /// <summary>
         /// 污染物名称。
         /// </summary>
@@ -145,6 +145,10 @@ namespace AirMonitor.ViewModels
 
         public void OnMapLoadChanged()
         {
+            if (!MapLoad)
+            {
+                SetPropertyPanel(null);
+            }
             if (Samples.Any())
             {
                 LoadHistoryData(GetUavName(null));
@@ -197,6 +201,10 @@ namespace AirMonitor.ViewModels
 
         public void Handle(EvtMapLoad message)
         {
+            if (MapLoad)
+            {
+                MapLoad = false;
+            }
             MapLoad = true;
         }
 
@@ -286,8 +294,8 @@ namespace AirMonitor.ViewModels
             view.MapBlocks = blocks;
             SetPropertyPanel(view);
         }
-
-        private void OnUpdateUavPosition(EvtAirSample sample)
+        private bool m_mapRefreshDelay = false;
+        private async void OnUpdateUavPosition(EvtAirSample sample)
         {
             if (MapLoad)
             {
@@ -299,13 +307,17 @@ namespace AirMonitor.ViewModels
                 else
                 {
                     MapProvider.UavMove(new MapUav { name = name, data = sample, lat = sample.ActualLat, lng = sample.ActualLng });
+                    if (m_mapRefreshDelay) return;
+                    m_mapRefreshDelay = true;
+                    await Task.Delay(1000);
+                    m_mapRefreshDelay = false;
                     MapProvider.GridRefresh();
-                    MapProvider.UavPath(name, ShowUavPath);
+                    MapProvider.UavPath(name);
                 }
-                if (IsUavFocus)
-                {
-                    MapProvider.UavFocus(name);
-                }
+                //if (IsUavFocus)
+                //{
+                //    MapProvider.UavFocus(name);
+                //}
             }
         }
 
@@ -355,7 +367,6 @@ namespace AirMonitor.ViewModels
         public void RefreshMap()
         {
             MapLoad = false;
-            SetPropertyPanel(null);
             MapProvider.LoadMap(MapContainer);
         }
 
@@ -458,16 +469,12 @@ namespace AirMonitor.ViewModels
                     {
                         samples = samples.OrderBy(o => o.RecordTime);
                     }
-                    switch (overwriteSample)
+                    if (overwriteSample != MessageBoxResult.Cancel)
                     {
-                        case MessageBoxResult.None:
-                        case MessageBoxResult.OK:
-                        case MessageBoxResult.Cancel:
-                            return;
+                        Samples.AddRange(samples);
+                        NotifyOfPropertyChange(nameof(Samples));
+                        RefreshMap();
                     }
-                    Samples.AddRange(samples);
-                    NotifyOfPropertyChange(nameof(Samples));
-                    RefreshMap();
                 }
             }
             catch (Exception e)
@@ -482,7 +489,7 @@ namespace AirMonitor.ViewModels
             MapProvider.GridInit(MapGridOptions);
             MapProvider.GridClear();
             MapProvider.GridRefresh();
-            MapProvider.UavPath(GetUavName(null), ShowUavPath);
+            MapProvider.UavPath(GetUavName(null));
             if (Show3DView)
             {
                 Show3D(true);

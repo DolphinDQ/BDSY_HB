@@ -102,16 +102,9 @@ namespace AirMonitor.Map
         /// </summary>
         /// <param name="map"></param>
         /// <param name="show">true为显示或者刷新，false为隐藏。</param>
-        public static void UavPath(this IMapProvider map, string name, bool show)
+        public static void UavPath(this IMapProvider map, string name)
         {
-            if (show)
-            {
-                map.Invoke("map.uavShowPath", name);
-            }
-            else
-            {
-                map.Invoke("map.uavHidePath", name);
-            }
+            map.Invoke("map.uavPathRefresh", name);
         }
         /// <summary>
         /// 移除无人机。
@@ -148,6 +141,6 @@ namespace AirMonitor.Map
         #endregion
 
 
-        
+
     }
 }

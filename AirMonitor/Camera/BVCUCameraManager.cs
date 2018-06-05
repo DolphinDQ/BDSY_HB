@@ -15,7 +15,6 @@ namespace AirMonitor.Camera
 {
     public class BVCUCameraManager : ICameraManager
     {
-        private readonly IntPtr m_sdkHandle;
         private readonly BVCU_Cmd_OnGetPuList m_getPuList;
         private readonly BVCU_Server_OnEvent m_serverEvent;
         private readonly BVCU_Server_ProcChannelInfo m_serverProcChannelInfo;
@@ -23,6 +22,7 @@ namespace AirMonitor.Camera
         private readonly BVCU_Dialog_OnStorageEvent m_dialog_OnStorageEvent;
         private readonly BVCU.DisplayFont m_afterRenderDisplayFont;
         private readonly IEventAggregator m_eventAggregator;
+        private IntPtr m_sdkHandle;
         private IntPtr m_sessionHandler;
         private IntPtr m_dialogHandle;
         private List<CameraDevice> m_devices;
@@ -31,6 +31,8 @@ namespace AirMonitor.Camera
         private IConfigManager m_configManager;
 
         public CameraSetting Setting { get; private set; }
+
+        public bool IsConnected { get; private set; }
 
         public BVCUCameraManager(IConfigManager configManager, IEventAggregator eventAggregator)
         {
@@ -53,12 +55,12 @@ namespace AirMonitor.Camera
 
         }
 
-        private void OnStorageEvent(IntPtr dialog, int eventCode, int errorCode, IntPtr fileName, int strLen, long timeStamp)
+        private void OnStorageEvent(IntPtr dialog, int eventCode, BVCU.BVCU_Result errorCode, IntPtr fileName, int strLen, long timeStamp)
         {
 
         }
 
-        private void OnDialogEvent(IntPtr dialog, int eventCode, int errorCode, int mediaDir)
+        private void OnDialogEvent(IntPtr dialog, int eventCode, BVCU.BVCU_Result errorCode, int mediaDir)
         {
 
         }
@@ -99,13 +101,105 @@ namespace AirMonitor.Camera
 
         private void OnServerEvent(IntPtr session, int eventCode, ref BVCU_Event_Common eventCommon)
         {
-            //m_sessionHandler = session;
+            var message = eventCommon.errorCode.ToString();
+            switch (eventCode)
+            {
+                case BVCU.BVCU_EVENT_SESSION_OPEN://建立连接事件
+                    switch (eventCommon.errorCode)
+                    {
+                        case BVCU.BVCU_Result.BVCU_RESULT_S_OK:
+                        case BVCU.BVCU_Result.BVCU_RESULT_S_IGNORE:
+                        case BVCU.BVCU_Result.BVCU_RESULT_S_PENDING:
+                            IsConnected = true;
+                            OnStatusChanged(message);
+                            //连接成功。
+                            break;
+                        case BVCU.BVCU_Result.BVCU_RESULT_E_CONNECTFAILED:
+                            OnError(CameraError.ConnectFailed, message);
+                            break;
+                        case BVCU.BVCU_Result.BVCU_RESULT_E_TIMEOUT:
+                            OnError(CameraError.ConnectTimeout, message);
+                            break;
+                        default:
+                            this.Warn("video service connect failed.{0}", eventCommon.errorCode);
+                            break;
+                    }
+                    break;
+                case BVCU.BVCU_EVENT_SESSION_CLOSE://关闭连接事件
+                    switch (eventCommon.errorCode)
+                    {
+                        case BVCU.BVCU_Result.BVCU_RESULT_S_OK:
+                        case BVCU.BVCU_Result.BVCU_RESULT_S_IGNORE:
+                        case BVCU.BVCU_Result.BVCU_RESULT_S_PENDING:
+                            IsConnected = false;
+                            OnStatusChanged(message);
+                            //正常断开。
+                            break;
+                        case BVCU.BVCU_Result.BVCU_RESULT_E_DISCONNECTED://被动断开
+                            IsConnected = false;
+                            OnStatusChanged();
+                            OnError(CameraError.Disconnected, message);
+                            break;
+                        default:
+                            this.Warn("video service disconnect unknow error.{0}", eventCommon.errorCode);
+                            break;
+                    }
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        private void OnStatusChanged(string message = null)
+        {
+            m_eventAggregator.PublishOnBackgroundThread(new EvtCameraConnect() { IsConnected = IsConnected, Message = message });
+        }
+
+        private void OnError(CameraError error, string message = null)
+        {
+            this.Warn(" error {0},{1}", error, message);
+            m_eventAggregator.PublishOnBackgroundThread(new EvtCameraError() { Error = error, ErrorMessage = message });
+
+        }
+
+        private void Disconnect()
+        {
+            if (m_dialogHandle != IntPtr.Zero)
+            {
+                BVCU.ManagedLayer_CuCloseDialog(m_sdkHandle, m_dialogHandle);
+                m_dialogHandle = IntPtr.Zero;
+            }
+            if (m_sessionHandler != IntPtr.Zero)
+            {
+                BVCU.ManagedLayer_CuLogout(m_sdkHandle, m_sessionHandler);
+                m_sessionHandler = IntPtr.Zero;
+            }
+        }
+
+        private void Connect()
+        {
+            var ip = Setting.Host;
+            var port = Setting.Port;
+            var userName = Setting.UserName;
+            var password = Setting.Password;
+            var timeout = Setting.ConnectionTimeout;
+            var ret = BVCU.ManagedLayer_CuLogin(m_sdkHandle,
+                     ref m_sessionHandler, Encoding.UTF8.GetBytes(ip),
+                     port, Encoding.UTF8.GetBytes(userName),
+                     Encoding.UTF8.GetBytes(password), timeout,
+                     m_serverEvent, m_serverProcChannelInfo);
+            BVCU.FAILED(ret);
         }
 
         public void Dispose()
         {
+            Disconnect();
+            if (m_sdkHandle != IntPtr.Zero)
+            {
+                BVCU.ManagedLayer_CuRelease(m_sdkHandle);
+                m_sdkHandle = IntPtr.Zero;
+            }
         }
-
 
         public void OpenVideo(object winPanel, VideoChannel channel = null)
         {
@@ -119,7 +213,7 @@ namespace AirMonitor.Camera
                         channel = camera.Channel.FirstOrDefault();
                     }
                 }
-                var chnl = Setting.VideoChanel;
+                var chnl = Setting.ChannelIndex;
                 var puId = Setting.CameraId;
                 if (channel != null)
                 {
@@ -167,17 +261,8 @@ namespace AirMonitor.Camera
 
         public async void Reconnect()
         {
-            var ip = Setting.Host;
-            var port = Setting.Port;
-            var userName = Setting.UserName;
-            var password = Setting.Password;
-            var timeout = Setting.ConnectionTimeout;
-            var ret = BVCU.ManagedLayer_CuLogin(m_sdkHandle,
-                     ref m_sessionHandler, Encoding.UTF8.GetBytes(ip),
-                     port, Encoding.UTF8.GetBytes(userName),
-                     Encoding.UTF8.GetBytes(password), timeout,
-                     m_serverEvent, m_serverProcChannelInfo);
-            BVCU.FAILED(ret);
+            Disconnect();
+            Connect();
             await Task.Delay(1000);
             GetDevices();
         }
