@@ -367,7 +367,6 @@ namespace AirMonitor.ViewModels
             //Show3D(true);
         }
 
-  
         public void OnShow3DViewChanged() => Show3D(Show3DView);
 
         public void Show3D(bool display)
@@ -471,13 +470,22 @@ namespace AirMonitor.ViewModels
 
         public void RefreshBlock()
         {
+            throw new Exception("test");
             MapProvider.GridInit(MapGridOptions);
             MapProvider.GridClear();
             MapProvider.GridRefresh();
             MapProvider.UavPath(GetUavName(null));
             if (Show3DView)
             {
-                Show3D(true);
+                if (Map3DFullPanel is Screen s1)
+                {
+                    s1.Refresh();
+                }
+                else if (Map3DPanel is Screen s2)
+                {
+                    s2.Refresh();
+                }
+
             }
         }
     }

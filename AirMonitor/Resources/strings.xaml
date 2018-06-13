@@ -69,7 +69,7 @@
     <sys:String x:Key="T_Avg">平均</sys:String>
     <sys:String x:Key="T_Realtime">实时</sys:String>
     <sys:String x:Key="T_Threshold">阈值</sys:String>
-    <sys:String x:Key="T_Simulation">模拟飞行</sys:String>
+    <sys:String x:Key="T_Simulation">采样回放</sys:String>
     <sys:String x:Key="T_OpenSimFile">飞行数据</sys:String>
     <sys:String x:Key="T_SamplingInterval">采样频率</sys:String>
     <sys:String x:Key="T_SampleSetting">采样设置</sys:String>

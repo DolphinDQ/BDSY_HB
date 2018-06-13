@@ -26,7 +26,7 @@
         </DockPanel.Resources>
         <Border DockPanel.Dock="Left" Width="250">
             <StackPanel >
-                <Label Style="{StaticResource Lbl_Title}">动态高度数据</Label>
+                <Label Style="{StaticResource Lbl_Title}">动态投影数据</Label>
                 <UniformGrid Columns="4">
                     <Label>采样数</Label>
                     <Label Content="{Binding Points.Count}"></Label>

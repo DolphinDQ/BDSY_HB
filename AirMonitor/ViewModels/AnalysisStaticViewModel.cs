@@ -18,7 +18,8 @@ namespace AirMonitor.ViewModels
         private IChartManager m_chartManager;
         private IEventAggregator m_eventAggregator;
 
-        public AnalysisStaticViewModel(IChartManager chartManager,
+        public AnalysisStaticViewModel(
+            IChartManager chartManager,
             IConfigManager configManager,
             IEventAggregator eventAggregator)
         {

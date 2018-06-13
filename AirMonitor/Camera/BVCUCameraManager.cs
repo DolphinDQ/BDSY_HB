@@ -14,6 +14,10 @@ using System.Windows.Forms;
 
 namespace AirMonitor.Camera
 {
+    /// <summary>
+    /// 合肥某个公司的摄像头管理器。技术支持论坛：http://bbs.besovideo.com:8067/forum.php
+    /// Web文档：http://120.210.75.225:8067/forum.php?mod=viewthread&tid=179&extra=page%3D1
+    /// </summary>
     public class BVCUCameraManager : ICameraManager
     {
         private readonly BVCU_Cmd_OnGetPuList m_getPuList;

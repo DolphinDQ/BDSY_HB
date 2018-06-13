@@ -48,9 +48,6 @@ namespace AirMonitor.ViewModels
             }
         };
 
-       
-
-
         public ObservableCollection<UavMarker3D> UavList { get; set; } = new ObservableCollection<UavMarker3D>();
 
         public ObservableCollection<BlockMarker3D> BlockList { get; set; } = new ObservableCollection<BlockMarker3D>();
@@ -102,6 +99,12 @@ namespace AirMonitor.ViewModels
             }
         }
 
+        public override void Refresh()
+        {
+            BlockList.Clear();
+            OnMapViewChanged();
+        }
+
         public void Handle(EvtMapBoundChanged message)
         {
             Bound = message.bound;
@@ -116,11 +119,12 @@ namespace AirMonitor.ViewModels
             }
         }
 
-        private double GetSampleValue(EvtAirSample sample) => (double)typeof(EvtAirSample).GetProperty(MapView.DataName.Item1).GetValue(sample);
+        private double GetSampleValue(EvtAirSample sample)
+            => (double)typeof(EvtAirSample).GetProperty(MapView.DataName.Item1).GetValue(sample);
 
         private BlockMarker3D SampleToBlock3D(EvtAirSample sample)
         {
-            var blockSize = 0.00001;
+            var blockSize = 0.00001;//地图比例大约1米
             var color = MapView.MapGridOptions.GetColor(GetSampleValue(sample));
             return new BlockMarker3D()
             {
