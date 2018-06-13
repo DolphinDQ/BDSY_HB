@@ -2,6 +2,7 @@ namespace AirMonitor
 {
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics;
     using System.Windows.Threading;
     using AirMonitor.Camera;
     using AirMonitor.Chart;
@@ -12,6 +13,7 @@ namespace AirMonitor
     using AirMonitor.Map;
     using AirMonitor.ViewModels;
     using Caliburn.Micro;
+
 
     public class AppBootstrapper : BootstrapperBase, IFactory
     {
@@ -25,7 +27,6 @@ namespace AirMonitor
         protected override void Configure()
         {
             container = new SimpleContainer();
-
             container.Singleton<IWindowManager, WindowManager>();
             container.Singleton<IEventAggregator, EventAggregator>();
             container.Singleton<IResourceManager, ResourceProvider>();
@@ -44,17 +45,17 @@ namespace AirMonitor
             container.PerRequest<AnalysisStaticViewModel>();
             container.PerRequest<AnalysisDynamicViewModel>();
             container.PerRequest<ConfigPushServerViewModel>();
-            container.PerRequest<ConfigCameraViewModel>(); 
+            container.PerRequest<ConfigCameraViewModel>();
             container.PerRequest<Map3DViewModel>();
-            
             container.Singleton<SimulatorViewModel>();
         }
 
         protected override void OnUnhandledException(object sender, DispatcherUnhandledExceptionEventArgs e)
         {
-            this.Warn("unhandle error  from {0} : {1}", sender, e.Exception.Message);
+            this.Warn("unhandle error from {0} : {1}", sender, e.Exception.Message);
             this.Error(e.Exception);
             e.Handled = true;
+
         }
 
 

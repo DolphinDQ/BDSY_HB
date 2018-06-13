@@ -22,6 +22,7 @@ namespace AirMonitor
             eventAggregator.Subscribe(this);
             LogManager.GetLog = o => factory.Create<ILog>();
             dataManager.Init();
+            DisplayName = m_res.GetText("T_AppName") + " - " + AppVersion.VERSION;
         }
 
         public object Sider { get; set; }

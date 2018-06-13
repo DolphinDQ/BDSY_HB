@@ -470,7 +470,6 @@ namespace AirMonitor.ViewModels
 
         public void RefreshBlock()
         {
-            throw new Exception("test");
             MapProvider.GridInit(MapGridOptions);
             MapProvider.GridClear();
             MapProvider.GridRefresh();

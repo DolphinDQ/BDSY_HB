@@ -25,7 +25,8 @@ namespace AirMonitor
                 if (Debugger.IsAttached) { Debugger.Break(); }
             };
 #endif
-            await HockeyClient.Current.SendCrashesAsync();
+            await HockeyClient.Current.SendCrashesAsync(true);
+           // throw new Exception("test");
             //await HockeyClient.Current.CheckForUpdatesAsync(true, () =>
             //{
             //    if (Current.MainWindow != null) { Current.MainWindow.Close(); }

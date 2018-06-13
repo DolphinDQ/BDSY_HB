@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using AirMonitor.Map;
 using AirMonitor.EventArgs;
 using AirMonitor.Config;
+using System.Text.RegularExpressions;
 
 namespace AirMonitor.ViewModels
 {

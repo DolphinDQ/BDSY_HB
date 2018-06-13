@@ -7,8 +7,7 @@
                      Width="1366" Height="768"
         ShowIconOnTitleBar="False"
         
-        GlowBrush="{DynamicResource AccentColorBrush}"
-        Title="{StaticResource T_AppName}">
+        GlowBrush="{DynamicResource AccentColorBrush}">
     <control:MetroWindow.RightWindowCommands>
         <control:WindowCommands>
             <Button cal:Message.Attach="ClearAllSample"  Content="{StaticResource T_ClearSamples}"></Button>
