@@ -54,6 +54,9 @@
     <sys:String x:Key="T_ClearSamples">清空数据</sys:String>
     <sys:String x:Key="T_ClearSamplesWarning">确认要清空当前全部采样数据？</sys:String>
     <sys:String x:Key="T_SaveSamples">保存样本</sys:String>
+    <sys:String x:Key="T_LocalSamples">本地样本</sys:String>
+    <sys:String x:Key="T_RemotingSamples">服务器样本</sys:String>
+    <sys:String x:Key="T_SharedSamples">发布样本</sys:String>
     <sys:String x:Key="T_SaveSamplesFailed">保存样本失败。</sys:String>
     <sys:String x:Key="T_LoadSamples">加载样本</sys:String>
     <sys:String x:Key="T_AnalysisSamples">分析样本</sys:String>
@@ -96,4 +99,11 @@
     <sys:String x:Key="T_RefreshList">刷新列表</sys:String>
     <sys:String x:Key="T_CameraStatus">摄像机状态</sys:String>
     <sys:String x:Key="T_DataServiceSetting">数据服务配置</sys:String>
+    <sys:String x:Key="T_SaveLocation">存档位置</sys:String>
+    <sys:String x:Key="T_FileName">文件名称</sys:String>
+    <sys:String x:Key="T_Local">本地文件夹</sys:String>
+    <sys:String x:Key="T_Personal">个人文件夹</sys:String>
+    <sys:String x:Key="T_Shared">共享文件夹</sys:String>
+    <sys:String x:Key="T_Search">搜索</sys:String>
+    
 </ResourceDictionary>

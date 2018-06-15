@@ -16,7 +16,8 @@ namespace AirMonitor.Config
         private IResourceManager m_res;
         private IEventAggregator m_eventAggregator;
 
-        public ConfigManager(IResourceManager res, IEventAggregator eventAggregator)
+        public ConfigManager(IResourceManager res,
+            IEventAggregator eventAggregator)
         {
             m_res = res;
             m_eventAggregator = eventAggregator;
@@ -59,10 +60,24 @@ namespace AirMonitor.Config
                     return (T)CreateAirStandardSetting();
                 case nameof(CameraSetting):
                     return (T)CreateCameraSetting();
+                case nameof(FtpSetting):
+                    return (T)CreateFtpSetting();
                 default:
                     return new T();
             }
 
+        }
+
+        private object CreateFtpSetting()
+        {
+            return new FtpSetting()
+            {
+                Account = "ftpadmin",
+                Password = "123456",
+                Host = "192.168.1.180",
+                Port = 8021,
+                SharedDir = "shared"
+            };
         }
 
         private object CreateCameraSetting()

@@ -10,6 +10,8 @@ namespace AirMonitor.Interfaces
     {
         string GetText(string key);
 
+        string GetText(Enum key);
+
         object Resource(string key);
     }
 }

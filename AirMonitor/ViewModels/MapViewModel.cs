@@ -24,7 +24,7 @@ namespace AirMonitor.ViewModels
         IHandle<EvtMapVerticalAspect>,
         IHandle<EvtMapSelectAnalysisArea>,
         IHandle<EvtMapClearAnalysisArea>,
-        IHandle<EvtMapSavePoints>,
+        IHandle<EvtSampleSaving>,
         IHandle<EvtMapClearAspect>
     {
         private IEventAggregator m_eventAggregator;
@@ -34,7 +34,9 @@ namespace AirMonitor.ViewModels
         private ISaveManager m_saveManager;
 
         public object MapContainer { get; set; }
+
         public List<EvtAirSample> Samples { get; private set; }
+
         public List<EvtAirSample> InvalidSamples { get; private set; }
         /// <summary>
         /// 数据名称列表，是采样数据的名称列表。
@@ -68,7 +70,6 @@ namespace AirMonitor.ViewModels
         /// 地图提供者。
         /// </summary>
         public IMapProvider MapProvider { get; }
-
         /// <summary>
         /// 属性框。
         /// </summary>
@@ -256,27 +257,15 @@ namespace AirMonitor.ViewModels
             }
         }
 
-        public void Handle(EvtMapSavePoints message)
+
+        public void Handle(EvtSampleSaving message)
         {
-            OnSaveSamples(message.points.Cast<EvtAirSample>().ToArray());
+            if (message.Type == SaveType.LoadSamplesCompleted)
+            {
+                OnLoadSampleCompleted(message.Save.Samples);
+            }
         }
 
-        private void OnSaveSamples(EvtAirSample[] airSamples)
-        {
-            OnUIThread(() =>
-            {
-                try
-                {
-                    var file = m_saveManager.ShowSaveFileDialog();
-                    if (file == null) return;
-                    m_saveManager.Save(file, airSamples);
-                }
-                catch (Exception e)
-                {
-                    MessageBox.Show(m_res.GetText("T_SaveSamplesFailed") + e.Message);
-                }
-            });
-        }
 
         private void OnShowAnalysisPanel(MapBlock[] blocks, AnalysisMode mode)
         {
@@ -289,7 +278,9 @@ namespace AirMonitor.ViewModels
             view.MapBlocks = blocks;
             SetPropertyPanel(view);
         }
+
         private bool m_mapRefreshDelay = false;
+
         private async void OnUpdateUavPosition(EvtAirSample sample)
         {
             if (MapLoad)
@@ -415,57 +406,40 @@ namespace AirMonitor.ViewModels
             }
         }
 
-        public void SaveSamples()
+        private void OnLoadSampleCompleted(IEnumerable<EvtAirSample> samples)
         {
-            if (!Samples.Any()) return;
-            OnSaveSamples(Samples.ToArray());
-        }
-
-        public void LoadSamples()
-        {
-            if (Sampling)
-            {
-                MessageBox.Show(m_res.GetText("T_LoadSamplesWarning"));
-                return;
-            }
             try
             {
-                var file = m_saveManager.ShowOpenFileDialog();
-                if (file != null)
+                MessageBoxResult overwriteSample = MessageBoxResult.Yes;
+                if (Samples.Any())
                 {
-                    IEnumerable<EvtAirSample> samples = m_saveManager.Load<EvtAirSample[]>(file);
-                    MessageBoxResult overwriteSample = MessageBoxResult.Yes;
-                    if (Samples.Any())
-                    {
-                        overwriteSample = MessageBox.Show(m_res.GetText("T_LoadSamplesOverwriteWarning"), "", MessageBoxButton.YesNoCancel);
-                        if (overwriteSample == MessageBoxResult.Yes)
-                        {
-                            samples = samples.OrderBy(o => o.RecordTime);
-                            Samples.Clear();
-                        }
-                        if (overwriteSample == MessageBoxResult.No)
-                        {
-                            samples = samples.Concat(Samples).OrderBy(o => o.RecordTime).ToArray();
-                            Samples.Clear();
-                        }
-                    }
-                    else
+                    overwriteSample = MessageBox.Show(m_res.GetText("T_LoadSamplesOverwriteWarning"), "", MessageBoxButton.YesNoCancel);
+                    if (overwriteSample == MessageBoxResult.Yes)
                     {
                         samples = samples.OrderBy(o => o.RecordTime);
+                        Samples.Clear();
                     }
-                    if (overwriteSample != MessageBoxResult.Cancel)
+                    if (overwriteSample == MessageBoxResult.No)
                     {
-                        Samples.AddRange(samples);
-                        NotifyOfPropertyChange(nameof(Samples));
-                        RefreshMap();
+                        samples = samples.Concat(Samples).OrderBy(o => o.RecordTime).ToArray();
+                        Samples.Clear();
                     }
+                }
+                else
+                {
+                    samples = samples.OrderBy(o => o.RecordTime);
+                }
+                if (overwriteSample != MessageBoxResult.Cancel)
+                {
+                    Samples.AddRange(samples);
+                    NotifyOfPropertyChange(nameof(Samples));
+                    RefreshMap();
                 }
             }
             catch (Exception e)
             {
                 MessageBox.Show(m_res.GetText("T_LoadSamplesFailed") + e.Message);
             }
-
         }
 
         public void RefreshBlock()
@@ -487,5 +461,30 @@ namespace AirMonitor.ViewModels
 
             }
         }
+
+        public void SaveSamples()
+        {
+            if (!Samples.Any()) return;
+            m_eventAggregator.PublishOnBackgroundThread(new EvtSampleSaving()
+            {
+                Type = SaveType.SaveSamples,
+                Save = new AirSamplesSave()
+                {
+                    Samples = Samples.ToArray(),
+                }
+            });
+        }
+
+        public void LoadSamples()
+        {
+            if (Sampling)
+            {
+                MessageBox.Show(m_res.GetText("T_LoadSamplesWarning"));
+                return;
+            }
+            m_eventAggregator.BeginPublishOnUIThread(new EvtSampleSaving() { Type = SaveType.LoadSamples });
+        }
+
+
     }
 }

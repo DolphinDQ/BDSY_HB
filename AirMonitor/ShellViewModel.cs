@@ -3,21 +3,31 @@ using AirMonitor.EventArgs;
 using AirMonitor.Interfaces;
 using AirMonitor.ViewModels;
 using Caliburn.Micro;
-using System;
+using System.Linq;
 using System.Windows;
 
 namespace AirMonitor
 {
-    public class ShellViewModel : Screen, IShell, IHandle<EvtSetting>
+    public class ShellViewModel : Screen, IShell,
+        IHandle<EvtSetting>,
+        IHandle<EvtSampleSaving>,
+        IHandle<EvtMapSavePoints>
     {
         private IFactory m_factory;
         private IResourceManager m_res;
+        private ISaveManager m_saveManager;
         private IEventAggregator m_eventAggregator;
 
-        public ShellViewModel(IFactory factory, IDataManager dataManager, IEventAggregator eventAggregator, IResourceManager res)
+        public ShellViewModel(
+            IFactory factory,
+            ISaveManager saveManager,
+            IDataManager dataManager,
+            IEventAggregator eventAggregator,
+            IResourceManager res)
         {
             m_factory = factory;
             m_res = res;
+            m_saveManager = saveManager;
             m_eventAggregator = eventAggregator;
             eventAggregator.Subscribe(this);
             LogManager.GetLog = o => factory.Create<ILog>();
@@ -127,6 +137,43 @@ namespace AirMonitor
             {
                 m_eventAggregator.PublishOnBackgroundThread(new EvtSampling() { Status = SamplingStatus.ClearAll });
             }
+        }
+
+        public void Handle(EvtSampleSaving message)
+        {
+            if (message.Type == SaveType.SaveSamples &&
+                (message.Save == null || message.Save.Samples == null || !message.Save.Samples.Any()))
+            {
+                return;//如果保存数据为空则不处理。
+            }
+            CloseSetting();
+            switch (message.Type)
+            {
+                case SaveType.SaveSamples:
+                case SaveType.LoadSamples:
+                    var model = m_factory.Create<SaveSampleViewModel>();
+                    model.Evt = message;
+                    Setting = model;
+                    SettingTitle = m_res.GetText(message.Type);
+                    EnableSetting = true;
+                    break;
+                default:
+                    EnableSetting = false;
+                    break;
+            }
+
+        }
+
+        public void Handle(EvtMapSavePoints message)
+        {
+            Handle(new EvtSampleSaving()
+            {
+                Save = new AirSamplesSave()
+                {
+                    Samples = message.points.Cast<EvtAirSample>().ToArray()
+                },
+                Type = SaveType.SaveSamples
+            });
         }
     }
 }

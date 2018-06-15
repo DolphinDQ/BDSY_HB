@@ -1,0 +1,102 @@
+﻿<UserControl x:Class="AirMonitor.Views.SaveSampleView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:AirMonitor.Views"
+             xmlns:control="http://metro.mahapps.com/winfx/xaml/controls"
+             xmlns:cal="http://www.caliburnproject.org"
+             mc:Ignorable="d" 
+             d:DesignHeight="1600" d:DesignWidth="300">
+    <UserControl.Resources>
+        <!--<Style x:Key="Top" TargetType="StackPanel">
+            <Style.Resources>
+                <Style TargetType="Border">
+                    <Setter Property="BorderBrush" Value="LightGray"/>
+                    <Setter Property="BorderThickness" Value="1"/>
+                    <Setter Property="Margin" Value="1"/>
+                </Style>
+            </Style.Resources>
+        </Style>-->
+        <Style x:Key="LblSettingTitle" TargetType="Label" BasedOn="{StaticResource MetroLabel}">
+            <Setter Property="DockPanel.Dock" Value="Left"/>
+            <Setter Property="Width" Value="80"/>
+        </Style>
+        <Style x:Key="LblSettingUnit" TargetType="Label" BasedOn="{StaticResource MetroLabel}">
+            <Setter Property="DockPanel.Dock" Value="Right"/>
+            <Setter Property="Width" Value="70"/>
+            <Setter Property="FontStyle" Value="Italic"/>
+            <Setter Property="FontSize" Value="12"/>
+        </Style>
+        <Style TargetType="DockPanel">
+            <Setter Property="Margin" Value="3"/>
+        </Style>
+    </UserControl.Resources>
+    <StackPanel Margin="2">
+        <DockPanel>
+            <Label Content="{StaticResource T_SaveLocation}"  Style="{StaticResource LblSettingTitle}" ></Label>
+            <ComboBox ItemsSource="{Binding SaveLocationList}" SelectedValue="{Binding SaveLocation}" DisplayMemberPath="Item1" SelectedValuePath="Item2"/>
+        </DockPanel>
+        <StackPanel Visibility="{Binding ShowFileList,Converter={StaticResource IsVisible}}">
+            <TextBox Margin="3,3,3,3" Name="T" cal:Message.Attach="[Event TextChanged]=[Action Search($this.Text)]" ></TextBox>
+            <ListBox 
+                    Margin="3,3,3,3"
+                    Height="300" 
+                    BorderBrush="{Binding ElementName=T,Path=BorderBrush}" 
+                    BorderThickness="1" 
+                    ItemsSource="{Binding FileList}"
+                    SelectedItem="{Binding Evt.Name}"
+                    cal:Message.Attach="[Event MouseDoubleClick]=[Action Confirm]"
+                ></ListBox>
+        </StackPanel>
+        <DockPanel  Visibility="{Binding IsSaveMode,Converter={StaticResource IsVisible}}">
+            <Label Style="{StaticResource LblSettingTitle}" Content="{StaticResource T_FileName}"></Label>
+            <CheckBox Name="Other" DockPanel.Dock="Right"  Margin="3 0">其他</CheckBox>
+            <TextBox Text="{Binding Evt.Name}" ></TextBox>
+        </DockPanel>
+        <Border Visibility="{Binding ElementName=Other,Path=IsChecked, Converter={StaticResource IsVisible}}">
+            <StackPanel>
+                <DockPanel>
+                    <Label Style="{StaticResource  LblSettingTitle}" Content="{StaticResource T_AltitudeUnit}"></Label>
+                    <Label Style="{StaticResource  LblSettingUnit}"></Label>
+                    <TextBox Text="{Binding Settings.AltitudeUnit}"></TextBox>
+                </DockPanel>
+                <DockPanel>
+                    <Label Style="{StaticResource  LblSettingTitle}" Content="{StaticResource T_MaxAltitude}"></Label>
+                    <Label Style="{StaticResource  LblSettingUnit}" Content="{Binding Settings.AltitudeUnit}"></Label>
+                    <control:NumericUpDown Value="{Binding Settings.MaxAltitude,Converter={StaticResource Round}}"></control:NumericUpDown>
+                </DockPanel>
+                <DockPanel>
+                    <Label Style="{StaticResource  LblSettingTitle}" Content="{StaticResource T_CorrectAltitude}"></Label>
+                    <Label Style="{StaticResource  LblSettingUnit}" Content="{Binding Settings.AltitudeUnit}"></Label>
+                    <control:NumericUpDown Value="{Binding Settings.CorrectAltitude,Converter={StaticResource Round}}"></control:NumericUpDown>
+                </DockPanel>
+                <DockPanel>
+                    <Label Style="{StaticResource  LblSettingTitle}" Content="{StaticResource T_Pollutant}"></Label>
+                    <Label Style="{StaticResource  LblSettingUnit}"></Label>
+                    <ComboBox ItemsSource="{Binding Pollutants}" SelectedItem="{Binding Current}" DisplayMemberPath="DisplayName"></ComboBox>
+                </DockPanel>
+
+                <DockPanel>
+                    <Label Style="{StaticResource  LblSettingTitle}" Content="{StaticResource T_Unit}"></Label>
+                    <Label Style="{StaticResource  LblSettingUnit}"></Label>
+                    <TextBox Text="{Binding Current.Unit}"></TextBox>
+                </DockPanel>
+
+                <DockPanel>
+                    <Label Style="{StaticResource  LblSettingTitle}" Content="{StaticResource T_MinValue}"></Label>
+                    <Label Style="{StaticResource  LblSettingUnit}" Content="{Binding Current.Unit}"></Label>
+                    <control:NumericUpDown Value="{Binding Current.MinValue}"></control:NumericUpDown>
+                </DockPanel>
+
+                <DockPanel>
+                    <Label Style="{StaticResource  LblSettingTitle}" Content="{StaticResource T_MaxValue}"></Label>
+                    <Label Style="{StaticResource  LblSettingUnit}" Content="{Binding Current.Unit}"></Label>
+                    <control:NumericUpDown Value="{Binding Current.MaxValue}"></control:NumericUpDown>
+                </DockPanel>
+            </StackPanel>
+        </Border>
+        <Button Name="Confirm" Content="{StaticResource  T_Confirm}"></Button>
+
+    </StackPanel>
+</UserControl>

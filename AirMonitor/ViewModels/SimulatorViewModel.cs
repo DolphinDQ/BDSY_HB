@@ -12,6 +12,12 @@ using System.Windows;
 
 namespace AirMonitor.ViewModels
 {
+    public enum SimulatorStatus
+    {
+        Stop,
+        Running,
+        Pause,
+    }
     public class SimulatorViewModel : Screen
     {
         private IResourceManager m_res;
@@ -100,7 +106,7 @@ namespace AirMonitor.ViewModels
 
         public async Task OnRun()
         {
-            var data = m_saveManager.Load<EvtAirSample[]>(Path).OrderBy(o => o.RecordTime).ToArray();
+            var data = m_saveManager.Load(Path).Samples.OrderBy(o => o.RecordTime).ToArray();
             Stop();
             try
             {

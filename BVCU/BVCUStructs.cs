@@ -60,8 +60,8 @@ namespace BVCUSDK
         public Int32 iChannelIndex;
         public BVCU_MEDIADIR iMediaDir;
         public Byte iPTZIndex;
-        Byte cReserved;
-        Byte cReserved0;
+        public Byte cReserved;
+        public Byte cReserved0;
     }
 
     /// <summary>

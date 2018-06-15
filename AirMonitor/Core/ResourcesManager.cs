@@ -15,6 +15,11 @@ namespace AirMonitor.Core
             return (string)FindResource(key);
         }
 
+        public string GetText(Enum key)
+        {
+            return (string)FindResource("T_" + key.ToString());
+        }
+
         public object Resource(string key) => FindResource(key);
     }
 }
