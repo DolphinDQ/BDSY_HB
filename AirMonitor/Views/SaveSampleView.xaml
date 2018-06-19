@@ -37,6 +37,10 @@
             <Label Content="{StaticResource T_SaveLocation}"  Style="{StaticResource LblSettingTitle}" ></Label>
             <ComboBox ItemsSource="{Binding SaveLocationList}" SelectedValue="{Binding SaveLocation}" DisplayMemberPath="Item1" SelectedValuePath="Item2"/>
         </DockPanel>
+        <DockPanel Visibility="{Binding SourceDirList,Converter={StaticResource AnyVisiable}}">
+            <Label Content="{StaticResource T_SaveDir}"  Style="{StaticResource LblSettingTitle}" ></Label>
+            <ComboBox ItemsSource="{Binding SourceDirList}" SelectedValue="{Binding BaseDir}" />
+        </DockPanel>
         <StackPanel Visibility="{Binding ShowFileList,Converter={StaticResource IsVisible}}">
             <DockPanel Margin=" 0">
                 <Label Padding="7" Style="{StaticResource LblSettingTitle}" Content="{StaticResource T_Search}" VerticalContentAlignment="Center"></Label>

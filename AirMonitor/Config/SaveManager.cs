@@ -18,28 +18,18 @@ namespace AirMonitor.Config
     /// </summary>
     public class SaveManager : ISaveManager
     {
-        public FtpSetting Setting { get; }
-        private IFtpClient Ftp { get; }
-        private string PersonalDir { get; }
-        private string SharedDir { get; }
+        //public FtpSetting Setting { get; }
+        //private IFtpClient FtpRead { get; }
+        //private string PersonalDir { get; }
+        //private string SharedDir { get; }
+
+        private FtpProvider Read { get; }
+        private FtpProvider Write { get; }
 
         public SaveManager(IConfigManager configManager)
         {
-            Setting = configManager.GetConfig<FtpSetting>();
-            Ftp = new FtpClient(Setting.Host, Setting.Port, Setting.Account, Setting.Password);
-            Ftp.Encoding = Encoding.UTF8;
-            PersonalDir = CheckDir(Setting.Account);
-            SharedDir = CheckDir(Setting.SharedDir);
-        }
-
-        private string CheckDir(string dir)
-        {
-            dir = AppDomain.CurrentDomain.BaseDirectory + dir;
-            if (!Directory.Exists(dir))
-            {
-                Directory.CreateDirectory(dir);
-            }
-            return dir;
+            Read = new FtpProvider(configManager.GetConfig<FtpSetting>());
+            Write = new FtpProvider(configManager.GetConfig<FtpWriteSetting>());
         }
 
         public AirSamplesSave Load(string path)
@@ -107,9 +97,40 @@ namespace AirMonitor.Config
             return result == DialogResult.OK ? dlg.FileName : null;
         }
 
-        public async Task SaveToCloud(string filename, AirSamplesSave data)
+        private string GetTempPath(string filename, CloudRoot root, string basedir)
         {
-            var path = $"{PersonalDir}\\{filename}";
+            switch (root)
+            {
+                case CloudRoot.Shared:
+                    return $"{Write.ShardedTempDir ?? Read.ShardedTempDir}\\{filename}"; ;
+                case CloudRoot.Personal:
+                    return $"{Write.PersonalTempDir ?? Read.PersonalTempDir}\\{filename}"; ;
+                default:
+                    return null;
+            }
+        }
+
+        private string GetRemotePath(string filename, CloudRoot root, string basedir)
+        {
+            string path = null;
+            switch (root)
+            {
+                case CloudRoot.Shared:
+                    path = $"{Write.ShardedRoot ?? Read.ShardedRoot}";
+                    break;
+                case CloudRoot.Personal:
+                    path = $"{Write.PersonalRoot ?? Read.PersonalRoot}";
+                    break;
+                default:
+                    return null;
+            }
+            var b = string.IsNullOrEmpty(basedir) ? "" : $"/{basedir}";
+            return path == null ? filename : $"{path}{b}/{filename}";
+        }
+
+        public async Task SaveToCloud(string filename, AirSamplesSave data, CloudRoot root, string basedir = null)
+        {
+            var path = GetTempPath(filename, root, basedir);
             using (var nux = new AutoResetEvent(true))
             {
                 var action = new Action<double>(o =>
@@ -120,7 +141,7 @@ namespace AirMonitor.Config
                     }
                 });
                 var by = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(data));
-                if (await Ftp.UploadAsync(by, $"{Setting.Account}/{filename}", FtpExists.Overwrite, false, CancellationToken.None, new Progress<double>(action)))
+                if (await Write.Ftp.UploadAsync(by, GetRemotePath(filename, root, basedir), FtpExists.Overwrite, true, CancellationToken.None, new Progress<double>(action)))
                 {
                     await Task.Run(() =>
                     {
@@ -130,9 +151,9 @@ namespace AirMonitor.Config
             }
         }
 
-        public async Task SaveToShared(string filename, AirSamplesSave data)
+        public async Task<AirSamplesSave> LoadFromCloud(string filename, CloudRoot root, string basedir = null)
         {
-            var path = $"{SharedDir}\\{filename}";
+            var path = GetTempPath(filename, root, basedir);
             using (var nux = new AutoResetEvent(true))
             {
                 var action = new Action<double>(o =>
@@ -142,30 +163,7 @@ namespace AirMonitor.Config
                         nux.Set();
                     }
                 });
-                var by = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(data));
-                if (await Ftp.UploadAsync(by, $"{Setting.SharedDir}/{filename}", FtpExists.Overwrite, false, CancellationToken.None, new Progress<double>(action)))
-                {
-                    await Task.Run(() =>
-                    {
-                        nux.WaitOne(TimeSpan.FromSeconds(10));
-                    });
-                }
-            }
-        }
-
-        public async Task<AirSamplesSave> LoadFromCloud(string filename)
-        {
-            var path = $"{PersonalDir}\\{filename}";
-            using (var nux = new AutoResetEvent(true))
-            {
-                var action = new Action<double>(o =>
-                {
-                    if (o >= 100)
-                    {
-                        nux.Set();
-                    }
-                });
-                if (await Ftp.DownloadFileAsync(path, $"{Setting.Account}/{filename}", true, progress: new Progress<double>(action)))
+                if (await Read.Ftp.DownloadFileAsync(path, GetRemotePath(filename, root, basedir), true, progress: new Progress<double>(action)))
                 {
                     return await Task.Run(() =>
                     {
@@ -177,50 +175,25 @@ namespace AirMonitor.Config
             return null;
         }
 
-        public async Task<AirSamplesSave> LoadFromShared(string filename)
+        public async Task<CloudListItem[]> GetCloudListing(CloudRoot root, string basedir = null)
         {
-            var path = $"{SharedDir}\\{filename}";
-            using (var nux = new AutoResetEvent(true))
+            var path = (root == CloudRoot.Personal ? Read.PersonalRoot : Write.ShardedRoot);
+            if (basedir != null)
             {
-                var action = new Action<double>(o =>
-                {
-                    if (o >= 100)
-                    {
-                        nux.Set();
-                    }
-                });
-                if (await Ftp.DownloadFileAsync(path, $"{Setting.SharedDir}/{filename}", true, progress: new Progress<double>(action)))
-                {
-                    return await Task.Run(() =>
-                    {
-                        nux.WaitOne();
-                        return Load(path);
-                    });
-                }
+                path += (path == null ? "" : "/") + basedir;
             }
-            return null;
+            return await Task.Run(() =>
+                Read.Ftp.GetListing(path)
+                    .Where(o => o.Type == FtpFileSystemObjectType.File || o.Type == FtpFileSystemObjectType.Directory)
+                    .Select(o => new CloudListItem() { Name = o.Name, Size = o.Size, Type = FtpFileSystemObjectType.File == o.Type ? CloudFileType.File : CloudFileType.Directory })
+                    .ToArray());
         }
 
-        public async Task<string[]> GetCloudFiles()
+        public async Task DeleteCloud(string filename, CloudRoot root, string basedir = null)
         {
-            return await Task.Run(() => Ftp.GetListing(Setting.Account).Where(o => o.Type == FtpFileSystemObjectType.File).Select(o => o.Name).ToArray());
+            var path = GetRemotePath(filename, root, basedir);
+            await Write.Ftp.DeleteFileAsync(path);
         }
 
-        public async Task<string[]> GetSharedFiles()
-        {
-            return await Task.Run(() => Ftp.GetListing(Setting.SharedDir).Where(o => o.Type == FtpFileSystemObjectType.File).Select(o => o.Name).ToArray());
-        }
-
-        public async Task DeleteCloud(string filename)
-        {
-            var path = $"{Setting.Account}/{filename}";
-            await Ftp.DeleteFileAsync(path);
-        }
-
-        public async Task DeleteShared(string filename)
-        {
-            var path = $"{Setting.SharedDir}/{filename}";
-            await Ftp.DeleteFileAsync(path);
-        }
     }
 }

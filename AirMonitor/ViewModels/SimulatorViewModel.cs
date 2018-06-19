@@ -76,9 +76,6 @@ namespace AirMonitor.ViewModels
                     }
                     break;
                 case SimulatorStatus.Running:
-                    m_eventAggregator.BeginPublishOnUIThread(new EvtSampling() { Status = SamplingStatus.ClearAll });
-                    m_eventAggregator.BeginPublishOnUIThread(new EvtSampling() { Status = SamplingStatus.StartSim });
-                    m_eventAggregator.BeginPublishOnUIThread(new EvtSampling() { Status = SamplingStatus.Start });
                     break;
                 case SimulatorStatus.Pause:
                     break;
@@ -113,6 +110,9 @@ namespace AirMonitor.ViewModels
                 var source = new CancellationTokenSource();
                 m_source = source;
                 Status = SimulatorStatus.Running;
+                m_eventAggregator.BeginPublishOnUIThread(new EvtSampling() { Status = SamplingStatus.ClearAll });
+                m_eventAggregator.BeginPublishOnUIThread(new EvtSampling() { Status = SamplingStatus.StartSim });
+                m_eventAggregator.BeginPublishOnUIThread(new EvtSampling() { Status = SamplingStatus.Start });
                 DataCount = data.Length;
                 for (int i = 0; i < DataCount; i++)
                 {

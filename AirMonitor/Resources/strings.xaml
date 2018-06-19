@@ -100,6 +100,7 @@
     <sys:String x:Key="T_CameraStatus">摄像机状态</sys:String>
     <sys:String x:Key="T_DataServiceSetting">数据服务配置</sys:String>
     <sys:String x:Key="T_SaveLocation">存档位置</sys:String>
+    <sys:String x:Key="T_SaveDir">存档目录</sys:String>
     <sys:String x:Key="T_FileName">文件名称</sys:String>
     <sys:String x:Key="T_Local">本地文件夹</sys:String>
     <sys:String x:Key="T_Personal">个人文件夹</sys:String>

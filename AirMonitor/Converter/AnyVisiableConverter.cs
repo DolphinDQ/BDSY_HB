@@ -13,8 +13,7 @@ namespace AirMonitor.Converter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            var r= (value == null) ? Visibility.Collapsed : Visibility.Visible;
-            return r;
+            return (value == null || ((value is IEnumerable<object> a) && !a.Any())) ? Visibility.Collapsed : Visibility.Visible;
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)

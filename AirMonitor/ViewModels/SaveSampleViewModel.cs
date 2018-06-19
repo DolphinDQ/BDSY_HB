@@ -71,36 +71,68 @@ namespace AirMonitor.ViewModels
 
         private IEnumerable<string> SourceFileList { get; set; }
 
+        public IEnumerable<string> SourceDirList { get; set; }
+
         public IEnumerable<string> FileList { get; set; }
 
         public List<Tuple<string, SaveLocation>> SaveLocationList { get; }
 
         public SaveLocation SaveLocation { get; set; }
 
-        public async void OnSaveLocationChanged()
+        public string BaseDir { get; set; }
+
+        public void OnBaseDirChanged()
         {
+            if (BaseDir != null)
+            {
+                ReloadList();
+            }
+        }
+
+        public void OnSourceDirListChanged()
+        {
+            BaseDir = SourceDirList?.FirstOrDefault();
+        }
+
+        private async void ReloadList(bool loadDir = false)
+        {
+            switch (SaveLocation)
+            {
+                case SaveLocation.Local:
+                    SourceFileList = null;
+                    SourceDirList = null;
+                    ShowFileList = false;
+                    break;
+                case SaveLocation.Personal:
+                    var l = await m_saveManager.GetCloudListing(CloudRoot.Personal, BaseDir);
+                    if (loadDir)
+                        SourceDirList = l.Where(o => o.Type == CloudFileType.Directory).Select(o => o.Name);
+                    SourceFileList = l.Where(o => o.Type == CloudFileType.File).Select(o => o.Name);
+                    ShowFileList = true;
+                    break;
+                case SaveLocation.Shared:
+                    var ll = await m_saveManager.GetCloudListing(CloudRoot.Shared, BaseDir);
+                    if (loadDir)
+                        SourceDirList = ll.Where(o => o.Type == CloudFileType.Directory).Select(o => o.Name);
+                    SourceFileList = ll.Where(o => o.Type == CloudFileType.File).Select(o => o.Name);
+                    ShowFileList = true;
+                    break;
+                default:
+                    break;
+            }
+
             if (!IsSaveMode)
             {
-                switch (SaveLocation)
-                {
-                    case SaveLocation.Local:
-                        SourceFileList = null;
-                        ShowFileList = false;
-                        break;
-                    case SaveLocation.Personal:
-                        SourceFileList = await m_saveManager.GetCloudFiles();
-                        ShowFileList = true;
-                        break;
-                    case SaveLocation.Shared:
-                        SourceFileList = await m_saveManager.GetSharedFiles();
-                        ShowFileList = true;
-                        break;
-                    default:
-                        break;
-                }
                 Evt.Name = null;
-                Search();
             }
+            Search();
+        }
+        public void OnSaveLocationChanged()
+        {
+            //if (!IsSaveMode)
+            //{
+            ReloadList(true);
+            //}
         }
 
         public void OnEvtChanged()
@@ -125,12 +157,12 @@ namespace AirMonitor.ViewModels
                 switch (SaveLocation)
                 {
                     case SaveLocation.Personal:
-                        await m_saveManager.DeleteCloud(item);
-                        OnSaveLocationChanged();
+                        await m_saveManager.DeleteCloud(item, CloudRoot.Personal, BaseDir);
+                        ReloadList();
                         break;
                     case SaveLocation.Shared:
-                        await m_saveManager.DeleteShared(item);
-                        OnSaveLocationChanged();
+                        await m_saveManager.DeleteCloud(item, CloudRoot.Shared, BaseDir);
+                        ReloadList();
                         break;
                 }
 
@@ -222,7 +254,7 @@ namespace AirMonitor.ViewModels
         {
             if (Evt.Name != null)
             {
-                var file = await m_saveManager.LoadFromShared(Evt.Name);
+                var file = await m_saveManager.LoadFromCloud(Evt.Name, CloudRoot.Shared, BaseDir);
                 if (file != null) m_eventAggregator.PublishOnBackgroundThread(new EvtSampleSaving() { Type = SaveType.LoadSamplesCompleted, Save = file });
             }
         }
@@ -238,10 +270,10 @@ namespace AirMonitor.ViewModels
             switch (SaveLocation)
             {
                 case SaveLocation.Personal:
-                    fileList = await m_saveManager.GetCloudFiles();
+                    fileList = (await m_saveManager.GetCloudListing(CloudRoot.Personal, BaseDir)).Select(o => o.Name);
                     break;
                 case SaveLocation.Shared:
-                    fileList = await m_saveManager.GetSharedFiles();
+                    fileList = (await m_saveManager.GetCloudListing(CloudRoot.Shared, BaseDir)).Select(o => o.Name);
                     break;
                 default:
                     fileList = Enumerable.Empty<string>();
@@ -264,7 +296,7 @@ namespace AirMonitor.ViewModels
             {
                 if (await CheckFileName())
                 {
-                    await m_saveManager.SaveToShared(Evt.Name, Evt.Save);
+                    await m_saveManager.SaveToCloud(Evt.Name, Evt.Save, CloudRoot.Shared, BaseDir);
                     m_eventAggregator.PublishOnBackgroundThread(new EvtSampleSaving() { Type = SaveType.SaveSamplesCompleted, Name = Evt.Name, Save = Evt.Save });
                 }
             }
@@ -281,7 +313,7 @@ namespace AirMonitor.ViewModels
 
             if (Evt.Name != null)
             {
-                var file = await m_saveManager.LoadFromCloud(Evt.Name);
+                var file = await m_saveManager.LoadFromCloud(Evt.Name, CloudRoot.Personal, BaseDir);
                 m_eventAggregator.PublishOnBackgroundThread(new EvtSampleSaving() { Type = SaveType.LoadSamplesCompleted, Name = Evt.Name, Save = file });
             }
         }
@@ -292,7 +324,7 @@ namespace AirMonitor.ViewModels
             {
                 if (await CheckFileName())
                 {
-                    await m_saveManager.SaveToCloud(Evt.Name, Evt.Save);
+                    await m_saveManager.SaveToCloud(Evt.Name, Evt.Save, CloudRoot.Personal);
                     m_eventAggregator.PublishOnBackgroundThread(new EvtSampleSaving() { Type = SaveType.SaveSamplesCompleted, Name = Evt.Name, Save = Evt.Save });
                 }
             }
