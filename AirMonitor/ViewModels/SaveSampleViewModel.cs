@@ -54,6 +54,8 @@ namespace AirMonitor.ViewModels
 
         public AirPollutant Current { get; set; }
 
+        public bool IsLoading { get; set; }
+
         /// <summary>
         /// 显示标准参数。
         /// </summary>
@@ -115,6 +117,26 @@ namespace AirMonitor.ViewModels
             }
         }
 
+        public async void DeleteSample(string item)
+        {
+            var ret = MessageBox.Show("您确定要删除" + m_resourceManager.GetText(SaveLocation) + "文件:" + item, "注意", MessageBoxButton.YesNo);
+            if (ret == MessageBoxResult.Yes)
+            {
+                switch (SaveLocation)
+                {
+                    case SaveLocation.Personal:
+                        await m_saveManager.DeleteCloud(item);
+                        OnSaveLocationChanged();
+                        break;
+                    case SaveLocation.Shared:
+                        await m_saveManager.DeleteShared(item);
+                        OnSaveLocationChanged();
+                        break;
+                }
+
+            }
+        }
+
         private void Init()
         {
 
@@ -142,46 +164,61 @@ namespace AirMonitor.ViewModels
             IsSaveMode = false;
         }
 
-        public void Confirm()
+        public async Task Confirm()
         {
-            switch (SaveLocation)
+            try
             {
-                case SaveLocation.Local:
-                    if (IsSaveMode)
-                    {
-                        OnSaveToLocal();
-                    }
-                    else
-                    {
-                        OnLoadFromLocal();
-                    }
-                    break;
-                case SaveLocation.Personal:
-                    if (IsSaveMode)
-                    {
-                        OnSaveToPersonal();
-                    }
-                    else
-                    {
-                        OnLoadFromPersonal();
-                    }
-                    break;
-                case SaveLocation.Shared:
-                    if (IsSaveMode)
-                    {
-                        OnSaveToShared();
-                    }
-                    else
-                    {
-                        OnLoadFromShared();
-                    }
-                    break;
-                default:
-                    break;
+                IsLoading = true;
+                switch (SaveLocation)
+                {
+                    case SaveLocation.Local:
+                        if (IsSaveMode)
+                        {
+                            await OnSaveToLocal();
+                        }
+                        else
+                        {
+                            await OnLoadFromLocal();
+                        }
+                        break;
+                    case SaveLocation.Personal:
+                        if (IsSaveMode)
+                        {
+                            await OnSaveToPersonal();
+                        }
+                        else
+                        {
+                            await OnLoadFromPersonal();
+                        }
+                        break;
+                    case SaveLocation.Shared:
+                        if (IsSaveMode)
+                        {
+                            await OnSaveToShared();
+                        }
+                        else
+                        {
+                            await OnLoadFromShared();
+                        }
+                        break;
+                    default:
+                        break;
+                }
             }
+            catch (Exception e)
+            {
+                this.Warn("save/load item error:{0}", e);
+                this.Error(e);
+                throw;
+            }
+            finally
+            {
+                IsLoading = false;
+            }
+
         }
 
-        private async void OnLoadFromShared()
+        private async Task OnLoadFromShared()
         {
             if (Evt.Name != null)
             {
@@ -190,45 +227,105 @@ namespace AirMonitor.ViewModels
             }
         }
 
-        private void OnSaveToShared()
+        private async Task<bool> CheckFileName()
         {
+            if (Evt.Name == null || Evt.Name == "")
+            {
+                MessageBox.Show("请输入文件名。");
+                return false;
+            }
+            IEnumerable<string> fileList = null;
+            switch (SaveLocation)
+            {
+                case SaveLocation.Personal:
+                    fileList = await m_saveManager.GetCloudFiles();
+                    break;
+                case SaveLocation.Shared:
+                    fileList = await m_saveManager.GetSharedFiles();
+                    break;
+                default:
+                    fileList = Enumerable.Empty<string>();
+                    break;
+            }
+            if (fileList.Contains(Evt.Name))
+            {
+                var ret = MessageBox.Show("文件以存在是否覆盖？", "注意", MessageBoxButton.YesNo);
+                if (ret == MessageBoxResult.No)
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        private async Task OnSaveToShared()
+        {
+            try
+            {
+                if (await CheckFileName())
+                {
+                    await m_saveManager.SaveToShared(Evt.Name, Evt.Save);
+                    m_eventAggregator.PublishOnBackgroundThread(new EvtSampleSaving() { Type = SaveType.SaveSamplesCompleted, Name = Evt.Name, Save = Evt.Save });
+                }
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show("保存失败!" + e.Message);
+                throw;
+            }
 
         }
 
-        private async void OnLoadFromPersonal()
+        private async Task OnLoadFromPersonal()
         {
 
             if (Evt.Name != null)
             {
                 var file = await m_saveManager.LoadFromCloud(Evt.Name);
-                if (file != null) m_eventAggregator.PublishOnBackgroundThread(new EvtSampleSaving() { Type = SaveType.LoadSamplesCompleted, Save = file });
+                m_eventAggregator.PublishOnBackgroundThread(new EvtSampleSaving() { Type = SaveType.LoadSamplesCompleted, Name = Evt.Name, Save = file });
             }
         }
 
-        private void OnSaveToPersonal()
+        private async Task OnSaveToPersonal()
         {
-
+            try
+            {
+                if (await CheckFileName())
+                {
+                    await m_saveManager.SaveToCloud(Evt.Name, Evt.Save);
+                    m_eventAggregator.PublishOnBackgroundThread(new EvtSampleSaving() { Type = SaveType.SaveSamplesCompleted, Name = Evt.Name, Save = Evt.Save });
+                }
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show("保存失败!" + e.Message);
+                throw;
+            }
         }
 
-        private void OnSaveToLocal()
+        private Task OnSaveToLocal()
         {
             try
             {
                 var file = m_saveManager.ShowSaveFileDialog(Evt.Name);
-                if (file == null) return;
-                m_saveManager.Save(file, Evt.Save);
-                m_eventAggregator.PublishOnBackgroundThread(new EvtSampleSaving() { Type = SaveType.SaveSamplesCompleted, Save = Evt.Save });
+                if (file != null)
+                {
+                    m_saveManager.Save(file, Evt.Save);
+                    m_eventAggregator.PublishOnBackgroundThread(new EvtSampleSaving() { Type = SaveType.SaveSamplesCompleted, Save = Evt.Save });
+                }
             }
             catch (Exception e)
             {
                 MessageBox.Show(m_resourceManager.GetText("T_SaveSamplesFailed") + e.Message);
             }
+            return Task.FromResult(0);
         }
 
-        private void OnLoadFromLocal()
+        private Task OnLoadFromLocal()
         {
             var file = m_saveManager.ShowOpenFileDialog();
             if (file != null) m_eventAggregator.PublishOnBackgroundThread(new EvtSampleSaving() { Type = SaveType.LoadSamplesCompleted, Save = m_saveManager.Load(file) });
+            return Task.FromResult(0);
         }
 
         public void Search(string text = null)
@@ -239,7 +336,18 @@ namespace AirMonitor.ViewModels
             }
             else
             {
-                FileList = SourceFileList?.Where(o => o.Contains(text));
+                if (SourceFileList != null)
+                {
+                    var sp = text.Split(' ');
+                    FileList = SourceFileList.Where(o => !o.Contains(text));
+                    foreach (var item in sp)
+                    {
+                        if (item == null || item == "") continue;
+                        FileList = FileList.Where(o => !o.Contains(item));
+                    }
+                    var ar = FileList.ToArray();
+                    FileList = SourceFileList.Where(o => !ar.Contains(o));
+                }
             }
         }
 

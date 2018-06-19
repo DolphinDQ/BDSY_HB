@@ -38,7 +38,10 @@
             <ComboBox ItemsSource="{Binding SaveLocationList}" SelectedValue="{Binding SaveLocation}" DisplayMemberPath="Item1" SelectedValuePath="Item2"/>
         </DockPanel>
         <StackPanel Visibility="{Binding ShowFileList,Converter={StaticResource IsVisible}}">
-            <TextBox Margin="3,3,3,3" Name="T" cal:Message.Attach="[Event TextChanged]=[Action Search($this.Text)]" ></TextBox>
+            <DockPanel Margin=" 0">
+                <Label Padding="7" Style="{StaticResource LblSettingTitle}" Content="{StaticResource T_Search}" VerticalContentAlignment="Center"></Label>
+                <TextBox Margin="3,3,3,3" Name="T" cal:Message.Attach="[Event TextChanged]=[Action Search($this.Text)]" ></TextBox>
+            </DockPanel>
             <ListBox 
                     Margin="3,3,3,3"
                     Height="300" 
@@ -47,7 +50,18 @@
                     ItemsSource="{Binding FileList}"
                     SelectedItem="{Binding Evt.Name}"
                     cal:Message.Attach="[Event MouseDoubleClick]=[Action Confirm]"
-                ></ListBox>
+                >
+                <ListBox.ItemTemplate>
+                    <ItemContainerTemplate>
+                        <ItemsControl>
+                            <DockPanel>
+                                <Button BorderBrush="Transparent" Background="Transparent" DockPanel.Dock="Right" cal:Message.Attach="DeleteSample($this)">删除</Button>
+                                <Label Content="{Binding}"></Label>
+                            </DockPanel>
+                        </ItemsControl>
+                    </ItemContainerTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
         </StackPanel>
         <DockPanel  Visibility="{Binding IsSaveMode,Converter={StaticResource IsVisible}}">
             <Label Style="{StaticResource LblSettingTitle}" Content="{StaticResource T_FileName}"></Label>
@@ -96,7 +110,11 @@
                 </DockPanel>
             </StackPanel>
         </Border>
-        <Button Name="Confirm" Content="{StaticResource  T_Confirm}"></Button>
-
+        <Button Name="Confirm" Width="150" IsEnabled="{Binding IsLoading, Converter={StaticResource Not} }">
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                <control:ProgressRing Height="15" Width="15" Visibility="{Binding IsLoading,Converter={StaticResource IsVisible}}" ></control:ProgressRing>
+                <TextBlock FontSize="15" Text="{StaticResource  T_Confirm}"></TextBlock>
+            </StackPanel>
+        </Button>
     </StackPanel>
 </UserControl>

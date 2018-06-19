@@ -107,14 +107,50 @@ namespace AirMonitor.Config
             return result == DialogResult.OK ? dlg.FileName : null;
         }
 
-        public Task SaveToCloud(string filename, AirSamplesSave data)
+        public async Task SaveToCloud(string filename, AirSamplesSave data)
         {
-            throw new NotImplementedException();
+            var path = $"{PersonalDir}\\{filename}";
+            using (var nux = new AutoResetEvent(true))
+            {
+                var action = new Action<double>(o =>
+                {
+                    if (o >= 100)
+                    {
+                        nux.Set();
+                    }
+                });
+                var by = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(data));
+                if (await Ftp.UploadAsync(by, $"{Setting.Account}/{filename}", FtpExists.Overwrite, false, CancellationToken.None, new Progress<double>(action)))
+                {
+                    await Task.Run(() =>
+                    {
+                        nux.WaitOne(TimeSpan.FromSeconds(10));
+                    });
+                }
+            }
         }
 
-        public Task SaveToShared(string filename, AirSamplesSave data)
+        public async Task SaveToShared(string filename, AirSamplesSave data)
         {
-            throw new NotImplementedException();
+            var path = $"{SharedDir}\\{filename}";
+            using (var nux = new AutoResetEvent(true))
+            {
+                var action = new Action<double>(o =>
+                {
+                    if (o >= 100)
+                    {
+                        nux.Set();
+                    }
+                });
+                var by = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(data));
+                if (await Ftp.UploadAsync(by, $"{Setting.SharedDir}/{filename}", FtpExists.Overwrite, false, CancellationToken.None, new Progress<double>(action)))
+                {
+                    await Task.Run(() =>
+                    {
+                        nux.WaitOne(TimeSpan.FromSeconds(10));
+                    });
+                }
+            }
         }
 
         public async Task<AirSamplesSave> LoadFromCloud(string filename)
@@ -175,14 +211,16 @@ namespace AirMonitor.Config
             return await Task.Run(() => Ftp.GetListing(Setting.SharedDir).Where(o => o.Type == FtpFileSystemObjectType.File).Select(o => o.Name).ToArray());
         }
 
-        public Task DeleteCloud(string filename)
+        public async Task DeleteCloud(string filename)
         {
-            throw new NotImplementedException();
+            var path = $"{Setting.Account}/{filename}";
+            await Ftp.DeleteFileAsync(path);
         }
 
-        public Task DeleteShared(string filename)
+        public async Task DeleteShared(string filename)
         {
-            throw new NotImplementedException();
+            var path = $"{Setting.SharedDir}/{filename}";
+            await Ftp.DeleteFileAsync(path);
         }
     }
 }
