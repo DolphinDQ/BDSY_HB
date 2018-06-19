@@ -17,7 +17,7 @@
     </NuGetPackageImportStamp>
     <IsWebBootstrapper>true</IsWebBootstrapper>
     <HockeyAppResourceId>75bbb694b0fd4d9891a87f46ac28d88e</HockeyAppResourceId>
-    <PublishUrl>ftp://192.168.1.180:8021/clickonce/AirHunter/</PublishUrl>
+    <PublishUrl>ftp://192.168.1.180/clickonce/AirHunter/</PublishUrl>
     <Install>true</Install>
     <InstallFrom>Web</InstallFrom>
     <UpdateEnabled>true</UpdateEnabled>
@@ -32,7 +32,7 @@
     <WebPage>publish.htm</WebPage>
     <OpenBrowserOnPublish>false</OpenBrowserOnPublish>
     <ApplicationRevision>6</ApplicationRevision>
-    <ApplicationVersion>0.0.14.12</ApplicationVersion>
+    <ApplicationVersion>0.0.14.13</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <CreateDesktopShortcut>true</CreateDesktopShortcut>
     <PublishWizardCompleted>true</PublishWizardCompleted>
