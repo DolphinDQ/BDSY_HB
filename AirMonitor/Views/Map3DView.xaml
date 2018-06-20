@@ -6,21 +6,36 @@
              xmlns:local="clr-namespace:AirMonitor.Views"
              xmlns:ctrl="clr-namespace:AirMonitor.Controls"
              mc:Ignorable="d" 
+             xmlns:cal="http://www.caliburnproject.org"
+             xmlns:controls="http://metro.mahapps.com/winfx/xaml/controls"
              d:DesignHeight="450" d:DesignWidth="800">
     <Grid>
-        <ctrl:Map3D 
+        <ctrl:Map3D
             MapContainer="{Binding MapView.MapContainer}"  
             MapBound="{Binding MapBound}" 
             UavCollection="{Binding UavList}"  
+            Angle="{Binding Angle}"
             BlockCollection="{Binding BlockList}"
             MapOpacity="{Binding ElementName=MapOpacity,Path=Value}"
             WallHeight="{Binding ElementName=WallHeight,Path=Value}"
             />
         <StackPanel Orientation="Horizontal" VerticalAlignment="Bottom">
-            <Label>地图透明</Label>
+            <Border BorderBrush="LightGray" BorderThickness="1"  Margin="2" CornerRadius="3">
+                <controls:DropDownButton Content="方向调整"  BorderThickness="0">
+                    <controls:DropDownButton.Items>
+                        <TextBlock Padding="20 5" cal:Message.Attach="[Event MouseUp]=[Action SetAngle(0)]" Text="0度"/>
+                        <TextBlock Padding="20 5" cal:Message.Attach="[Event MouseUp]=[Action SetAngle(45)]" Text="45度"/>
+                        <TextBlock Padding="20 5" cal:Message.Attach="[Event MouseUp]=[Action SetAngle(90)]" Text="90度"/>
+                        <TextBlock Padding="20 5" cal:Message.Attach="[Event MouseUp]=[Action SetAngle(135)]" Text="135度"/>
+                        <TextBlock Padding="20 5" cal:Message.Attach="[Event MouseUp]=[Action SetAngle(180)]" Text="180度"/>
+                    </controls:DropDownButton.Items>
+                </controls:DropDownButton>
+            </Border>
+            <Label VerticalContentAlignment="Center">地图透明</Label>
             <Slider Width="100" Name="MapOpacity" Minimum="0" Maximum="1" Value="0.5"></Slider>
-            <Label>测量高度</Label>
-            <Slider Width="100" Name="WallHeight" Minimum="100" Maximum="2000" Value="500"></Slider>
+            <Label  VerticalContentAlignment="Center">测量高度</Label>
+            <Slider Width="100" Name="WallHeight" Minimum="100" Maximum="3000" Value="500"></Slider>
+
         </StackPanel>
     </Grid>
 </UserControl>

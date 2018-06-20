@@ -148,14 +148,45 @@ namespace AirMonitor.Controls
 
 
 
+        public double Angle
+        {
+            get { return (double)GetValue(AngleProperty); }
+            set { SetValue(AngleProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for Angle.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty AngleProperty =
+            DependencyProperty.Register("Angle", typeof(double), typeof(Map3D), new PropertyMetadata(0d, new PropertyChangedCallback(OnAngleChanged)));
+
+        private static void OnAngleChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            if (d is Map3D map)
+            {
+                map.OnAngleChanged(e);
+            }
+        }
+
+        private void OnAngleChanged(DependencyPropertyChangedEventArgs e)
+        {
+            if (Trackball3DContext != null
+                && Trackball3DContext.Rotate != null
+                && Trackball3DContext.Rotate.Rotation is AxisAngleRotation3D axis)
+            {
+                axis.Angle = (double)e.NewValue;
+            }
+        }
+
+        public Trackball3DContext Trackball3DContext { get; set; } = new Trackball3DContext();
 
         #endregion
+
 
         public Map3D()
         {
             InitializeComponent();
             MapBound = new Map3DBound();
             View3D.DataContext = MapBound;
+
         }
 
         public object MapContainer
@@ -284,6 +315,8 @@ namespace AirMonitor.Controls
                 });
             }
         }
+
+
 
         private void OnUavCollectionChanged(DependencyPropertyChangedEventArgs e)
         {

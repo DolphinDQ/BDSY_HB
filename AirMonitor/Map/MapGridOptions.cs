@@ -68,31 +68,6 @@ namespace AirMonitor.Map
             pollutant = pollutants?.FirstOrDefault();
         }
 
-        //public void OnpollutantsChanged()
-        //{
-        //    if (pollutants == null)
-        //    {
-        //        dataName = null;
-        //    }
-        //    else
-        //    {
-        //        if (dataName == null)
-        //        {
-        //            dataName = pollutants.FirstOrDefault()?.Name;
-        //        }
-        //    }
-        //}
-
-        //public void OndataNameChanged()
-        //{
-        //    if (pollutants != null && dataName != null)
-        //    {
-        //        var item = pollutants.FirstOrDefault(o => o.Name == dataName);
-        //        minValue = item.MinValue;
-        //        maxValue = item.MaxValue;
-        //    }
-        //}
-
         private void SetValueStep()
         {
             var maxValue = pollutant?.MaxValue ?? 0;
@@ -109,7 +84,6 @@ namespace AirMonitor.Map
                 ValueStep = res;
             }
         }
-
 
         [JsonIgnore]
         public double[] ValueStep { get; private set; }

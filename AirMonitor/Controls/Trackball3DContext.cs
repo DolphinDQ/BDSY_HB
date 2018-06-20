@@ -8,6 +8,7 @@ using System.Windows.Media.Media3D;
 
 namespace AirMonitor.Controls
 {
+    [PropertyChanged.AddINotifyPropertyChangedInterface]
     public class Trackball3DContext
     {
         public ScaleTransform3D Scale { get; set; }

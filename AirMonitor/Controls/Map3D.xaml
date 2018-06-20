@@ -9,7 +9,7 @@
              d:DesignHeight="768" d:DesignWidth="1366">
     <Grid>
 
-        <Viewport3D Focusable="True" Name="View3D" local:Trackball3D.TransformModel="{Binding ElementName=M}" >
+        <Viewport3D Focusable="True" Name="View3D" local:Trackball3D.TransformModel="{Binding ElementName=M}" local:Trackball3D.Trackball3DContext="{Binding ElementName=Root,Path=Trackball3DContext}">
             <Viewport3D.Resources>
                 <MeshGeometry3D x:Key="UavGeometry" Positions="-1 10 -1,-1 10 1,1 10 1, 1 10 -1" TriangleIndices="0 1 2,0 2 3" TextureCoordinates="0 0 ,0 1 ,1 1, 1 0"/>
                 <DiffuseMaterial x:Key="UavMaterial">

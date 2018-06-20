@@ -58,6 +58,8 @@ namespace AirMonitor.ViewModels
 
         public AirStandardSetting Setting { get; }
 
+        public double Angle { get; set; }
+
         public MapBound Bound { get; private set; }
 
         public void OnBoundChanged()
@@ -149,6 +151,14 @@ namespace AirMonitor.ViewModels
                 Color = color,
                 Opacity = 1
             };
+        }
+
+        public void SetAngle(int angle)
+        {
+            if (angle >= 0 && angle <= 360)
+            {
+                Angle = angle;
+            }
         }
 
         public void Handle(EvtSampling message)
