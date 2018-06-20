@@ -87,7 +87,7 @@ namespace AirMonitor.Config
         {
             return new FtpWriteSetting()
             {
-                Account = "airhunter",
+                Account = "airadmin",
                 Password = "123456",
                 Host = "192.168.1.180",
                 Port = 21,
