@@ -11,9 +11,6 @@ namespace AirMonitor.Config
     /// </summary>
     class FtpWriteSetting : FtpSetting
     {
-        /// <summary>
-        /// 共享根目录。
-        /// </summary>
-        public string SharedRoot { get; set; }
+       
     }
 }

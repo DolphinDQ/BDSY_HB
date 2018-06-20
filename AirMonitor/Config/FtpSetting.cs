@@ -22,5 +22,9 @@ namespace AirMonitor.Config
         /// 用户根目录。
         /// </summary>
         public string Root { get; set; }
+        /// <summary>
+        /// 共享根目录。
+        /// </summary>
+        public string SharedRoot { get; set; }
     }
 }

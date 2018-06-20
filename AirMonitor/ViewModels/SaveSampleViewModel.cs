@@ -96,6 +96,8 @@ namespace AirMonitor.ViewModels
 
         private async void ReloadList(bool loadDir = false)
         {
+            if (loadDir) BaseDir = null;
+
             switch (SaveLocation)
             {
                 case SaveLocation.Local:

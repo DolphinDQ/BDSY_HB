@@ -74,11 +74,12 @@ namespace AirMonitor.Config
         {
             return new FtpSetting()
             {
-                Account = "airadmin",
+                Account = "airhunter",
                 Password = "123456",
                 Host = "b.vvlogic.com",
                 Port = 8021,
-                Root = "airadmin"
+                Root = "airhunter",
+                SharedRoot = "shared",
             };
         }
 
@@ -86,11 +87,11 @@ namespace AirMonitor.Config
         {
             return new FtpWriteSetting()
             {
-                Account = "airadmin",
+                Account = "airhunter",
                 Password = "123456",
                 Host = "192.168.1.180",
                 Port = 21,
-                Root = "airadmin",
+                Root = "airhunter",
                 SharedRoot = "shared"
             };
         }

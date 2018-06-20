@@ -15,6 +15,7 @@ using System.Text.RegularExpressions;
 namespace AirMonitor.ViewModels
 {
     class Map3DViewModel : Screen,
+        IHandle<EvtSampling>,
         IHandle<EvtMapBoundChanged>,
         IHandle<EvtMapPointConverted>
     {
@@ -148,6 +149,26 @@ namespace AirMonitor.ViewModels
                 Color = color,
                 Opacity = 1
             };
+        }
+
+        public void Handle(EvtSampling message)
+        {
+            switch (message.Status)
+            {
+                case SamplingStatus.Stop:
+                    break;
+                case SamplingStatus.Start:
+                    break;
+                case SamplingStatus.ClearAll:
+                    Refresh();
+                    break;
+                case SamplingStatus.StartSim:
+                    break;
+                case SamplingStatus.StopSim:
+                    break;
+                default:
+                    break;
+            }
         }
     }
 }
