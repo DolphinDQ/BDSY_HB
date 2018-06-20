@@ -6,6 +6,7 @@
              xmlns:local="clr-namespace:AirMonitor.Views"
              xmlns:control="http://metro.mahapps.com/winfx/xaml/controls"
              xmlns:cal="http://www.caliburnproject.org"
+              xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
              mc:Ignorable="d" 
              d:DesignHeight="1600" d:DesignWidth="300">
     <UserControl.Resources>
@@ -39,6 +40,29 @@
         </DockPanel>
         <DockPanel Visibility="{Binding SourceDirList,Converter={StaticResource AnyVisiable}}">
             <Label Content="{StaticResource T_SaveDir}"  Style="{StaticResource LblSettingTitle}" ></Label>
+            <control:DropDownButton ItemsSource="{Binding SourceDirList}" Content="选择目录" >
+                <control:DropDownButton.Style>
+                    <Style TargetType="control:DropDownButton">
+                        <Setter Property="Background" Value="{DynamicResource WhiteBrush}" />
+                        <Setter Property="BorderBrush" Value="{DynamicResource BlackBrush}" />
+                    </Style>
+                </control:DropDownButton.Style>
+                <control:DropDownButton.ItemContainerStyle>
+                    <Style TargetType="MenuItem"  >
+                        <Setter Property="Header" Value="{Binding}"/>
+                        <Setter Property="Margin" Value="0" />
+                        <Setter Property="Padding" Value="0 3 0 0"/>
+                        <Setter Property="MinHeight" Value="25" />
+                        <Setter Property="BorderThickness" Value="0"/>
+                        <Setter Property="VerticalContentAlignment" Value="Center"/>
+                        <Setter Property="HorizontalContentAlignment" Value="Center"/>
+                        <Setter Property="Background" Value="{DynamicResource WhiteBrush}" />
+                        <Setter Property="Foreground" Value="{DynamicResource TextBrush}" />
+                        <Setter Property="cal:Action.TargetWithoutContext" Value="{Binding DataContext, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type control:DropDownButton }}}"/>
+                        <Setter Property="cal:Message.Attach" Value="[Event Click]=[Action SelectedDir($this)]"/>
+                    </Style>
+                </control:DropDownButton.ItemContainerStyle>
+            </control:DropDownButton>
             <ComboBox ItemsSource="{Binding SourceDirList}" SelectedValue="{Binding BaseDir}" />
         </DockPanel>
         <StackPanel Visibility="{Binding ShowFileList,Converter={StaticResource IsVisible}}">
@@ -46,7 +70,7 @@
                 <Label Padding="7" Style="{StaticResource LblSettingTitle}" Content="{StaticResource T_Search}" VerticalContentAlignment="Center"></Label>
                 <TextBox Margin="3,3,3,3" Name="T" cal:Message.Attach="[Event TextChanged]=[Action Search($this.Text)]" ></TextBox>
             </DockPanel>
-         
+
             <ListBox 
                     Margin="3,3,3,3"
                     Height="300" 
@@ -115,6 +139,8 @@
                 </DockPanel>
             </StackPanel>
         </Border>
+
+
         <Button Name="Confirm" Width="120" IsEnabled="{Binding IsLoading, Converter={StaticResource Not} }" HorizontalAlignment="Right" Margin="5">
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                 <control:ProgressRing Height="15" Width="15" Visibility="{Binding IsLoading,Converter={StaticResource IsVisible}}" />

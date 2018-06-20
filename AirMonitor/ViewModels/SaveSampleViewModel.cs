@@ -90,6 +90,16 @@ namespace AirMonitor.ViewModels
             }
         }
 
+        public void SelectedDir()
+        {
+
+        }
+
+        public void SelectedDir(string dirName)
+        {
+
+        }
+
         public void OnSourceDirListChanged()
         {
             BaseDir = SourceDirList?.FirstOrDefault();
