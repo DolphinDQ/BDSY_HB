@@ -8,8 +8,6 @@ namespace AirMonitor.Interfaces
 {
     public interface IMapView
     {
-        Tuple<string, string> DataName { get; set; }
-        List<Tuple<string, string>> DataNameList { get; set; }
         object MapContainer { get; }
         bool MapLoad { get; }
         IMapProvider MapProvider { get; }

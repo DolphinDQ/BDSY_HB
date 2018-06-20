@@ -1,6 +1,7 @@
 ﻿using AirMonitor.Config;
 using AirMonitor.EventArgs;
 using Newtonsoft.Json;
+using PropertyChanged;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,7 +14,7 @@ namespace AirMonitor.Map
     /// <summary>
     /// 地图网格选项。
     /// </summary>
-    [PropertyChanged.AddINotifyPropertyChangedInterface]
+    [AddINotifyPropertyChangedInterface]
     public class MapGridOptions
     {
         public MapGridOptions()
@@ -37,39 +38,65 @@ namespace AirMonitor.Map
         /// 透明度。0-1
         /// </summary>
         public double opacity { get; set; } = 0.8;
-        /// <summary>
-        /// 采集数据名称。/*数据字段名称*/
-        /// </summary>
-        public string dataName { get; set; } = nameof(EvtAirSample.temp);
-        /// <summary>
-        /// 数据最大值。
-        /// </summary>
-        public double maxValue { get; set; } = 100;
-        /// <summary>
-        /// 数据最小值。
-        /// </summary>
-        public double minValue { get; set; } = 0;
+        ///// <summary>
+        ///// 采集数据名称。/*数据字段名称*/
+        ///// </summary>
+        //public string dataName { get; set; }
+        ///// <summary>
+        ///// 数据最大值。
+        ///// </summary>
+        //public double maxValue { get; set; }
+        ///// <summary>
+        ///// 数据最小值。
+        ///// </summary>
+        //public double minValue { get; set; }
         /// <summary>
         /// 污染物。
         /// </summary>
         public AirPollutant[] pollutants { get; set; }
+        /// <summary>
+        /// 当前选中的污染物。
+        /// </summary>
+        public AirPollutant pollutant { get; set; }
 
         public void OnmaxValueChanged() => SetValueStep();
 
         public void OnminValueChanged() => SetValueStep();
 
-        public void OndataNameChanged()
+        public void OnpollutantsChanged()
         {
-            if (pollutants != null)
-            {
-                var item = pollutants.FirstOrDefault(o => o.Name == dataName);
-                minValue = item.MinValue;
-                maxValue = item.MaxValue;
-            }
+            pollutant = pollutants?.FirstOrDefault();
         }
+
+        //public void OnpollutantsChanged()
+        //{
+        //    if (pollutants == null)
+        //    {
+        //        dataName = null;
+        //    }
+        //    else
+        //    {
+        //        if (dataName == null)
+        //        {
+        //            dataName = pollutants.FirstOrDefault()?.Name;
+        //        }
+        //    }
+        //}
+
+        //public void OndataNameChanged()
+        //{
+        //    if (pollutants != null && dataName != null)
+        //    {
+        //        var item = pollutants.FirstOrDefault(o => o.Name == dataName);
+        //        minValue = item.MinValue;
+        //        maxValue = item.MaxValue;
+        //    }
+        //}
 
         private void SetValueStep()
         {
+            var maxValue = pollutant?.MaxValue ?? 0;
+            var minValue = pollutant?.MinValue ?? 0;
             var val = maxValue - minValue;
             if (val > 0)
             {
@@ -81,18 +108,16 @@ namespace AirMonitor.Map
                 res[5] = maxValue;
                 ValueStep = res;
             }
-            if (pollutants != null)
-            {
-                var item = pollutants.FirstOrDefault(o => o.Name == dataName);
-                item.MinValue = minValue;
-                item.MaxValue = maxValue;
-            }
         }
+
+
         [JsonIgnore]
         public double[] ValueStep { get; private set; }
 
         public string GetColor(double value)
         {
+            var maxValue = pollutant?.MaxValue ?? 0;
+            var minValue = pollutant?.MinValue ?? 0;
             if (value > maxValue) return colorEnd;
             if (value < minValue) return colorBegin;
             var percent = (value - minValue) / (maxValue - minValue);

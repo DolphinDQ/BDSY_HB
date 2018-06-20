@@ -6,7 +6,16 @@
         xmlns:local="clr-namespace:AirDetector"
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
+    <Window.DataContext>
+        <local:I></local:I>
+    </Window.DataContext>
     <Grid>
-        
+        <TreeView  ItemsSource="{Binding Its}" >
+            <TreeView.ItemTemplate>
+                <HierarchicalDataTemplate ItemsSource="{Binding C}">
+                    <TextBlock Text="{Binding Name}"></TextBlock>
+                </HierarchicalDataTemplate>
+            </TreeView.ItemTemplate>
+        </TreeView>
     </Grid>
 </Window>

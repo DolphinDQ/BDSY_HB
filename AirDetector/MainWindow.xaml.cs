@@ -23,6 +23,53 @@ namespace AirDetector
         public MainWindow()
         {
             InitializeComponent();
+
         }
+
+    }
+    public class I
+    {
+        public I()
+        {
+            Its = new It[]
+            {
+                new It(){
+                    Name ="root",
+                    C=new []{
+                        new It(){ Name ="child1"},
+                        new It(){ Name ="child2"},
+                        new It(){ Name ="child3"},
+                        new It(){ Name ="child4"},
+                        new It(){ Name ="child5"},
+                        new It(){ Name ="child6"},
+                        new It(){ Name ="child7",
+                            C=new []{
+                                new It(){ Name ="child1"},
+                                new It(){ Name ="child2"},
+                                new It(){ Name ="child3"},
+                                new It(){ Name ="child4"},
+                                new It(){ Name ="child5"},
+                                new It(){ Name ="child6"},
+                                new It(){ Name ="child7"
+
+
+                                },
+                    }
+
+                        },
+                    }
+                }
+            };
+        }
+
+        public IEnumerable<It> Its { get; set; }
+
+    }
+    public class It
+    {
+
+        public string Name { get; set; }
+
+        public It[] C { get; set; }
     }
 }

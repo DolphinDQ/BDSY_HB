@@ -77,7 +77,7 @@ namespace AirMonitor.ViewModels
 
         public void RefreshPlot()
         {
-            var p = typeof(MapPointData).GetProperty(MapView.MapGridOptions.dataName);
+            var p = typeof(MapPointData).GetProperty(MapView.MapGridOptions.pollutant?.Name);
             if (p != null)
             {
                 PlotModel = m_chartManager.CreateScatter(
@@ -91,8 +91,8 @@ namespace AirMonitor.ViewModels
                         }))
                     , new ScatterOptions()
                     {
-                        MaxVaule = MapView.MapGridOptions.maxValue,
-                        MinValue = MapView.MapGridOptions.minValue,
+                        MaxVaule = MapView.MapGridOptions.pollutant?.MaxValue,
+                        MinValue = MapView.MapGridOptions.pollutant?.MinValue,
                         MaxColor = MapView.MapGridOptions.colorEnd,
                         MinColor = MapView.MapGridOptions.colorBegin,
                     });

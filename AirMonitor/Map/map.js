@@ -408,9 +408,9 @@ var BaiduMapProvider = /** @class */ (function (_super) {
         if (max === void 0) { max = undefined; }
         var opt = this.blockGrid.options;
         if (!min)
-            min = opt.minValue;
+            min = opt.pollutant.MinValue;
         if (!max)
-            max = opt.maxValue;
+            max = opt.pollutant.MaxValue;
         var percent = (value - min) / (max - min);
         percent = percent > 1 ? 1 : percent;
         percent = percent < 0 ? 0 : percent;
@@ -970,12 +970,14 @@ var BaiduMapProvider = /** @class */ (function (_super) {
             opt.colorEnd = "#00FF00";
         if (!opt.opacity)
             opt.opacity = 0.5;
-        if (!opt.dataName)
-            opt.dataName = "sample";
-        if (!opt.maxValue)
-            opt.maxValue = 100;
-        if (!opt.minValue)
-            opt.minValue = 0;
+        if (!opt.pollutant)
+            opt.pollutant = new Pollutant();
+        if (!opt.pollutant.Name)
+            opt.pollutant.Name = "sample";
+        if (!opt.pollutant.MaxValue)
+            opt.pollutant.MaxValue = 100;
+        if (!opt.pollutant.MinValue)
+            opt.pollutant.MinValue = 0;
         if (!opt.pollutants)
             opt.pollutants = [new Pollutant()]; //格式：{Name:"",DisplayName:"",MaxValue:0,MinValue:0,Unit:""}
         this.blockGrid.options = opt;
@@ -1001,7 +1003,7 @@ var BaiduMapProvider = /** @class */ (function (_super) {
             }
         });
         blockGrid.blocks.forEach(function (block) {
-            var report = block.context.getReports(function (o) { return o.pollutant.Name == opt.dataName; }).first(function (o) { return true; });
+            var report = block.context.getReports(function (o) { return o.pollutant.Name == opt.pollutant.Name; }).first(function (o) { return true; });
             if (report) {
                 var color = _this.getColor(report.avg);
                 if (block.context.color != color) {

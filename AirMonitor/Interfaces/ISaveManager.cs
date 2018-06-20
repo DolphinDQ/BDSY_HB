@@ -41,7 +41,7 @@ namespace AirMonitor.Interfaces
         /// 获取云端文件列表。
         /// </summary>
         /// <returns></returns>
-        Task<CloudListItem[]> GetCloudListing(CloudRoot root, string basedir=null);
+        Task<CloudListItem[]> GetCloudListing(CloudRoot root, string basedir = null);
         /// <summary>
         /// 删除云端文件。
         /// </summary>
@@ -91,5 +91,6 @@ namespace AirMonitor.Interfaces
         public CloudFileType Type { get; set; }
 
         public double Size { get; set; }
+
     }
 }

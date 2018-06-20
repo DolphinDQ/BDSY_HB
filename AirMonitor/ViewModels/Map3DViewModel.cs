@@ -122,7 +122,7 @@ namespace AirMonitor.ViewModels
         }
 
         private double GetSampleValue(EvtAirSample sample)
-            => (double)typeof(EvtAirSample).GetProperty(MapView.DataName.Item1).GetValue(sample);
+            => (double)typeof(EvtAirSample).GetProperty(MapView.MapGridOptions.pollutant?.Name).GetValue(sample);
 
         private BlockMarker3D SampleToBlock3D(EvtAirSample sample)
         {

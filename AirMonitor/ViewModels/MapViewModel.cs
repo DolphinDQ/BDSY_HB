@@ -62,10 +62,10 @@ namespace AirMonitor.ViewModels
         ///// 无人机跟踪
         ///// </summary>
         //public bool IsUavFocus { get; set; } = true;
-        /// <summary>
-        /// 污染物名称。
-        /// </summary>
-        public Tuple<string, string> DataName { get; set; }
+        ///// <summary>
+        ///// 污染物名称。
+        ///// </summary>
+        //public Tuple<string, string> DataName { get; set; }
         /// <summary>
         /// 地图提供者。
         /// </summary>
@@ -120,12 +120,12 @@ namespace AirMonitor.ViewModels
             {
                 pollutants = setting.Pollutant
             };
-            DataNameList = new List<Tuple<string, string>>();
-            foreach (var item in setting.Pollutant)
-            {
-                DataNameList.Add(Tuple.Create(item.Name, item.DisplayName));
-            }
-            DataName = DataNameList.First();
+            //DataNameList = new List<Tuple<string, string>>();
+            //foreach (var item in setting.Pollutant)
+            //{
+            //    DataNameList.Add(Tuple.Create(item.Name, item.DisplayName));
+            //}
+            //MapGridOptions.dataName = DataNameList.FirstOrDefault()?.Item1;
         }
 
         public override void TryClose(bool? dialogResult = null)

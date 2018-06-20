@@ -69,6 +69,7 @@ namespace AirMonitor.ViewModels
         /// </summary>
         public bool ShowFileList { get; set; }
 
+
         private IEnumerable<string> SourceFileList { get; set; }
 
         public IEnumerable<string> SourceDirList { get; set; }
@@ -106,29 +107,30 @@ namespace AirMonitor.ViewModels
                     ShowFileList = false;
                     break;
                 case SaveLocation.Personal:
-                    var l = await m_saveManager.GetCloudListing(CloudRoot.Personal, BaseDir);
+                    var list = await m_saveManager.GetCloudListing(CloudRoot.Personal, BaseDir);
                     if (loadDir)
-                        SourceDirList = l.Where(o => o.Type == CloudFileType.Directory).Select(o => o.Name);
-                    SourceFileList = l.Where(o => o.Type == CloudFileType.File).Select(o => o.Name);
+                        SourceDirList = list.Where(o => o.Type == CloudFileType.Directory).Select(o => o.Name);
+                    SourceFileList = list.Where(o => o.Type == CloudFileType.File).Select(o => o.Name);
                     ShowFileList = true;
                     break;
                 case SaveLocation.Shared:
-                    var ll = await m_saveManager.GetCloudListing(CloudRoot.Shared, BaseDir);
+                    list = await m_saveManager.GetCloudListing(CloudRoot.Shared, BaseDir);
                     if (loadDir)
-                        SourceDirList = ll.Where(o => o.Type == CloudFileType.Directory).Select(o => o.Name);
-                    SourceFileList = ll.Where(o => o.Type == CloudFileType.File).Select(o => o.Name);
+                        SourceDirList = list.Where(o => o.Type == CloudFileType.Directory).Select(o => o.Name);
+                    SourceFileList = list.Where(o => o.Type == CloudFileType.File).Select(o => o.Name);
                     ShowFileList = true;
                     break;
                 default:
                     break;
             }
-
             if (!IsSaveMode)
             {
                 Evt.Name = null;
             }
             Search();
         }
+
+
         public void OnSaveLocationChanged()
         {
             //if (!IsSaveMode)

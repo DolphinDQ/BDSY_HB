@@ -55,7 +55,7 @@
                     <Button Name="ClearSamples" Content="{StaticResource T_ClearMap}"></Button>
                     <Button Name="SaveSamples" Content="{StaticResource T_SaveSamples}"></Button>
                     <Button Name="LoadSamples" Content="{StaticResource T_LoadSamples}"></Button>
-                    
+
                     <!--<Border>
                         <control:DropDownButton Margin="1" Height="18" FontWeight="Bold" Content="{StaticResource T_SaveSamples}" BorderThickness="0">
                             <control:DropDownButton.Items>
@@ -112,12 +112,11 @@
                     </Style>
                 </StackPanel.Resources>
                 <Label Content="{StaticResource T_MapDisplay}"></Label>
-                <ComboBox ItemsSource="{Binding DataNameList}" SelectedItem="{Binding DataName}" SelectedValue="{Binding MapGridOptions.dataName}" DisplayMemberPath="Item2" SelectedValuePath="Item1" SelectedIndex="0"/>
-
+                <ComboBox ItemsSource="{Binding MapGridOptions.pollutants}" SelectedItem="{Binding MapGridOptions.pollutant}" DisplayMemberPath="DisplayName" SelectedValuePath="Name" />
                 <Label Content="{StaticResource T_MinValue}"></Label>
-                <control:NumericUpDown Value="{Binding MapGridOptions.minValue}"/>
+                <control:NumericUpDown Value="{Binding MapGridOptions.pollutant.MinValue}"/>
                 <Label Content="{StaticResource T_MaxValue}"></Label>
-                <control:NumericUpDown Value="{Binding MapGridOptions.maxValue}"/>
+                <control:NumericUpDown Value="{Binding MapGridOptions.pollutant.MaxValue}"/>
                 <Label Content="{StaticResource T_SideLength}"></Label>
                 <control:NumericUpDown Value="{Binding MapGridOptions.sideLength}" Minimum="5"/>
                 <Label Content="透明度"></Label>

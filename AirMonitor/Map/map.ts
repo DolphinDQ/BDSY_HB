@@ -154,10 +154,11 @@ class MapGridOptions {
     colorBegin: string;
     colorEnd: string;
     opacity: number;
-    dataName: string;
-    maxValue: number;
-    minValue: number;
+    //dataName: string;
+    //maxValue: number;
+    //minValue: number;
     pollutants: Pollutant[];
+    pollutant: Pollutant;
 }
 
 class MapGrid {
@@ -434,8 +435,8 @@ class BaiduMapProvider extends MapBase {
     private tempSelectedData: Array<any>;    //临时选中数据。
     private getColor(value: number, min: number = undefined, max: number = undefined): string {
         var opt = this.blockGrid.options;
-        if (!min) min = opt.minValue
-        if (!max) max = opt.maxValue
+        if (!min) min = opt.pollutant.MinValue
+        if (!max) max = opt.pollutant.MaxValue
 
         var percent = (value - min) / (max - min);
         percent = percent > 1 ? 1 : percent;
@@ -978,9 +979,11 @@ class BaiduMapProvider extends MapBase {
         if (!opt.colorBegin) opt.colorBegin = "#FF0000";
         if (!opt.colorEnd) opt.colorEnd = "#00FF00";
         if (!opt.opacity) opt.opacity = 0.5;
-        if (!opt.dataName) opt.dataName = "sample";
-        if (!opt.maxValue) opt.maxValue = 100;
-        if (!opt.minValue) opt.minValue = 0;
+        if (!opt.pollutant) opt.pollutant = new Pollutant();
+
+        if (!opt.pollutant.Name) opt.pollutant.Name = "sample";
+        if (!opt.pollutant.MaxValue) opt.pollutant.MaxValue = 100;
+        if (!opt.pollutant.MinValue) opt.pollutant.MinValue = 0;
         if (!opt.pollutants) opt.pollutants = [new Pollutant()];//格式：{Name:"",DisplayName:"",MaxValue:0,MinValue:0,Unit:""}
         this.blockGrid.options = opt;
     }
@@ -1003,7 +1006,7 @@ class BaiduMapProvider extends MapBase {
             }
         });
         blockGrid.blocks.forEach(block => {
-            var report = block.context.getReports(o => o.pollutant.Name == opt.dataName).first(o => true);
+            var report = block.context.getReports(o => o.pollutant.Name == opt.pollutant.Name).first(o => true);
             if (report) {
                 var color = this.getColor(report.avg);
                 if (block.context.color != color) {

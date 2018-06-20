@@ -70,7 +70,7 @@ namespace AirMonitor.ViewModels
         public double CorrectHeight { get; set; }
 
         public EvtMapSelectAnalysisArea Bounds { get; set; }
-        public PropertyInfo DataProperty => typeof(MapPointData).GetProperty(MapView.MapGridOptions.dataName);
+        public PropertyInfo DataProperty => typeof(MapPointData).GetProperty(MapView.MapGridOptions.pollutant?.Name);
 
         public void Handle(EvtAirSample message)
         {
@@ -127,8 +127,8 @@ namespace AirMonitor.ViewModels
                 {
                     MaxX = Mode == AnalysisMode.Horizontal ? Bounds.ne.lng : Bounds.ne.lat,
                     MinX = Mode == AnalysisMode.Horizontal ? Bounds.sw.lng : Bounds.sw.lat,
-                    MaxVaule = MapView.MapGridOptions.maxValue,
-                    MinValue = MapView.MapGridOptions.minValue,
+                    MaxVaule = MapView.MapGridOptions.pollutant?.MaxValue,
+                    MinValue = MapView.MapGridOptions.pollutant?.MinValue,
                     MaxColor = MapView.MapGridOptions.colorEnd,
                     MinColor = MapView.MapGridOptions.colorBegin,
                 });
