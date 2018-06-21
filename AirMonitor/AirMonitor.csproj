@@ -32,7 +32,7 @@
     <WebPage>publish.htm</WebPage>
     <OpenBrowserOnPublish>false</OpenBrowserOnPublish>
     <ApplicationRevision>6</ApplicationRevision>
-    <ApplicationVersion>0.0.15.20</ApplicationVersion>
+    <ApplicationVersion>0.0.15.21</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <CreateDesktopShortcut>true</CreateDesktopShortcut>
     <PublishWizardCompleted>true</PublishWizardCompleted>
