@@ -29,6 +29,20 @@ namespace AirMonitor.ViewModels
 
         public AirPollutant Current { get; set; }
 
+        public void OnCurrentChanged()
+        {
+            if (Current == null)
+            {
+                CurrentLevel = null;
+            }
+            else
+            {
+                CurrentLevel = Current.Levels?.FirstOrDefault();
+            }
+        }
+
+        public AirPollutantLevel CurrentLevel { get; set; }
+
         public void Confirm()
         {
             if (Settings != null)

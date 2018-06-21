@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
@@ -32,7 +32,7 @@
     <WebPage>publish.htm</WebPage>
     <OpenBrowserOnPublish>false</OpenBrowserOnPublish>
     <ApplicationRevision>6</ApplicationRevision>
-    <ApplicationVersion>0.0.15.21</ApplicationVersion>
+    <ApplicationVersion>0.1.16.22</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <CreateDesktopShortcut>true</CreateDesktopShortcut>
     <PublishWizardCompleted>true</PublishWizardCompleted>
@@ -119,6 +119,7 @@
     <Compile Include="Chart\ScatterOptions.cs" />
     <Compile Include="Chart\ScatterSelectManipulator.cs" />
     <Compile Include="Config\AirPollutant.cs" />
+    <Compile Include="Config\AirPollutantLevel.cs" />
     <Compile Include="Config\AirSamplesSave.cs" />
     <Compile Include="Config\AirStandardSetting.cs" />
     <Compile Include="Config\CameraSetting.cs" />
@@ -136,6 +137,7 @@
     <Compile Include="Controls\Trackball3D.cs" />
     <Compile Include="Controls\Trackball3DContext.cs" />
     <Compile Include="Controls\UavMarker3D.cs" />
+    <Compile Include="Converter\AirLevelToGradientConverter.cs" />
     <Compile Include="Converter\AnyVisiableConverter.cs" />
     <Compile Include="Converter\IsConnectConvert.cs" />
     <Compile Include="Converter\IsHiddenConverter.cs" />

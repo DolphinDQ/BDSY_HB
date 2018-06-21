@@ -65,6 +65,8 @@
     <sys:String x:Key="T_LoadSamplesWarning">加载样本之前需要先停止采样！</sys:String>
     <sys:String x:Key="T_Pollutant">污染源</sys:String>
     <sys:String x:Key="T_Unit">计数单位</sys:String>
+    <sys:String x:Key="T_PollutantLevel">污染等级</sys:String>
+    
     <sys:String x:Key="T_Confirm">确认</sys:String>
     <sys:String x:Key="T_Setting">配置</sys:String>
     <sys:String x:Key="T_Max">最大</sys:String>

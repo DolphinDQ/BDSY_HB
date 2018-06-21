@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -18,11 +19,11 @@ namespace AirMonitor.Config
         /// <summary>
         /// 最大值。
         /// </summary>
-        public double MaxValue { get; set; }
+        public double MaxValue => Levels?.Max(o => o.MaxValue) ?? 0;
         /// <summary>
         /// 最小值。
         /// </summary>
-        public double MinValue { get; set; }
+        public double MinValue => Levels?.Min(o => o.MinValue) ?? 0;
         /// <summary>
         /// 显示名称。
         /// </summary>
@@ -31,5 +32,10 @@ namespace AirMonitor.Config
         /// 单位。
         /// </summary>
         public string Unit { get; set; }
+        /// <summary>
+        /// 等级。
+        /// </summary>
+        public AirPollutantLevel[] Levels { get; set; }
+
     }
 }

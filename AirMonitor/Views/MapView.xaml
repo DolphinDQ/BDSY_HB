@@ -113,10 +113,10 @@
                 </StackPanel.Resources>
                 <Label Content="{StaticResource T_MapDisplay}"></Label>
                 <ComboBox ItemsSource="{Binding MapGridOptions.pollutants}" SelectedItem="{Binding MapGridOptions.pollutant}" DisplayMemberPath="DisplayName" SelectedValuePath="Name" />
-                <Label Content="{StaticResource T_MinValue}"></Label>
+                <!--<Label Content="{StaticResource T_MinValue}"></Label>
                 <control:NumericUpDown Value="{Binding MapGridOptions.pollutant.MinValue}"/>
                 <Label Content="{StaticResource T_MaxValue}"></Label>
-                <control:NumericUpDown Value="{Binding MapGridOptions.pollutant.MaxValue}"/>
+                <control:NumericUpDown Value="{Binding MapGridOptions.pollutant.MaxValue}"/>-->
                 <Label Content="{StaticResource T_SideLength}"></Label>
                 <control:NumericUpDown Value="{Binding MapGridOptions.sideLength}" Minimum="5"/>
                 <Label Content="透明度"></Label>
@@ -132,7 +132,7 @@
         </Border>
         <Border DockPanel.Dock="Left">
             <Grid Margin="5">
-                <Grid.Resources>
+                <!--<Grid.Resources>
                     <Style TargetType="Label" BasedOn="{StaticResource MetroLabel}">
                         <Setter Property="HorizontalContentAlignment" Value="Right"/>
                         <Setter Property="VerticalContentAlignment" Value="Bottom"/>
@@ -154,21 +154,62 @@
                     <RowDefinition Height="1*"/>
                     <RowDefinition Height="1*"/>
                     <RowDefinition Height="30"/>
-                </Grid.RowDefinitions>
-                <Rectangle Grid.Row="1" Grid.RowSpan="5" Opacity="{Binding MapGridOptions.opacity}" >
+                </Grid.RowDefinitions>-->
+                <!--<Rectangle Grid.Row="1" Grid.RowSpan="5" Opacity="{Binding MapGridOptions.opacity}" >
                     <Rectangle.Fill>
-                        <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                        <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0" >
                             <GradientStop Color="{Binding MapGridOptions.colorEnd}" Offset="0"/>
                             <GradientStop Color="{Binding MapGridOptions.colorBegin}" Offset="1"/>
                         </LinearGradientBrush>
                     </Rectangle.Fill>
-                </Rectangle>
-                <Label Grid.ColumnSpan="2" Grid.Row="0" Content="{Binding MapGridOptions.ValueStep[5],Converter={StaticResource Round}}"/>
+                </Rectangle>-->
+                <ListView Width="40" ItemsSource="{Binding MapGridOptions.pollutant.Levels}" >
+                    <!--<ListView.Background>
+                        <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0" Opacity="{Binding MapGridOptions.opacity}">
+                            <GradientStop Color="{Binding MapGridOptions.colorEnd}" Offset="0"/>
+                            <GradientStop Color="{Binding MapGridOptions.colorBegin}" Offset="1"/>
+                        </LinearGradientBrush>
+                    </ListView.Background>-->
+                    <!--<ListView.ItemTemplate>
+                        <ItemContainerTemplate>
+                            
+                        </ItemContainerTemplate>
+                    </ListView.ItemTemplate>-->
+                    <ListView.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <UniformGrid Columns="1"/>
+                        </ItemsPanelTemplate>
+                    </ListView.ItemsPanel>
+                    <ListBox.ItemContainerStyle>
+                        <Style TargetType="ListViewItem">
+                            <Setter Property="Template">
+                                <Setter.Value>
+                                    <ControlTemplate>
+                                        <Border BorderBrush="LightGray" BorderThickness="0 0 0 1">
+                                            <Border.Background>
+                                                <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0" Opacity="{Binding MapGridOptions.opacity}">
+                                                    <GradientStop Color="{Binding MinColor}" Offset="0"/>
+                                                    <GradientStop Color="{Binding MaxColor}" Offset="1"/>
+                                                </LinearGradientBrush>
+                                            </Border.Background>
+                                            <Grid>
+                                                <Label Foreground="Black" VerticalAlignment="Top" Content="{Binding MinValue,Converter={StaticResource Round}}"/>
+                                                <!--<Label Foreground="White" VerticalAlignment="Center" HorizontalAlignment="Center" Content="{Binding Name}"/>-->
+                                                <Label Foreground="White" VerticalAlignment="Bottom" Content="{Binding MaxValue,Converter={StaticResource Round}}"/>
+                                            </Grid>
+                                        </Border>
+                                    </ControlTemplate>
+                                </Setter.Value>
+                            </Setter>
+                        </Style>
+                    </ListBox.ItemContainerStyle>
+                </ListView>
+                <!--<Label Grid.ColumnSpan="2" Grid.Row="0" Content="{Binding MapGridOptions.ValueStep[5],Converter={StaticResource Round}}"/>
                 <Label Grid.ColumnSpan="2" Grid.Row="1" Content="{Binding MapGridOptions.ValueStep[4],Converter={StaticResource Round}}"/>
                 <Label Grid.ColumnSpan="2" Grid.Row="2" Content="{Binding MapGridOptions.ValueStep[3],Converter={StaticResource Round}}"/>
                 <Label Grid.ColumnSpan="2" Grid.Row="3" Content="{Binding MapGridOptions.ValueStep[2],Converter={StaticResource Round}}"/>
                 <Label Grid.ColumnSpan="2" Grid.Row="4" Content="{Binding MapGridOptions.ValueStep[1],Converter={StaticResource Round}}"/>
-                <Label Grid.ColumnSpan="2" Grid.Row="5" Content="{Binding MapGridOptions.ValueStep[0],Converter={StaticResource Round}}"/>
+                <Label Grid.ColumnSpan="2" Grid.Row="5" Content="{Binding MapGridOptions.ValueStep[0],Converter={StaticResource Round}}"/>-->
             </Grid>
         </Border>
         <Border>
@@ -181,7 +222,6 @@
                             Visibility="{Binding PropertyPanel,Converter={StaticResource AnyVisiable}}" >
                             <control:TransitioningContentControl  cal:View.Model="{Binding PropertyPanel}"/>
                         </Border>
-
                         <Border 
                             Background="White"
                             VerticalAlignment="Top"

@@ -119,17 +119,44 @@ namespace AirMonitor.Config
                 MaxAltitude = 200,
                 AltitudeUnit = "m",
                 Pollutant = new[] {
-                    new AirPollutant(){ Name=nameof( EvtAirSample.temp), MinValue = 0 , MaxValue = 70, DisplayName= m_res.GetText("T_Temperature") , Unit="℃"},
-                    new AirPollutant(){ Name=nameof( EvtAirSample.humi), MinValue = 0 , MaxValue = 100, DisplayName= m_res.GetText("T_Humidity") , Unit="%" },
-                    new AirPollutant(){ Name=nameof( EvtAirSample.voc), MinValue = 0 , MaxValue = 1000 , DisplayName= m_res.GetText("T_VOC") , Unit= "ppb" },
-                    new AirPollutant(){ Name=nameof( EvtAirSample.co), MinValue = 4.8 , MaxValue = 36, DisplayName= m_res.GetText("T_CO") , Unit= "mg/m3"  },
-                    new AirPollutant(){ Name=nameof( EvtAirSample.so2), MinValue = 72 , MaxValue = 500, DisplayName= m_res.GetText("T_SO2") , Unit= "ug/m3"  },
-                    new AirPollutant(){ Name=nameof( EvtAirSample.no2), MinValue = 60 , MaxValue = 400, DisplayName= m_res.GetText("T_NO2") , Unit= "ug/m3"  },
-                    new AirPollutant(){ Name=nameof( EvtAirSample.o3), MinValue = 192 , MaxValue = 700, DisplayName= m_res.GetText("T_O3") , Unit= "ug/m3"  },
-                    new AirPollutant(){ Name=nameof( EvtAirSample.pm25), MinValue = 44 , MaxValue = 300, DisplayName= m_res.GetText("T_PM2_5") , Unit= "ug/m3" },
-                    new AirPollutant(){ Name=nameof( EvtAirSample.pm10), MinValue = 71 , MaxValue = 500, DisplayName= m_res.GetText("T_PM10") , Unit="ug/m3"  },
-                 },
+                    new AirPollutant(){ Name=nameof( EvtAirSample.temp),DisplayName= m_res.GetText("T_Temperature") , Unit="℃" ,Levels=CreateLevel(new []{0d,27,30,37,45,70},          new [] {"#00ff00","#66ff00","#ccff00","#ffca00","#ff6a00","#ff0000"})},
+                    new AirPollutant(){ Name=nameof( EvtAirSample.humi),DisplayName= m_res.GetText("T_Humidity") , Unit="%"     ,Levels=CreateLevel(new []{0d,20,40,60,80,100},         new [] {"#00ff00","#66ff00","#ccff00","#ffca00","#ff6a00","#ff0000"})},
+                    new AirPollutant(){ Name=nameof( EvtAirSample.voc), DisplayName= m_res.GetText("T_VOC") , Unit= "ppb"       ,Levels=CreateLevel(new []{0d,200,400,600,800,1000},    new [] {"#00ff00","#66ff00","#ccff00","#ffca00","#ff6a00","#ff0000"})},
+                    new AirPollutant(){ Name=nameof( EvtAirSample.co),  DisplayName= m_res.GetText("T_CO") , Unit= "mg/m3"      ,Levels=CreateLevel(new []{0d,4.8,8,16,24,36},          new [] {"#00ff00","#66ff00","#ccff00","#ffca00","#ff6a00","#ff0000"})},
+                    new AirPollutant(){ Name=nameof( EvtAirSample.so2), DisplayName= m_res.GetText("T_SO2") , Unit= "ug/m3"     ,Levels=CreateLevel(new []{0d,72,150,200,300,500},      new [] {"#00ff00","#66ff00","#ccff00","#ffca00","#ff6a00","#ff0000"})},
+                    new AirPollutant(){ Name=nameof( EvtAirSample.no2), DisplayName= m_res.GetText("T_NO2") , Unit= "ug/m3"     ,Levels=CreateLevel(new []{0d,60,100,150,250,400},      new [] {"#00ff00","#66ff00","#ccff00","#ffca00","#ff6a00","#ff0000"})},
+                    new AirPollutant(){ Name=nameof( EvtAirSample.o3),  DisplayName= m_res.GetText("T_O3") , Unit= "ug/m3"      ,Levels=CreateLevel(new []{0d,192,300,400,500,700},     new [] {"#00ff00","#66ff00","#ccff00","#ffca00","#ff6a00","#ff0000"})},
+                    new AirPollutant(){ Name=nameof( EvtAirSample.pm25),DisplayName= m_res.GetText("T_PM2_5") , Unit= "ug/m3"   ,Levels=CreateLevel(new []{0d,44,80,150,200,300},       new [] {"#00ff00","#66ff00","#ccff00","#ffca00","#ff6a00","#ff0000"})},
+                    new AirPollutant(){ Name=nameof( EvtAirSample.pm10),DisplayName= m_res.GetText("T_PM10") , Unit="ug/m3"     ,Levels=CreateLevel(new []{0d ,71,150,200,300,500},     new [] { "#00ff00", "#66ff00", "#ccff00", "#ffca00", "#ff6a00", "#ff0000" } )}
+            },
             };
+        }
+
+        //MinValue = 0 , MaxValue = 70,   
+        // MinValue = 0 , MaxValue = 100,  
+        // MinValue = 0 , MaxValue = 1000 ,
+        // MinValue = 4.8 , MaxValue = 36, 
+        // MinValue = 72 , MaxValue = 500, 
+        // MinValue = 60 , MaxValue = 400, 
+        // MinValue = 192 , MaxValue = 700,
+        // MinValue = 44 , MaxValue = 300, 
+        // MinValue = 71 , MaxValue = 500, 
+
+        private AirPollutantLevel[] CreateLevel(double[] val, string[] color)
+        {
+            var list = new List<AirPollutantLevel>();
+            for (int i = 0; i < val.Length - 1; i++)
+            {
+                list.Add(new AirPollutantLevel()
+                {
+                    Name = "Lv." + (i + 1),
+                    MinValue = val[i],
+                    MaxValue = val[i + 1],
+                    MinColor = color[i],
+                    MaxColor = color[i + 1]
+                });
+            }
+            return list.ToArray();
         }
 
         public void SaveConfig<T>(T config)

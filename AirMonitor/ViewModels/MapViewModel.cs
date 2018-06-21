@@ -54,18 +54,6 @@ namespace AirMonitor.ViewModels
         /// 地图网格参数。
         /// </summary>
         public MapGridOptions MapGridOptions { get; private set; }
-        ///// <summary>
-        ///// 显示无人机路径。
-        ///// </summary>
-        //public bool ShowUavPath { get; set; } = true;
-        ///// <summary>
-        ///// 无人机跟踪
-        ///// </summary>
-        //public bool IsUavFocus { get; set; } = true;
-        ///// <summary>
-        ///// 污染物名称。
-        ///// </summary>
-        //public Tuple<string, string> DataName { get; set; }
         /// <summary>
         /// 地图提供者。
         /// </summary>
@@ -120,12 +108,6 @@ namespace AirMonitor.ViewModels
             {
                 pollutants = setting.Pollutant
             };
-            //DataNameList = new List<Tuple<string, string>>();
-            //foreach (var item in setting.Pollutant)
-            //{
-            //    DataNameList.Add(Tuple.Create(item.Name, item.DisplayName));
-            //}
-            //MapGridOptions.dataName = DataNameList.FirstOrDefault()?.Item1;
         }
 
         public override void TryClose(bool? dialogResult = null)
@@ -444,7 +426,7 @@ namespace AirMonitor.ViewModels
 
         public void RefreshBlock()
         {
-            MapGridOptions.Reload();
+            //MapGridOptions.Reload();
             MapProvider.GridInit(MapGridOptions);
             MapProvider.GridClear();
             MapProvider.GridRefresh();

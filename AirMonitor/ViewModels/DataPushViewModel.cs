@@ -155,8 +155,7 @@ namespace AirMonitor.ViewModels
                 Name = nameof(EvtAirSample.RelativeHeight),
                 DisplayName = m_res.GetText("T_RelativeHeight"),
                 Unit = StandardSetting.AltitudeUnit,
-                MinValue = 0,
-                MaxValue = StandardSetting.MaxAltitude,
+                Levels = new[] { new AirPollutantLevel() { MinValue = 0, MaxValue = StandardSetting.MaxAltitude } },
             };
         }
 

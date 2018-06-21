@@ -4,6 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:AirMonitor.Views"
+             xmlns:cal="http://www.caliburnproject.org"
              xmlns:control="http://metro.mahapps.com/winfx/xaml/controls"
              mc:Ignorable="d" 
              Padding="5"
@@ -14,6 +15,7 @@
             <Setter Property="Width" Value="80"/>
         </Style>
         <Style x:Key="LblSettingUnit" TargetType="Label" BasedOn="{StaticResource MetroLabel}">
+
             <Setter Property="DockPanel.Dock" Value="Right"/>
             <Setter Property="Width" Value="70"/>
             <Setter Property="FontStyle" Value="Italic"/>
@@ -22,9 +24,21 @@
         <Style TargetType="DockPanel">
             <Setter Property="Margin" Value="3"/>
         </Style>
+        <!--<Style x:Key="BtnOptions" TargetType="Button" BasedOn="{StaticResource MetroButton}">
+            <Setter Property="DockPanel.Dock" Value="Right"/>
+            <Setter Property="Margin" Value="3 0"/>
+        </Style>-->
+        <Style x:Key="ColorBlock" TargetType="Border">
+            <!--BorderBrush="LightGray" BorderThickness="1" CornerRadius="1" Width="60" Height="18" Cursor="Hand"-->
+            <Setter Property="BorderBrush" Value="LightGray"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="CornerRadius" Value="2"/>
+            <Setter Property="Width" Value="60"/>
+            <Setter Property="Height" Value="18"/>
+            <Setter Property="Cursor" Value="Hand"/>
+        </Style>
     </UserControl.Resources>
     <StackPanel>
-
         <DockPanel>
             <Label Style="{StaticResource  LblSettingTitle}" Content="{StaticResource T_AltitudeUnit}"></Label>
             <Label Style="{StaticResource  LblSettingUnit}"></Label>
@@ -45,14 +59,13 @@
             <Label Style="{StaticResource  LblSettingUnit}"></Label>
             <ComboBox ItemsSource="{Binding Pollutants}" SelectedItem="{Binding Current}" DisplayMemberPath="DisplayName"></ComboBox>
         </DockPanel>
-
         <DockPanel>
             <Label Style="{StaticResource  LblSettingTitle}" Content="{StaticResource T_Unit}"></Label>
             <Label Style="{StaticResource  LblSettingUnit}"></Label>
             <TextBox Text="{Binding Current.Unit}"></TextBox>
         </DockPanel>
 
-        <DockPanel>
+        <!--<DockPanel>
             <Label Style="{StaticResource  LblSettingTitle}" Content="{StaticResource T_MinValue}"></Label>
             <Label Style="{StaticResource  LblSettingUnit}" Content="{Binding Current.Unit}"></Label>
             <control:NumericUpDown Value="{Binding Current.MinValue}"></control:NumericUpDown>
@@ -62,8 +75,32 @@
             <Label Style="{StaticResource  LblSettingTitle}" Content="{StaticResource T_MaxValue}"></Label>
             <Label Style="{StaticResource  LblSettingUnit}" Content="{Binding Current.Unit}"></Label>
             <control:NumericUpDown Value="{Binding Current.MaxValue}"></control:NumericUpDown>
+        </DockPanel>-->
+        <DockPanel>
+            <Label Style="{StaticResource  LblSettingTitle}" Content="{StaticResource T_PollutantLevel}"></Label>
+            <Label Style="{StaticResource LblSettingUnit}" Padding="0" FontStyle="Normal">
+                <StackPanel Orientation="Horizontal">
+                    <Button Name="AddLevel" Margin="3 0" Visibility="Hidden">添加</Button>
+                    <Button Name="DelLevel" Visibility="Hidden">删除</Button>
+                </StackPanel>
+            </Label>
+            <ComboBox ItemsSource="{Binding Current.Levels}" SelectedItem="{Binding CurrentLevel}" DisplayMemberPath="Name"></ComboBox>
         </DockPanel>
 
+        <DockPanel>
+            <Label Style="{StaticResource  LblSettingTitle}" Content="{StaticResource T_MinValue}"></Label>
+            <Label Style="{StaticResource  LblSettingUnit}" >
+                <Border Style="{StaticResource ColorBlock}"  Background="{Binding CurrentLevel.MinColor}" cal:Message.Attach="[Event MouseUp]=[Action SetMinColor]"/>
+            </Label>
+            <control:NumericUpDown Value="{Binding CurrentLevel.MinValue}"></control:NumericUpDown>
+        </DockPanel>
+        <DockPanel>
+            <Label Style="{StaticResource  LblSettingTitle}" Content="{StaticResource T_MaxValue}"></Label>
+            <Label Style="{StaticResource  LblSettingUnit}" >
+                <Border Style="{StaticResource ColorBlock}" Background="{Binding CurrentLevel.MaxColor}"  cal:Message.Attach="[Event MouseUp]=[Action SetMaxColor]"/>
+            </Label>
+            <control:NumericUpDown Value="{Binding CurrentLevel.MaxValue}"></control:NumericUpDown>
+        </DockPanel>
         <DockPanel>
             <Button Name="Confirm" Content="{StaticResource T_Confirm}"></Button>
         </DockPanel>
