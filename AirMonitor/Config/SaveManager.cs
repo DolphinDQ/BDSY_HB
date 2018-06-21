@@ -25,11 +25,16 @@ namespace AirMonitor.Config
 
         private FtpProvider Read { get; }
         private FtpProvider Write { get; }
+        private string TempDir { get; } = "temp\\";
 
         public SaveManager(IConfigManager configManager)
         {
             Read = new FtpProvider(configManager.GetConfig<FtpSetting>());
             Write = new FtpProvider(configManager.GetConfig<FtpWriteSetting>());
+            if (!Directory.Exists(TempDir))
+            {
+                Directory.CreateDirectory(TempDir);
+            }
         }
 
         public AirSamplesSave Load(string path)
@@ -99,15 +104,7 @@ namespace AirMonitor.Config
 
         private string GetTempPath(string filename, CloudRoot root, string basedir)
         {
-            switch (root)
-            {
-                case CloudRoot.Shared:
-                    return $"{Write.ShardedTempDir ?? Read.ShardedTempDir}\\{filename}"; ;
-                case CloudRoot.Personal:
-                    return $"{Write.PersonalTempDir ?? Read.PersonalTempDir}\\{filename}"; ;
-                default:
-                    return null;
-            }
+            return TempDir+Guid.NewGuid();
         }
 
         private string GetRemotePath(string filename, CloudRoot root, string basedir)

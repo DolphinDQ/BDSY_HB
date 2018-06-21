@@ -106,5 +106,6 @@
     <sys:String x:Key="T_Personal">个人文件夹</sys:String>
     <sys:String x:Key="T_Shared">共享文件夹</sys:String>
     <sys:String x:Key="T_Search">搜索</sys:String>
+    <sys:String x:Key="T_Back">返回</sys:String>
     
 </ResourceDictionary>

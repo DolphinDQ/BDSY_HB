@@ -53,7 +53,7 @@ namespace AirMonitor.ViewModels
                     ActualMin = 0;
                     ActualAvg = 0;
                 }
-                IsWarning = ActualMax > MaxValue || ActualMin < MinValue;
+                IsWarning = ActualMax > MaxValue;//|| ActualMin < MinValue
             }
 
             public ObservableCollection<Tuple<DateTime, double>> Collection { get; private set; }
