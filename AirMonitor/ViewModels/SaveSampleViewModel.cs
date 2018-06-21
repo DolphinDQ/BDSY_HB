@@ -342,7 +342,7 @@ namespace AirMonitor.ViewModels
             {
                 if (await CheckFileName())
                 {
-                    await m_saveManager.SaveToCloud(Evt.Name, Evt.Save, CloudRoot.Personal);
+                    await m_saveManager.SaveToCloud(Evt.Name, Evt.Save, CloudRoot.Personal,BaseDir);
                     m_eventAggregator.PublishOnBackgroundThread(new EvtSampleSaving() { Type = SaveType.SaveSamplesCompleted, Name = Evt.Name, Save = Evt.Save });
                 }
             }

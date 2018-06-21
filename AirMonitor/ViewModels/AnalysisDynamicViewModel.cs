@@ -140,5 +140,10 @@ namespace AirMonitor.ViewModels
             RefreshSample();
         }
 
+        public override void Refresh()
+        {
+            //base.Refresh();
+            RefreshSample();
+        }
     }
 }

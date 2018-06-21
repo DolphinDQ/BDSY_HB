@@ -98,7 +98,11 @@ namespace AirMonitor.ViewModels
                     });
             }
         }
-
+        public override void Refresh()
+        {
+            //base.Refresh();
+            RefreshPlot();
+        }
         public void Handle(EvtChartScatterSelectChanged message)
         {
             if (message.Scatter == PlotModel)

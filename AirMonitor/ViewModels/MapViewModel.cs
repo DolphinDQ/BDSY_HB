@@ -444,6 +444,7 @@ namespace AirMonitor.ViewModels
 
         public void RefreshBlock()
         {
+            MapGridOptions.Reload();
             MapProvider.GridInit(MapGridOptions);
             MapProvider.GridClear();
             MapProvider.GridRefresh();
@@ -458,7 +459,10 @@ namespace AirMonitor.ViewModels
                 {
                     s2.Refresh();
                 }
-
+            }
+            if (PropertyPanel is Screen s)
+            {
+                s.Refresh();
             }
         }
 

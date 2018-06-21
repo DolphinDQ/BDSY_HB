@@ -19,7 +19,7 @@ namespace AirMonitor.Map
     {
         public MapGridOptions()
         {
-            SetValueStep();
+            Reload();
         }
 
         /// <summary>
@@ -59,16 +59,13 @@ namespace AirMonitor.Map
         /// </summary>
         public AirPollutant pollutant { get; set; }
 
-        public void OnmaxValueChanged() => SetValueStep();
-
-        public void OnminValueChanged() => SetValueStep();
-
         public void OnpollutantsChanged()
         {
             pollutant = pollutants?.FirstOrDefault();
+            Reload();
         }
 
-        private void SetValueStep()
+        public void Reload()
         {
             var maxValue = pollutant?.MaxValue ?? 0;
             var minValue = pollutant?.MinValue ?? 0;
