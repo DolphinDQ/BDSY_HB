@@ -62,8 +62,6 @@ namespace AirMonitor.Config
                     return (T)CreateCameraSetting();
                 case nameof(FtpSetting):
                     return (T)CreateFtpSetting();
-                case nameof(FtpWriteSetting):
-                    return (T)CreateFtpWriteSetting();
                 default:
                     return new T();
             }
@@ -74,25 +72,12 @@ namespace AirMonitor.Config
         {
             return new FtpSetting()
             {
-                Account = "airhunter",
+                Account = "airadmin",
                 Password = "123456",
                 Host = "b.vvlogic.com",
                 Port = 8021,
                 Root = "airhunter",
                 SharedRoot = "shared",
-            };
-        }
-
-        private object CreateFtpWriteSetting()
-        {
-            return new FtpWriteSetting()
-            {
-                Account = "airhunter",
-                Password = "123456",
-                Host = "b.vvlogic.com",
-                Port = 8021,
-                Root = "airhunter",
-                SharedRoot = "shared"
             };
         }
 

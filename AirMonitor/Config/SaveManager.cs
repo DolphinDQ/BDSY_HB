@@ -23,14 +23,12 @@ namespace AirMonitor.Config
         //private string PersonalDir { get; }
         //private string SharedDir { get; }
 
-        private FtpProvider Read { get; }
-        private FtpProvider Write { get; }
+        private FtpProvider Provider { get; }
         private string TempDir { get; } = "temp\\";
 
         public SaveManager(IConfigManager configManager)
         {
-            Read = new FtpProvider(configManager.GetConfig<FtpSetting>());
-            Write = new FtpProvider(configManager.GetConfig<FtpWriteSetting>());
+            Provider = new FtpProvider(configManager.GetConfig<FtpSetting>());
             if (!Directory.Exists(TempDir))
             {
                 Directory.CreateDirectory(TempDir);
@@ -104,7 +102,7 @@ namespace AirMonitor.Config
 
         private string GetTempPath(string filename, CloudRoot root, string basedir)
         {
-            return TempDir+Guid.NewGuid();
+            return TempDir + Guid.NewGuid();
         }
 
         private string GetRemotePath(string filename, CloudRoot root, string basedir)
@@ -113,10 +111,10 @@ namespace AirMonitor.Config
             switch (root)
             {
                 case CloudRoot.Shared:
-                    path = $"{Write.ShardedRoot ?? Read.ShardedRoot}";
+                    path = $"{ Provider.ShardedRoot}";
                     break;
                 case CloudRoot.Personal:
-                    path = $"{Write.PersonalRoot ?? Read.PersonalRoot}";
+                    path = $"{ Provider.PersonalRoot}";
                     break;
                 default:
                     return null;
@@ -138,7 +136,7 @@ namespace AirMonitor.Config
                     }
                 });
                 var by = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(data));
-                if (await Write.Ftp.UploadAsync(by, GetRemotePath(filename, root, basedir), FtpExists.Overwrite, true, CancellationToken.None, new Progress<double>(action)))
+                if (await Provider.Ftp.UploadAsync(by, GetRemotePath(filename, root, basedir), FtpExists.Overwrite, true, CancellationToken.None, new Progress<double>(action)))
                 {
                     await Task.Run(() =>
                     {
@@ -160,7 +158,7 @@ namespace AirMonitor.Config
                         nux.Set();
                     }
                 });
-                if (await Read.Ftp.DownloadFileAsync(path, GetRemotePath(filename, root, basedir), true, progress: new Progress<double>(action)))
+                if (await Provider.Ftp.DownloadFileAsync(path, GetRemotePath(filename, root, basedir), true, progress: new Progress<double>(action)))
                 {
                     return await Task.Run(() =>
                     {
@@ -174,13 +172,13 @@ namespace AirMonitor.Config
 
         public async Task<CloudListItem[]> GetCloudListing(CloudRoot root, string basedir = null)
         {
-            var path = (root == CloudRoot.Personal ? Read.PersonalRoot : Write.ShardedRoot);
+            var path = (root == CloudRoot.Personal ? Provider.PersonalRoot : Provider.ShardedRoot);
             if (basedir != null)
             {
                 path += (path == null ? "" : "/") + basedir;
             }
             return await Task.Run(() =>
-                Read.Ftp.GetListing(path)
+                Provider.Ftp.GetListing(path)
                     .Where(o => o.Type == FtpFileSystemObjectType.File || o.Type == FtpFileSystemObjectType.Directory)
                     .Select(o => new CloudListItem() { Name = o.Name, Size = o.Size, Type = FtpFileSystemObjectType.File == o.Type ? CloudFileType.File : CloudFileType.Directory })
                     .ToArray());
@@ -189,7 +187,7 @@ namespace AirMonitor.Config
         public async Task DeleteCloud(string filename, CloudRoot root, string basedir = null)
         {
             var path = GetRemotePath(filename, root, basedir);
-            await Write.Ftp.DeleteFileAsync(path);
+            await Provider.Ftp.DeleteFileAsync(path);
         }
 
     }

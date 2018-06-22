@@ -18,15 +18,9 @@ namespace AirMonitor.Config
             client.SslProtocols = System.Security.Authentication.SslProtocols.Tls12;
             client.EncryptionMode = FtpEncryptionMode.Explicit;
             client.ValidateCertificate += Ftp_ValidateCertificate;
-            //client.PlainTextEncryption = true;
-            //Ftp.DataConnectionType = FtpDataConnectionType.PASV;
-            //client.Connect();
             Ftp = client;
             PersonalRoot = setting.Root;
-            if (setting is FtpWriteSetting s)
-            {
-                ShardedRoot = s.SharedRoot;
-            }
+            ShardedRoot = setting.SharedRoot;
         }
 
         private void Ftp_ValidateCertificate(FtpClient control, FtpSslValidationEventArgs e)

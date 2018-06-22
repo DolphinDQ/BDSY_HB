@@ -51,7 +51,7 @@ namespace AirMonitor
             container.PerRequest<ConfigCameraViewModel>();
             container.PerRequest<Map3DViewModel>();
             container.Singleton<SimulatorViewModel>();
-            container.PerRequest<SaveSampleViewModel>();
+            container.Singleton<SaveSampleViewModel>();
 
 
           
