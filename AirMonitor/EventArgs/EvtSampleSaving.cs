@@ -18,13 +18,37 @@ namespace AirMonitor.EventArgs
 
     public enum SaveType
     {
+        /// <summary>
+        /// 请求保存样本。无样本。
+        /// </summary>
+        SaveSamplesRequest,
+        /// <summary>
+        /// 保存样本。携带需要保存的样本。
+        /// </summary>
         SaveSamples,
+        /// <summary>
+        /// 保存样本完毕。携带已经保存的样本。
+        /// </summary>
         SaveSamplesCompleted,
+        /// <summary>
+        /// 取消保存样本。
+        /// </summary>
+        SaveSamplesCancelled,
+        /// <summary>
+        /// 请求加载样本。无样本。
+        /// </summary>
+        LoadSamplesRequest,
+        /// <summary>
+        /// 确认加载样本。无样本。
+        /// </summary>
         LoadSamples,
+        /// <summary>
+        /// 加载样本完毕。携带已经加载的样本。
+        /// </summary>
         LoadSamplesCompleted,
         /// <summary>
-        /// 如果保存数据为空则会跳过配置。
+        /// 取消加载样本。
         /// </summary>
-        Skipped,
+        LoadSamplesCancelled,
     }
 }

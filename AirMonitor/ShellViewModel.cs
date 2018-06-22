@@ -138,7 +138,6 @@ namespace AirMonitor
             Container = m_factory.Create<MapViewModel>();
         }
 
-
         public void OpenSimulator()
         {
             CloseSetting();
@@ -153,6 +152,16 @@ namespace AirMonitor
             {
                 m_eventAggregator.PublishOnBackgroundThread(new EvtSampling() { Status = SamplingStatus.ClearAll });
             }
+        }
+
+        public void SaveSamples()
+        {
+            m_eventAggregator.PublishOnBackgroundThread(new EvtSampleSaving() { Type = SaveType.SaveSamplesRequest });
+        }
+
+        public void LoadSamples()
+        {
+            m_eventAggregator.PublishOnBackgroundThread(new EvtSampleSaving() { Type = SaveType.LoadSamplesRequest });
         }
 
         public void Handle(EvtSampleSaving message)

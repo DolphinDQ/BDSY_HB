@@ -29,10 +29,11 @@ namespace AirMonitor.Config
         public SaveManager(IConfigManager configManager)
         {
             Provider = new FtpProvider(configManager.GetConfig<FtpSetting>());
-            if (!Directory.Exists(TempDir))
+            if (Directory.Exists(TempDir))
             {
-                Directory.CreateDirectory(TempDir);
+                Directory.Delete(TempDir,true);
             }
+            Directory.CreateDirectory(TempDir);
         }
 
         public AirSamplesSave Load(string path)

@@ -32,6 +32,15 @@
         <Style TargetType="DockPanel">
             <Setter Property="Margin" Value="3"/>
         </Style>
+        <Style x:Key="ColorBlock" TargetType="Border">
+            <!--BorderBrush="LightGray" BorderThickness="1" CornerRadius="1" Width="60" Height="18" Cursor="Hand"-->
+            <Setter Property="BorderBrush" Value="LightGray"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="CornerRadius" Value="2"/>
+            <Setter Property="Width" Value="60"/>
+            <Setter Property="Height" Value="18"/>
+            <Setter Property="Cursor" Value="Hand"/>
+        </Style>
     </UserControl.Resources>
     <StackPanel Margin="2">
         <DockPanel>
@@ -98,10 +107,10 @@
         </StackPanel>
         <DockPanel  Visibility="{Binding IsSaveMode,Converter={StaticResource IsVisible}}">
             <Label Style="{StaticResource LblSettingTitle}" Content="{StaticResource T_FileName}"></Label>
-            <CheckBox Name="Other" DockPanel.Dock="Right"  Margin="3 0">其他</CheckBox>
+            <!--<CheckBox Name="Other" DockPanel.Dock="Right"  Margin="3 0">其他</CheckBox>-->
             <TextBox Text="{Binding Evt.Name}" ></TextBox>
         </DockPanel>
-        <Border Visibility="{Binding ElementName=Other,Path=IsChecked, Converter={StaticResource IsVisible}}">
+        <!--<Border Visibility="{Binding ElementName=Other,Path=IsChecked, Converter={StaticResource IsVisible}}">
             <StackPanel>
                 <DockPanel>
                     <Label Style="{StaticResource  LblSettingTitle}" Content="{StaticResource T_AltitudeUnit}"></Label>
@@ -123,28 +132,32 @@
                     <Label Style="{StaticResource  LblSettingUnit}"></Label>
                     <ComboBox ItemsSource="{Binding Pollutants}" SelectedItem="{Binding Current}" DisplayMemberPath="DisplayName"></ComboBox>
                 </DockPanel>
-
                 <DockPanel>
                     <Label Style="{StaticResource  LblSettingTitle}" Content="{StaticResource T_Unit}"></Label>
                     <Label Style="{StaticResource  LblSettingUnit}"></Label>
                     <TextBox Text="{Binding Current.Unit}"></TextBox>
                 </DockPanel>
-
+                <DockPanel>
+                    <Label Style="{StaticResource  LblSettingTitle}" Content="{StaticResource T_PollutantLevel}"></Label>
+                    <Label Style="{StaticResource LblSettingUnit}" Padding="0" FontStyle="Normal"></Label>
+                    <ComboBox ItemsSource="{Binding Current.Levels}" SelectedItem="{Binding CurrentLevel}" DisplayMemberPath="Name"></ComboBox>
+                </DockPanel>
                 <DockPanel>
                     <Label Style="{StaticResource  LblSettingTitle}" Content="{StaticResource T_MinValue}"></Label>
-                    <Label Style="{StaticResource  LblSettingUnit}" Content="{Binding Current.Unit}"></Label>
-                    <control:NumericUpDown Value="{Binding Current.MinValue}"></control:NumericUpDown>
+                    <Label Style="{StaticResource  LblSettingUnit}" >
+                        <Border Style="{StaticResource ColorBlock}"  Background="{Binding CurrentLevel.MinColor}" cal:Message.Attach="[Event MouseUp]=[Action SetMinColor]"/>
+                    </Label>
+                    <control:NumericUpDown Value="{Binding CurrentLevel.MinValue}"></control:NumericUpDown>
                 </DockPanel>
-
                 <DockPanel>
                     <Label Style="{StaticResource  LblSettingTitle}" Content="{StaticResource T_MaxValue}"></Label>
-                    <Label Style="{StaticResource  LblSettingUnit}" Content="{Binding Current.Unit}"></Label>
-                    <control:NumericUpDown Value="{Binding Current.MaxValue}"></control:NumericUpDown>
+                    <Label Style="{StaticResource  LblSettingUnit}" >
+                        <Border Style="{StaticResource ColorBlock}" Background="{Binding CurrentLevel.MaxColor}"  cal:Message.Attach="[Event MouseUp]=[Action SetMaxColor]"/>
+                    </Label>
+                    <control:NumericUpDown Value="{Binding CurrentLevel.MaxValue}"></control:NumericUpDown>
                 </DockPanel>
             </StackPanel>
-        </Border>
-
-
+        </Border>-->
         <Button Width="120" 
                 IsEnabled="{Binding IsLoading, Converter={StaticResource Not} }"
                 Tag="{Binding ElementName=Filelist,Path=SelectedItems}"

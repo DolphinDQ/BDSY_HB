@@ -54,6 +54,26 @@ namespace AirMonitor.ViewModels
 
         public AirPollutant Current { get; set; }
 
+        public void OnCurrentChanged()
+        {
+            if (Current == null)
+            {
+                CurrentLevel = null;
+            }
+            else
+            {
+                CurrentLevel = Current.Levels?.FirstOrDefault();
+            }
+        }
+        public void OnSettingsChanged()
+        {
+            if (Settings != null)
+            {
+                Current = Settings.Pollutant.FirstOrDefault();
+            }
+        }
+        public AirPollutantLevel CurrentLevel { get; set; }
+
         public bool IsLoading { get; set; }
 
         public string SearchText { get; set; }
@@ -171,6 +191,10 @@ namespace AirMonitor.ViewModels
             if (!IsSaveMode)
             {
                 Evt.Name = null;
+            }
+            else
+            {
+                ShowStandard = false;
             }
             Search();
         }
@@ -342,7 +366,7 @@ namespace AirMonitor.ViewModels
             {
                 if (await CheckFileName())
                 {
-                    await m_saveManager.SaveToCloud(Evt.Name, Evt.Save, CloudRoot.Personal,BaseDir);
+                    await m_saveManager.SaveToCloud(Evt.Name, Evt.Save, CloudRoot.Personal, BaseDir);
                     m_eventAggregator.PublishOnBackgroundThread(new EvtSampleSaving() { Type = SaveType.SaveSamplesCompleted, Name = Evt.Name, Save = Evt.Save });
                 }
             }

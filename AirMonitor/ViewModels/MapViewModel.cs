@@ -239,12 +239,33 @@ namespace AirMonitor.ViewModels
             }
         }
 
-
         public void Handle(EvtSampleSaving message)
         {
-            if (message.Type == SaveType.LoadSamplesCompleted)
+            switch (message.Type)
             {
-                OnLoadSampleCompleted(message.Save.Samples);
+                case SaveType.SaveSamplesRequest:
+                    m_eventAggregator.PublishOnBackgroundThread(new EvtSampleSaving()
+                    {
+                        Type = Samples.Any() ? SaveType.SaveSamples : SaveType.SaveSamplesCancelled,
+                        Save = new AirSamplesSave()
+                        {
+                            Samples = Samples.ToArray(),
+                        }
+                    });
+                    break;
+                case SaveType.LoadSamplesRequest:
+                    if (Sampling)
+                    {
+                        MessageBox.Show(m_res.GetText("T_LoadSamplesWarning"));
+                    }
+                    m_eventAggregator.BeginPublishOnUIThread(new EvtSampleSaving()
+                    {
+                        Type = Sampling ? SaveType.SaveSamplesCancelled : SaveType.LoadSamples
+                    });
+                    break;
+                case SaveType.LoadSamplesCompleted:
+                    OnLoadSampleCompleted(message.Save.Samples);
+                    break;
             }
         }
 
@@ -448,28 +469,7 @@ namespace AirMonitor.ViewModels
             }
         }
 
-        public void SaveSamples()
-        {
-            if (!Samples.Any()) return;
-            m_eventAggregator.PublishOnBackgroundThread(new EvtSampleSaving()
-            {
-                Type = SaveType.SaveSamples,
-                Save = new AirSamplesSave()
-                {
-                    Samples = Samples.ToArray(),
-                }
-            });
-        }
 
-        public void LoadSamples()
-        {
-            if (Sampling)
-            {
-                MessageBox.Show(m_res.GetText("T_LoadSamplesWarning"));
-                return;
-            }
-            m_eventAggregator.BeginPublishOnUIThread(new EvtSampleSaving() { Type = SaveType.LoadSamples });
-        }
 
 
     }

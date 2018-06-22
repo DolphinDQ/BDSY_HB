@@ -13,6 +13,8 @@
             <Button cal:Message.Attach="ClearAllSample"  Content="{StaticResource T_ClearSamples}"></Button>
             <!--<Button cal:Message.Attach="OpenAirStandardSetting" Content="{StaticResource T_Setting}"></Button>-->
             <Button cal:Message.Attach="OpenSimulator"  Content="{StaticResource T_Simulation}"></Button>
+            <Button cal:Message.Attach="SaveSamples" Content="{StaticResource T_SaveSamples}"></Button>
+            <Button cal:Message.Attach="LoadSamples" Content="{StaticResource T_LoadSamples}"></Button>
         </control:WindowCommands>
     </control:MetroWindow.RightWindowCommands>
     <Grid>
