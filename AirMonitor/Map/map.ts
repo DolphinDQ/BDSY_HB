@@ -484,14 +484,14 @@ class BaiduMapProvider extends MapBase {
     }
     private getInfoWindowContentTemplate(opt) {
         var template = '<div class="pollutant_message"><div class="pollutant_block" style="background:{{background}};opacity:{{opacity}}"></div><div class="pollutant_title">{{title}}</div><div class="pollutant_val">{{min}}</div><div class="pollutant_val">{{avg}}</div><div class="pollutant_val">{{max}}</div><div class="pollutant_unit">{{unit}}</div></div>';
-        template = template.replace("{{title}}", opt.title);
-        template = template.replace("{{min}}", opt.min);
-        template = template.replace("{{max}}", opt.max);
-        template = template.replace("{{avg}}", opt.avg);
-        template = template.replace("{{unit}}", opt.unit);
-        template = template.replace("{{background}}", opt.background);
-        template = template.replace("{{opacity}}", opt.opacity);
-        return template;
+        return template
+            .replace("{{title}}", opt.title)
+            .replace("{{min}}", opt.min)
+            .replace("{{max}}", opt.max)
+            .replace("{{avg}}", opt.avg)
+            .replace("{{unit}}", opt.unit)
+            .replace("{{background}}", opt.background)
+            .replace("{{opacity}}", opt.opacity);
     }
     private createInfoWindowContent(report: PollutantReport) {
         return this.getInfoWindowContentTemplate({
