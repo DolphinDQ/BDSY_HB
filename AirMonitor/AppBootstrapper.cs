@@ -13,7 +13,7 @@ namespace AirMonitor
     using AirMonitor.Map;
     using AirMonitor.ViewModels;
     using Caliburn.Micro;
-
+    using Microsoft.HockeyApp;
 
     public class AppBootstrapper : BootstrapperBase, IFactory
     {
@@ -24,13 +24,16 @@ namespace AirMonitor
             Initialize();
         }
 
-        protected override void Configure()
+
+
+        protected override  void Configure()
         {
+
             container = new SimpleContainer();
             container.Singleton<IWindowManager, WindowManager>();
             container.Singleton<IEventAggregator, EventAggregator>();
             container.Singleton<IResourceManager, ResourceProvider>();
-            container.Singleton<ILog, Logger>();
+            container.Singleton<Caliburn.Micro.ILog, Logger>();
             container.Singleton<ISaveManager, SaveManager>();
             container.Singleton<IDataManager, MqttDataManager>();
             container.Singleton<IConfigManager, ConfigManager>();
@@ -49,7 +52,10 @@ namespace AirMonitor
             container.PerRequest<Map3DViewModel>();
             container.Singleton<SimulatorViewModel>();
             container.PerRequest<SaveSampleViewModel>();
-            
+
+
+          
+
         }
 
         protected override void OnUnhandledException(object sender, DispatcherUnhandledExceptionEventArgs e)

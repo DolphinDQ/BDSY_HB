@@ -3,6 +3,8 @@ using AirMonitor.EventArgs;
 using AirMonitor.Interfaces;
 using AirMonitor.ViewModels;
 using Caliburn.Micro;
+using Microsoft.HockeyApp;
+using System.Diagnostics;
 using System.Linq;
 using System.Windows;
 
@@ -30,7 +32,7 @@ namespace AirMonitor
             m_saveManager = saveManager;
             m_eventAggregator = eventAggregator;
             eventAggregator.Subscribe(this);
-            LogManager.GetLog = o => factory.Create<ILog>();
+            LogManager.GetLog = o => factory.Create<Caliburn.Micro.ILog>();
             dataManager.Init();
             DisplayName = m_res.GetText("T_AppName") + " - " + AppVersion.VERSION;
         }
@@ -44,6 +46,20 @@ namespace AirMonitor
         public bool EnableSetting { get; set; }
 
         public string SettingTitle { get; set; }
+
+        protected override async void OnViewLoaded(object view)
+        {
+            base.OnViewLoaded(view);
+            HockeyClient.Current.Configure("75bbb694b0fd4d9891a87f46ac28d88e");
+#if DEBUG
+            ((HockeyClient)HockeyClient.Current).OnHockeySDKInternalException += (sender, args) =>
+            {
+                if (Debugger.IsAttached) { Debugger.Break(); }
+            };
+#endif
+            await HockeyClient.Current.SendCrashesAsync(true);
+        }
+
 
         public override void TryClose(bool? dialogResult = null)
         {

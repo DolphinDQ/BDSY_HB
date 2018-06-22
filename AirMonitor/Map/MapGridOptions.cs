@@ -26,14 +26,14 @@ namespace AirMonitor.Map
         /// 网格边长。单位（米）
         /// </summary>
         public double sideLength { get; set; } = 15;
-        /// <summary>
-        /// 渐变色开始。格式："#ffffff"，"#0f0f0f"
-        /// </summary>
-        public string colorBegin { get; set; } = "#00ff00";
-        /// <summary>
-        /// 渐变色结束。格式："#ffffff"，"#0f0f0f"
-        /// </summary>
-        public string colorEnd { get; set; } = "#ff0000";
+        ///// <summary>
+        ///// 渐变色开始。格式："#ffffff"，"#0f0f0f"
+        ///// </summary>
+        //public string colorBegin { get; set; } = "#00ff00";
+        ///// <summary>
+        ///// 渐变色结束。格式："#ffffff"，"#0f0f0f"
+        ///// </summary>
+        //public string colorEnd { get; set; } = "#ff0000";
         /// <summary>
         /// 透明度。0-1
         /// </summary>
@@ -81,7 +81,7 @@ namespace AirMonitor.Map
                 var maxValue = pollutant.MaxValue;
                 if (value > maxValue) value = maxValue;
                 if (value < minValue) value = minValue;
-                var level = pollutant.Levels.FirstOrDefault(o => o.MaxValue > value && o.MinValue < value);
+                var level = pollutant.Levels.FirstOrDefault(o => o.MaxValue >= value && o.MinValue <= value);
                 maxValue = level.MaxValue;
                 minValue = level.MinValue;
                 var percent = (value - minValue) / (maxValue - minValue);

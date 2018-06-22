@@ -153,6 +153,11 @@ var PollutantReport = /** @class */ (function () {
     }
     return PollutantReport;
 }());
+var PollutantLevel = /** @class */ (function () {
+    function PollutantLevel() {
+    }
+    return PollutantLevel;
+}());
 var Pollutant = /** @class */ (function () {
     function Pollutant() {
         this.Name = "sample";
@@ -160,6 +165,7 @@ var Pollutant = /** @class */ (function () {
         this.MaxValue = 100;
         this.MinValue = 1;
         this.Unit = "mg/m3";
+        this.Levels = [];
     }
     return Pollutant;
 }());
@@ -403,31 +409,51 @@ var BaiduMapProvider = /** @class */ (function (_super) {
         _this.uavPath = false;
         return _this;
     }
-    BaiduMapProvider.prototype.getColor = function (value, min, max) {
+    BaiduMapProvider.prototype.getColor = function (value, min, max, minColor, maxColor) {
         if (min === void 0) { min = undefined; }
         if (max === void 0) { max = undefined; }
+        if (minColor === void 0) { minColor = undefined; }
+        if (maxColor === void 0) { maxColor = undefined; }
         var opt = this.blockGrid.options;
         if (!min)
             min = opt.pollutant.MinValue;
         if (!max)
             max = opt.pollutant.MaxValue;
+        if (!maxColor)
+            maxColor = "#ff0000";
+        if (!minColor)
+            minColor = "#00ff00";
         var percent = (value - min) / (max - min);
         percent = percent > 1 ? 1 : percent;
         percent = percent < 0 ? 0 : percent;
-        var br = parseInt(opt.colorBegin.substring(1, 3), 16);
-        var bg = parseInt(opt.colorBegin.substring(3, 5), 16);
-        var bb = parseInt(opt.colorBegin.substring(5, 7), 16);
-        var er = parseInt(opt.colorEnd.substring(1, 3), 16);
-        var eg = parseInt(opt.colorEnd.substring(3, 5), 16);
-        var eb = parseInt(opt.colorEnd.substring(5, 7), 16);
-        return "#" + this.getColorValue(percent, br, er) +
-            this.getColorValue(percent, bg, eg) +
-            this.getColorValue(percent, bb, eb);
+        var br = parseInt(minColor.substring(1, 3), 16);
+        var bg = parseInt(minColor.substring(3, 5), 16);
+        var bb = parseInt(minColor.substring(5, 7), 16);
+        var er = parseInt(maxColor.substring(1, 3), 16);
+        var eg = parseInt(maxColor.substring(3, 5), 16);
+        var eb = parseInt(maxColor.substring(5, 7), 16);
+        var getColorValue = function (percent, begin, end) {
+            var flag = end > begin ? 1 : -1;
+            var result = Math.round(Math.abs(end - begin) * percent * flag + begin).toString(16);
+            return result.length < 2 ? "0" + result : result;
+        };
+        return "#" + getColorValue(percent, br, er) +
+            getColorValue(percent, bg, eg) +
+            getColorValue(percent, bb, eb);
     };
-    BaiduMapProvider.prototype.getColorValue = function (percent, begin, end) {
-        var flag = end > begin ? 1 : -1;
-        var result = Math.round(Math.abs(end - begin) * percent * flag + begin).toString(16);
-        return result.length < 2 ? "0" + result : result;
+    BaiduMapProvider.prototype.getColorByReport = function (report) {
+        var lv = report.pollutant.Levels.first(function (o) { return o.MaxValue >= report.avg && o.MinValue <= report.avg; });
+        if (!lv) {
+            if (report.avg > report.pollutant.MaxValue) {
+                lv = report.pollutant.Levels.max(function (o) { return o.MaxValue; });
+            }
+            if (report.avg < report.pollutant.MinValue) {
+                lv = report.pollutant.Levels.min(function (o) { return o.MinValue; });
+            }
+        }
+        if (!lv)
+            return "#ffffff";
+        return this.getColor(report.avg, lv.MinValue, lv.MaxValue, lv.MinColor, lv.MaxColor);
     };
     BaiduMapProvider.prototype.getInfoWindowContentTemplate = function (opt) {
         var template = '<div class="pollutant_message"><div class="pollutant_block" style="background:{{background}};opacity:{{opacity}}"></div><div class="pollutant_title">{{title}}</div><div class="pollutant_val">{{min}}</div><div class="pollutant_val">{{avg}}</div><div class="pollutant_val">{{max}}</div><div class="pollutant_unit">{{unit}}</div></div>';
@@ -447,7 +473,7 @@ var BaiduMapProvider = /** @class */ (function (_super) {
             max: Math.round(report.max * 100) / 100,
             avg: Math.round(report.avg * 100) / 100,
             unit: report.pollutant.Unit,
-            background: this.getColor(report.avg, report.pollutant.MinValue, report.pollutant.MaxValue),
+            background: this.getColorByReport(report),
             opacity: this.blockGrid.options.opacity,
         });
     };
@@ -964,10 +990,8 @@ var BaiduMapProvider = /** @class */ (function (_super) {
             opt.sideLength = 100; //默认边长100米，地图比例尺约1米约等于0.00001经纬度
         if (!opt.blockList)
             opt.blockList = []; //网格列表。
-        if (!opt.colorBegin)
-            opt.colorBegin = "#FF0000";
-        if (!opt.colorEnd)
-            opt.colorEnd = "#00FF00";
+        //if (!opt.colorBegin) opt.colorBegin = "#FF0000";
+        //if (!opt.colorEnd) opt.colorEnd = "#00FF00";
         if (!opt.opacity)
             opt.opacity = 0.5;
         if (!opt.pollutant)
@@ -1005,7 +1029,7 @@ var BaiduMapProvider = /** @class */ (function (_super) {
         blockGrid.blocks.forEach(function (block) {
             var report = block.context.getReports(function (o) { return o.pollutant.Name == opt.pollutant.Name; }).first(function (o) { return true; });
             if (report) {
-                var color = _this.getColor(report.avg);
+                var color = _this.getColorByReport(report);
                 if (block.context.color != color) {
                     block.context.color = color;
                     _this.on(MapEvents.blockChanged, { blocks: _this.getBlocksData(_this.blockGrid.blocks) });

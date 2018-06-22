@@ -11,8 +11,8 @@ namespace AirMonitor.Chart
         public double? MaxVaule { get; set; }
         public double? MinValue { get; set; }
 
-        public string MaxColor { get; set; }
+        //public string MaxColor { get; set; }
 
-        public string MinColor { get; set; }
+        //public string MinColor { get; set; }
     }
 }

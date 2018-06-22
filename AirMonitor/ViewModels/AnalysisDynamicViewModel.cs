@@ -129,8 +129,8 @@ namespace AirMonitor.ViewModels
                     MinX = Mode == AnalysisMode.Horizontal ? Bounds.sw.lng : Bounds.sw.lat,
                     MaxVaule = MapView.MapGridOptions.pollutant?.MaxValue,
                     MinValue = MapView.MapGridOptions.pollutant?.MinValue,
-                    MaxColor = MapView.MapGridOptions.colorEnd,
-                    MinColor = MapView.MapGridOptions.colorBegin,
+                    //MaxColor = MapView.MapGridOptions.colorEnd,
+                    //MinColor = MapView.MapGridOptions.colorBegin,
                 });
         }
 

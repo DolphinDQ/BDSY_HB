@@ -93,8 +93,8 @@ namespace AirMonitor.ViewModels
                     {
                         MaxVaule = MapView.MapGridOptions.pollutant?.MaxValue,
                         MinValue = MapView.MapGridOptions.pollutant?.MinValue,
-                        MaxColor = MapView.MapGridOptions.colorEnd,
-                        MinColor = MapView.MapGridOptions.colorBegin,
+                        //MaxColor = MapView.MapGridOptions.colorEnd,
+                        //MinColor = MapView.MapGridOptions.colorBegin,
                     });
             }
         }

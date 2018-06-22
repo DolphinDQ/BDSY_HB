@@ -144,11 +144,7 @@ namespace AirMonitor.Chart
                 var right = plot.Axes.First(o => o.Position == AxisPosition.Right) as LinearColorAxis;
                 right.Maximum = options.MaxVaule ?? double.NaN;
                 right.Minimum = options.MinValue ?? double.NaN;
-                if (options.MaxColor != null && options.MinColor != null)
-                {
-                    right.Palette = OxyPalette.Interpolate(300, OxyColor.Parse(options.MinColor), OxyColor.Parse(options.MaxColor));
-                }
-
+                right.Palette = OxyPalette.Interpolate(300, OxyColor.Parse("#00ff00"), OxyColor.Parse("#ffff00"), OxyColor.Parse("#ff0000"));
                 var bottom = plot.Axes.First(o => o.Position == AxisPosition.Bottom) as LinearAxis;
                 bottom.Maximum = options.MaxX ?? double.NaN;
                 bottom.Minimum = options.MinX ?? double.NaN;
