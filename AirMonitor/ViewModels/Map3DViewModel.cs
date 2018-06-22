@@ -16,6 +16,7 @@ namespace AirMonitor.ViewModels
 {
     class Map3DViewModel : Screen,
         IHandle<EvtSampling>,
+        IHandle<EvtSetting>,
         IHandle<EvtMapBoundChanged>,
         IHandle<EvtMapPointConverted>
     {
@@ -56,7 +57,7 @@ namespace AirMonitor.ViewModels
 
         public IMapView MapView { get; set; }
 
-        public AirStandardSetting Setting { get; }
+        public AirStandardSetting Setting { get; private set; }
 
         public double Angle { get; set; }
 
@@ -175,6 +176,21 @@ namespace AirMonitor.ViewModels
                 case SamplingStatus.StartSim:
                     break;
                 case SamplingStatus.StopSim:
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        public void Handle(EvtSetting message)
+        {
+            switch (message.Command)
+            {
+                case SettingCommands.Changed:
+                    if (message.SettingObject is AirStandardSetting setting)
+                    {
+                        Setting = setting;
+                    }
                     break;
                 default:
                     break;
