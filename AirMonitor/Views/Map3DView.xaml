@@ -32,7 +32,7 @@
                 </controls:DropDownButton>
             </Border>
             <Label VerticalContentAlignment="Center">地图透明</Label>
-            <Slider Width="100" Name="MapOpacity" Minimum="0" Maximum="1" Value="0.5"></Slider>
+            <Slider Width="100" Name="MapOpacity" Minimum="0" Maximum="1" Value="1"></Slider>
             <Label  VerticalContentAlignment="Center">测量高度</Label>
             <Slider Width="100" Name="WallHeight" Minimum="100" Maximum="3000" Value="500"></Slider>
 
