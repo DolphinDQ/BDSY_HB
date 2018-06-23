@@ -24,6 +24,7 @@ namespace AirMonitor
             IFactory factory,
             ISaveManager saveManager,
             IDataManager dataManager,
+            IBackupManager backupManager,
             IEventAggregator eventAggregator,
             IResourceManager res)
         {
@@ -34,6 +35,7 @@ namespace AirMonitor
             eventAggregator.Subscribe(this);
             LogManager.GetLog = o => factory.Create<Caliburn.Micro.ILog>();
             dataManager.Init();
+            backupManager.Init();
             DisplayName = m_res.GetText("T_AppName") + " - " + AppVersion.VERSION;
         }
 
@@ -59,7 +61,6 @@ namespace AirMonitor
 #endif
             await HockeyClient.Current.SendCrashesAsync(true);
         }
-
 
         public override void TryClose(bool? dialogResult = null)
         {

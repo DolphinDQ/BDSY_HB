@@ -26,7 +26,7 @@ namespace AirMonitor
 
 
 
-        protected override  void Configure()
+        protected override void Configure()
         {
 
             container = new SimpleContainer();
@@ -39,6 +39,7 @@ namespace AirMonitor
             container.Singleton<IConfigManager, ConfigManager>();
             container.Singleton<IChartManager, ChartManager>();
             container.Singleton<ICameraManager, BVCUCameraManager>();
+            container.Singleton<IBackupManager, BackupManager>();
             container.PerRequest<IShell, ShellViewModel>();
             container.PerRequest<IMapProvider, MapProvider>();
             container.RegisterInstance(typeof(IFactory), null, this);
@@ -52,10 +53,6 @@ namespace AirMonitor
             container.PerRequest<Map3DViewModel>();
             container.Singleton<SimulatorViewModel>();
             container.Singleton<SaveSampleViewModel>();
-
-
-          
-
         }
 
         protected override void OnUnhandledException(object sender, DispatcherUnhandledExceptionEventArgs e)
