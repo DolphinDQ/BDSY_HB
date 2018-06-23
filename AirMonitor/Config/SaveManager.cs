@@ -31,25 +31,44 @@ namespace AirMonitor.Config
             Provider = new FtpProvider(configManager.GetConfig<FtpSetting>());
             if (Directory.Exists(TempDir))
             {
-                Directory.Delete(TempDir,true);
+                Directory.Delete(TempDir, true);
             }
             Directory.CreateDirectory(TempDir);
         }
 
         public AirSamplesSave Load(string path)
         {
-            var json = File.ReadAllText(path);
-            if (!TryDeserialize<AirSamplesSave>(json, out var result))
+            var lines = File.ReadAllLines(path);
+            if (lines.Length == 1)
             {
-                if (TryDeserialize<EvtAirSample[]>(json, out var samples))
+                var json = lines[0];
+                if (!TryDeserialize<AirSamplesSave>(json, out var result))
                 {
-                    result = new AirSamplesSave()
+                    if (TryDeserialize<EvtAirSample[]>(json, out var samples))
                     {
-                        Samples = samples
-                    };
+                        result = new AirSamplesSave()
+                        {
+                            Samples = samples
+                        };
+                    }
                 }
+                return result;
             }
-            return result;
+            else
+            {
+                var list = new List<EvtAirSample>();
+                foreach (var item in lines)
+                {
+                    if (TryDeserialize<EvtAirSample>(item, out var sample))
+                    {
+                        list.Add(sample);
+                    }
+                }
+                return new AirSamplesSave()
+                {
+                    Samples = list.ToArray()
+                };
+            }
         }
 
         private bool TryDeserialize<T>(string json, out T result)

@@ -24,10 +24,12 @@ namespace AirMonitor.Core
         private CancellationTokenSource Source { get; set; }
         private BlockingCollection<EvtAirSample> Queue { get; }
         private IEventAggregator m_eventAggregator;
+        private ISaveManager m_saveManager;
 
-        public BackupManager(IEventAggregator eventAggregator)
+        public BackupManager(IEventAggregator eventAggregator, ISaveManager saveManager)
         {
             m_eventAggregator = eventAggregator;
+            m_saveManager = saveManager;
             CacheDir = "cache\\";
             CacheDays = 5;
             Queue = new BlockingCollection<EvtAirSample>(new ConcurrentQueue<EvtAirSample>());
@@ -97,16 +99,22 @@ namespace AirMonitor.Core
                     var path = CacheFilePath;
                     if (path == null) continue;
                     if (DateTime.Now - message.RecordTime > TimeSpan.FromSeconds(10)) continue;//模拟数据。
-                    File.AppendAllText(path, JsonConvert.SerializeObject(message));
+                    File.AppendAllLines(path, new[] { JsonConvert.SerializeObject(message) });
                 }
             } while (!Source.IsCancellationRequested);
         }
 
-        public void Handle(EvtSampling message)
+        private async Task OnSaveToCloud(string path)
+        {
+            await m_saveManager.SaveToCloud(path, m_saveManager.Load(path), CloudRoot.Personal);
+        }
+
+        public async void Handle(EvtSampling message)
         {
             switch (message.Status)
             {
                 case SamplingStatus.Stop:
+                    await OnSaveToCloud(CacheFilePath);
                     CacheFilePath = null;
                     break;
                 case SamplingStatus.Start:
