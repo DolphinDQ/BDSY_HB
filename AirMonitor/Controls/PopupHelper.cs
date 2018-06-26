@@ -80,7 +80,10 @@ namespace AirMonitor.Controls
                     {
                         item.IsOpen = false;
                         await Task.Delay(500);
-                        item.IsOpen = true;
+                        if (window.WindowState != WindowState.Minimized)
+                        {
+                            item.IsOpen = true;
+                        }
                     }
                 }
             }
