@@ -7,7 +7,7 @@
              xmlns:oxy="clr-namespace:OxyPlot.Wpf;assembly=OxyPlot.Wpf" 
              xmlns:controls="http://metro.mahapps.com/winfx/xaml/controls"
              mc:Ignorable="d" 
-             xmlns:form="clr-namespace:System.Windows.Forms;assembly=System.Windows.Forms"
+             xmlns:cal="http://www.caliburnproject.org"
              d:DesignHeight="800" d:DesignWidth="350">
 
     <DockPanel IsEnabled="{Binding DataManager.IsConnected}">
@@ -29,11 +29,17 @@
         <Border DockPanel.Dock="Top">
             <StackPanel>
                 <DockPanel>
-                    <Button Name="CloseVideo" 
-                            DockPanel.Dock="Right" 
-                            Height="Auto" 
-                            VerticalAlignment="Bottom" 
-                            Visibility="{Binding ShowVideo,Converter={StaticResource IsVisible}}" Content="{StaticResource T_CloseVideo}"></Button>
+                    <DockPanel.Resources>
+                        <Style x:Key="VideoButton" TargetType="Button" BasedOn="{StaticResource MetroButton}">
+                            <Setter Property="DockPanel.Dock" Value="Right"/>
+                            <Setter Property="Height" Value="Auto"/>
+                            <Setter Property="VerticalAlignment" Value="Bottom"/>
+                            <Setter Property="Margin" Value="0 0 3 0"/>
+                            <Setter Property="Visibility" Value="{Binding VideoModel,Converter={StaticResource AnyVisiable}}" />
+                        </Style>
+                    </DockPanel.Resources>
+                    <Button Name="CloseVideo" Style="{StaticResource VideoButton}" Content="{StaticResource T_CloseVideo}"></Button>
+                    <Button Name="OpenVideoDialog" Style="{StaticResource VideoButton}" Content="{StaticResource T_OpenVideoDialog}"></Button>
                     <Label Style="{StaticResource Lbl_Title}" Content="{StaticResource T_UavStatus}"></Label>
                 </DockPanel>
                 <Grid Name="UavStatusPanel">
@@ -69,14 +75,7 @@
                         <Label Content="{Binding NewestData.RelativeHeight,Converter={StaticResource Round}}"></Label>
                         <!--<Label Content="{StaticResource T_RelativeAltitude}"></Label>-->
                     </UniformGrid>
-                    <WindowsFormsHost Name="CameraHost"  
-                                  Visibility="{Binding ShowVideo,Converter={StaticResource IsVisible}}"
-                                  Width="{Binding ElementName=UavStatusPanel,Path=ActualWidth}"
-                                  Height="{Binding ElementName=UavStatusPanel,Path=ActualHeight}"
-                                  Tag="{Binding CameraPanel ,Mode=OneWayToSource}"
-                                  HorizontalAlignment="Right" VerticalAlignment="Top" >
-                        <form:Panel x:Name="CameraView"  BorderStyle="FixedSingle" BackColor="black"/>
-                    </WindowsFormsHost>
+                    <ContentControl Visibility="{Binding VideoModel,Converter={StaticResource AnyVisiable}}" cal:View.Model="{Binding VideoModel}"/>
                 </Grid>
             </StackPanel>
         </Border>

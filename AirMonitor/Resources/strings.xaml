@@ -19,6 +19,7 @@
     <sys:String x:Key="T_VideoServiceStatus">视频服务</sys:String>
     <sys:String x:Key="T_OpenVideo">打开视频</sys:String>
     <sys:String x:Key="T_CloseVideo">关闭视频</sys:String>
+    <sys:String x:Key="T_OpenVideoDialog">窗口化</sys:String>
     <sys:String x:Key="T_Normal">正常</sys:String>
     <sys:String x:Key="T_DataDisplay">显示数据</sys:String>
     <sys:String x:Key="T_Visualization">可视化数据显示</sys:String>

@@ -214,6 +214,7 @@
     <Compile Include="ViewModels\AnalysisStaticViewModel.cs" />
     <Compile Include="ViewModels\SaveSampleViewModel.cs" />
     <Compile Include="ViewModels\SimulatorViewModel.cs" />
+    <Compile Include="ViewModels\VideoViewModel.cs" />
     <Compile Include="Views\AnalysisDynamicView.xaml.cs">
       <DependentUpon>AnalysisDynamicView.xaml</DependentUpon>
     </Compile>
@@ -243,6 +244,9 @@
     </Compile>
     <Compile Include="Views\SimulatorView.xaml.cs">
       <DependentUpon>SimulatorView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\VideoView.xaml.cs">
+      <DependentUpon>VideoView.xaml</DependentUpon>
     </Compile>
     <Page Include="Controls\Map3D.xaml">
       <SubType>Designer</SubType>
@@ -297,6 +301,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\SimulatorView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\VideoView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

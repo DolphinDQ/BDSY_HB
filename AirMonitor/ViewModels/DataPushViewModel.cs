@@ -83,6 +83,8 @@ namespace AirMonitor.ViewModels
         private IEventAggregator m_eventAggregator;
 
         private IResourceManager m_res;
+        private IFactory m_factory;
+        private IWindowManager m_windowManager;
 
         public IDataManager DataManager { get; }
         public ICameraManager CameraManager { get; }
@@ -90,15 +92,15 @@ namespace AirMonitor.ViewModels
 
         public bool EnableSampling { get; set; }
 
+        public Screen VideoModel { get; set; }
+
         public double CorrectAltitude { get; set; }
         /// <summary>
         /// 数据名称列表，是采样数据的名称列表。
         /// </summary>
         public List<Tuple<string, string>> DataNameList { get; set; }
 
-        public object CameraPanel { get; set; }
 
-        public bool ShowVideo { get; set; }
 
         #region Sample list
         public SampleChart Temperature => Plots[nameof(EvtAirSample.temp)];
@@ -120,9 +122,11 @@ namespace AirMonitor.ViewModels
         #endregion
 
         public DataPushViewModel(
+            IWindowManager windowManager,
             IEventAggregator eventAggregator,
             IChartManager chartManager,
             IConfigManager configManager,
+            IFactory factory,
             ICameraManager cameraManager,
             IDataManager data,
             IResourceManager res)
@@ -130,6 +134,8 @@ namespace AirMonitor.ViewModels
             eventAggregator.Subscribe(this);
             m_eventAggregator = eventAggregator;
             m_res = res;
+            m_factory = factory;
+            m_windowManager = windowManager;
             DataManager = data;
             m_configManager = configManager;
             CameraManager = cameraManager;
@@ -223,19 +229,22 @@ namespace AirMonitor.ViewModels
 
         public void OpenVideo()
         {
-            ShowVideo = true;
-            if (CameraPanel != null)
+            if (VideoModel != null)
             {
-                CameraManager.OpenVideo(CameraPanel);
+                VideoModel.TryClose();
+            }
+            else
+            {
+                VideoModel = m_factory.Create<VideoViewModel>();
             }
         }
 
         public void CloseVideo()
         {
-            ShowVideo = false;
-            if (CameraPanel != null)
+            if (VideoModel != null)
             {
-                CameraManager.CloseVideo(CameraPanel);
+                VideoModel.TryClose();
+                VideoModel = null;
             }
         }
 
@@ -255,6 +264,20 @@ namespace AirMonitor.ViewModels
                 ClearChart(RelativeHeight);
             }
         }
+
+        public void OpenVideoDialog()
+        {
+            if (VideoModel != null)
+            {
+                var view = VideoModel;
+                var dir = new Dictionary<string, object>();
+                //dir.Add("WindowState", 2);
+                //dir.Add("Width", 1280);
+                //dir.Add("Heght", 720);
+                m_windowManager.ShowWindow(view, null, dir);
+            }
+        }
+
 
         private void ClearChart(SampleChart chart) => OnUIThread(() => chart.Collection.Clear());
 

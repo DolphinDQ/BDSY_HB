@@ -91,7 +91,7 @@
             </DockPanel>
         </Border>
         <Border DockPanel.Dock="Bottom">
-            <StackPanel Orientation="Horizontal">
+            <StackPanel Orientation="Horizontal" Margin="3">
                 <StackPanel.Resources>
                     <Style TargetType="Button" BasedOn="{StaticResource MetroButton}">
                         <Setter Property="Margin" Value="2 0 0 0"/>
@@ -113,104 +113,44 @@
                 </StackPanel.Resources>
                 <Label Content="{StaticResource T_MapDisplay}"></Label>
                 <ComboBox ItemsSource="{Binding MapGridOptions.pollutants}" SelectedItem="{Binding MapGridOptions.pollutant}" DisplayMemberPath="DisplayName" SelectedValuePath="Name" />
-                <!--<Label Content="{StaticResource T_MinValue}"></Label>
-                <control:NumericUpDown Value="{Binding MapGridOptions.pollutant.MinValue}"/>
-                <Label Content="{StaticResource T_MaxValue}"></Label>
-                <control:NumericUpDown Value="{Binding MapGridOptions.pollutant.MaxValue}"/>-->
                 <Label Content="{StaticResource T_SideLength}"></Label>
                 <control:NumericUpDown Value="{Binding MapGridOptions.sideLength}" Minimum="5"/>
                 <Label Content="透明度"></Label>
                 <control:NumericUpDown Value="{Binding MapGridOptions.opacity}" Maximum="1" Minimum="0" Interval="0.1"/>
                 <Button Name="RefreshBlock" Content="{StaticResource T_RefreshBlock}"></Button>
-                <!--<ToggleButton IsChecked="{Binding IsUavFocus}" Content="{StaticResource T_UavFocus}"></ToggleButton>-->
-                <!--<ToggleButton IsChecked="{Binding ShowUavPath}" Content="{StaticResource T_UavPath}"></ToggleButton>-->
-                <!--<Button Name="UavLocation" Content="{StaticResource T_UavLocation}"></Button>-->
-                <!--<Button Name="RefreshMap" Content="{StaticResource T_RefreshMap}"></Button>-->
-                <!--<Button Name="Test" >测试</Button>
-                <Button Name="OpenVideo" >打开视频</Button>-->
-            </StackPanel>
+               </StackPanel>
         </Border>
-        <Border DockPanel.Dock="Left">
-            <Grid Margin="5">
-                <!--<Grid.Resources>
-                    <Style TargetType="Label" BasedOn="{StaticResource MetroLabel}">
-                        <Setter Property="HorizontalContentAlignment" Value="Right"/>
-                        <Setter Property="VerticalContentAlignment" Value="Bottom"/>
-                        <Setter Property="Margin" Value="0"/>
-                        <Setter Property="Padding" Value="2"/>
-                        <Setter Property="BorderBrush" Value="Gray"/>
-                        <Setter Property="BorderThickness" Value="0 0 0 1"/>
+        <Border DockPanel.Dock="Left" >
+            <ListView Margin="5" Width="40" ItemsSource="{Binding MapGridOptions.pollutant.Levels}" >
+                <ListView.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <UniformGrid Columns="1"/>
+                    </ItemsPanelTemplate>
+                </ListView.ItemsPanel>
+                <ListBox.ItemContainerStyle>
+                    <Style TargetType="ListViewItem">
+                        <Setter Property="Template">
+                            <Setter.Value>
+                                <ControlTemplate>
+                                    <Border BorderBrush="LightGray" BorderThickness="0 0 0 1">
+                                        <Border.Background>
+                                            <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0" Opacity="{Binding MapGridOptions.opacity}">
+                                                <GradientStop Color="{Binding MinColor}" Offset="0"/>
+                                                <GradientStop Color="{Binding MaxColor}" Offset="1"/>
+                                            </LinearGradientBrush>
+                                        </Border.Background>
+                                        <Grid>
+                                            <Label Foreground="Black" VerticalAlignment="Top" Content="{Binding MinValue,Converter={StaticResource Round}}"/>
+                                            <!--<Label Foreground="White" VerticalAlignment="Center" HorizontalAlignment="Center" Content="{Binding Name}"/>-->
+                                            <Label Foreground="White" VerticalAlignment="Bottom" Content="{Binding MaxValue,Converter={StaticResource Round}}"/>
+                                        </Grid>
+                                    </Border>
+                                </ControlTemplate>
+                            </Setter.Value>
+                        </Setter>
                     </Style>
-                </Grid.Resources>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="40"/>
-                    <ColumnDefinition Width="10"/>
-                </Grid.ColumnDefinitions>
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="30"/>
-                    <RowDefinition Height="1*"/>
-                    <RowDefinition Height="1*"/>
-                    <RowDefinition Height="1*"/>
-                    <RowDefinition Height="1*"/>
-                    <RowDefinition Height="1*"/>
-                    <RowDefinition Height="30"/>
-                </Grid.RowDefinitions>-->
-                <!--<Rectangle Grid.Row="1" Grid.RowSpan="5" Opacity="{Binding MapGridOptions.opacity}" >
-                    <Rectangle.Fill>
-                        <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0" >
-                            <GradientStop Color="{Binding MapGridOptions.colorEnd}" Offset="0"/>
-                            <GradientStop Color="{Binding MapGridOptions.colorBegin}" Offset="1"/>
-                        </LinearGradientBrush>
-                    </Rectangle.Fill>
-                </Rectangle>-->
-                <ListView Width="40" ItemsSource="{Binding MapGridOptions.pollutant.Levels}" >
-                    <!--<ListView.Background>
-                        <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0" Opacity="{Binding MapGridOptions.opacity}">
-                            <GradientStop Color="{Binding MapGridOptions.colorEnd}" Offset="0"/>
-                            <GradientStop Color="{Binding MapGridOptions.colorBegin}" Offset="1"/>
-                        </LinearGradientBrush>
-                    </ListView.Background>-->
-                    <!--<ListView.ItemTemplate>
-                        <ItemContainerTemplate>
-                            
-                        </ItemContainerTemplate>
-                    </ListView.ItemTemplate>-->
-                    <ListView.ItemsPanel>
-                        <ItemsPanelTemplate>
-                            <UniformGrid Columns="1"/>
-                        </ItemsPanelTemplate>
-                    </ListView.ItemsPanel>
-                    <ListBox.ItemContainerStyle>
-                        <Style TargetType="ListViewItem">
-                            <Setter Property="Template">
-                                <Setter.Value>
-                                    <ControlTemplate>
-                                        <Border BorderBrush="LightGray" BorderThickness="0 0 0 1">
-                                            <Border.Background>
-                                                <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0" Opacity="{Binding MapGridOptions.opacity}">
-                                                    <GradientStop Color="{Binding MinColor}" Offset="0"/>
-                                                    <GradientStop Color="{Binding MaxColor}" Offset="1"/>
-                                                </LinearGradientBrush>
-                                            </Border.Background>
-                                            <Grid>
-                                                <Label Foreground="Black" VerticalAlignment="Top" Content="{Binding MinValue,Converter={StaticResource Round}}"/>
-                                                <!--<Label Foreground="White" VerticalAlignment="Center" HorizontalAlignment="Center" Content="{Binding Name}"/>-->
-                                                <Label Foreground="White" VerticalAlignment="Bottom" Content="{Binding MaxValue,Converter={StaticResource Round}}"/>
-                                            </Grid>
-                                        </Border>
-                                    </ControlTemplate>
-                                </Setter.Value>
-                            </Setter>
-                        </Style>
-                    </ListBox.ItemContainerStyle>
-                </ListView>
-                <!--<Label Grid.ColumnSpan="2" Grid.Row="0" Content="{Binding MapGridOptions.ValueStep[5],Converter={StaticResource Round}}"/>
-                <Label Grid.ColumnSpan="2" Grid.Row="1" Content="{Binding MapGridOptions.ValueStep[4],Converter={StaticResource Round}}"/>
-                <Label Grid.ColumnSpan="2" Grid.Row="2" Content="{Binding MapGridOptions.ValueStep[3],Converter={StaticResource Round}}"/>
-                <Label Grid.ColumnSpan="2" Grid.Row="3" Content="{Binding MapGridOptions.ValueStep[2],Converter={StaticResource Round}}"/>
-                <Label Grid.ColumnSpan="2" Grid.Row="4" Content="{Binding MapGridOptions.ValueStep[1],Converter={StaticResource Round}}"/>
-                <Label Grid.ColumnSpan="2" Grid.Row="5" Content="{Binding MapGridOptions.ValueStep[0],Converter={StaticResource Round}}"/>-->
-            </Grid>
+                </ListBox.ItemContainerStyle>
+            </ListView>
         </Border>
         <Border>
             <Grid>

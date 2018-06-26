@@ -16,15 +16,14 @@ using System.Windows.Shapes;
 namespace AirMonitor.Views
 {
     /// <summary>
-    /// DataDisplayViewer.xaml 的交互逻辑
+    /// VideoView.xaml 的交互逻辑
     /// </summary>
-    public partial class DataPushView : UserControl
+    public partial class VideoView : UserControl
     {
-        public DataPushView()
+        public VideoView()
         {
             InitializeComponent();
+            CameraHost.Tag = CameraView;
         }
-
-
     }
 }

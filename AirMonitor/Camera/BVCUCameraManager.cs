@@ -224,6 +224,7 @@ namespace AirMonitor.Camera
         {
             if (winPanel is Control control)
             {
+                if (m_dialogs.ContainsKey(control.Handle)) return;
                 if (channel == null && m_devices != null && m_devices.Any())
                 {
                     var camera = m_devices.FirstOrDefault(o => o.Id == Setting.CameraId);
