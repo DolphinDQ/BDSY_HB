@@ -1,4 +1,4 @@
-namespace AirMonitor
+﻿namespace AirMonitor
 {
     using System;
     using System.Collections.Generic;
@@ -8,7 +8,6 @@ namespace AirMonitor
     using AirMonitor.Chart;
     using AirMonitor.Config;
     using AirMonitor.Core;
-    using AirMonitor.Data;
     using AirMonitor.Interfaces;
     using AirMonitor.Map;
     using AirMonitor.ViewModels;
@@ -32,24 +31,13 @@ namespace AirMonitor
             container.Singleton<IResourceManager, ResourceProvider>();
             container.Singleton<Caliburn.Micro.ILog, Logger>();
             container.Singleton<ISaveManager, SaveManager>();
-            container.Singleton<IDataManager, MqttDataManager>();
             container.Singleton<IConfigManager, ConfigManager>();
             container.Singleton<IChartManager, ChartManager>();
-            container.Singleton<ICameraManager, BVCUCameraManager>();
-            container.Singleton<IBackupManager, BackupManager>();
             container.PerRequest<IShell, ShellViewModel>();
             container.PerRequest<IMapProvider, MapProvider>();
             container.RegisterInstance(typeof(IFactory), null, this);
-            container.PerRequest<DataPushViewModel>();
             container.PerRequest<MapViewModel>();
-            container.PerRequest<ConfigAirPollutantViewModel>();
-            container.PerRequest<AnalysisStaticViewModel>();
-            container.PerRequest<AnalysisDynamicViewModel>();
-            container.PerRequest<ConfigPushServerViewModel>();
-            container.PerRequest<ConfigCameraViewModel>();
-            container.PerRequest<Map3DViewModel>();
-            container.Singleton<SimulatorViewModel>();
-            container.Singleton<SaveSampleViewModel>();
+
         }
 
         protected override void OnUnhandledException(object sender, DispatcherUnhandledExceptionEventArgs e)

@@ -6,13 +6,14 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{F1064E60-674D-4495-8253-5567A770290E}</ProjectGuid>
     <OutputType>WinExe</OutputType>
-    <RootNamespace>AirDetector</RootNamespace>
+    <RootNamespace>AirMonitor</RootNamespace>
     <AssemblyName>AirDetector</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <WarningLevel>4</WarningLevel>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <HockeyAppResourceId>62a7026e610a4bb989f4bce56d884a23</HockeyAppResourceId>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -36,6 +37,8 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Core" />
@@ -45,29 +48,303 @@
     <Reference Include="System.Xaml">
       <RequiredTargetFramework>4.0</RequiredTargetFramework>
     </Reference>
+    <Reference Include="UIAutomationProvider" />
     <Reference Include="WindowsBase" />
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
+    <Reference Include="WindowsFormsIntegration" />
   </ItemGroup>
   <ItemGroup>
     <ApplicationDefinition Include="App.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Page Include="MainWindow.xaml">
+    <Compile Include="..\AirMonitor\Controls\PopupHelper.cs">
+      <Link>Controls\PopupHelper.cs</Link>
+    </Compile>
+    <Compile Include="..\AirMonitor\Converter\AirLevelToGradientConverter.cs">
+      <Link>Converter\AirLevelToGradientConverter.cs</Link>
+    </Compile>
+    <Compile Include="..\AirMonitor\Converter\AnyVisiableConverter.cs">
+      <Link>Converter\AnyVisiableConverter.cs</Link>
+    </Compile>
+    <Compile Include="..\AirMonitor\Converter\IsConnectConvert.cs">
+      <Link>Converter\IsConnectConvert.cs</Link>
+    </Compile>
+    <Compile Include="..\AirMonitor\Converter\IsHiddenConverter.cs">
+      <Link>Converter\IsHiddenConverter.cs</Link>
+    </Compile>
+    <Compile Include="..\AirMonitor\Converter\IsNullConverter.cs">
+      <Link>Converter\IsNullConverter.cs</Link>
+    </Compile>
+    <Compile Include="..\AirMonitor\Converter\IsVisibleConverter.cs">
+      <Link>Converter\IsVisibleConverter.cs</Link>
+    </Compile>
+    <Compile Include="..\AirMonitor\Converter\MultipleConverter.cs">
+      <Link>Converter\MultipleConverter.cs</Link>
+    </Compile>
+    <Compile Include="..\AirMonitor\Converter\NotConverter.cs">
+      <Link>Converter\NotConverter.cs</Link>
+    </Compile>
+    <Compile Include="..\AirMonitor\Converter\RoundConverter.cs">
+      <Link>Converter\RoundConverter.cs</Link>
+    </Compile>
+    <Compile Include="..\AirMonitor\Converter\WarningConverter.cs">
+      <Link>Converter\WarningConverter.cs</Link>
+    </Compile>
+    <Compile Include="AppBootstrapper.cs" />
+    <Compile Include="ShellView.xaml.cs">
+      <DependentUpon>ShellView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="ShellViewModel.cs" />
+    <Compile Include="ViewModels\MapViewModel.cs" />
+    <Compile Include="Views\MapView.xaml.cs">
+      <DependentUpon>MapView.xaml</DependentUpon>
+    </Compile>
+    <Page Include="..\AirMonitor\Controls\Map3D.xaml">
+      <Link>Controls\Map3D.xaml</Link>
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Page Include="..\AirMonitor\Resources\NamedStyles.xaml">
+      <Link>Resources\NamedStyles.xaml</Link>
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="..\AirMonitor\Resources\strings.xaml">
+      <Link>Resources\strings.xaml</Link>
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Compile Include="..\AirMonitor\Camera\CameraDevice.cs">
+      <Link>Camera\CameraDevice.cs</Link>
+    </Compile>
+    <Compile Include="..\AirMonitor\Camera\CameraError.cs">
+      <Link>Camera\CameraError.cs</Link>
+    </Compile>
+    <Compile Include="..\AirMonitor\Camera\VideoChannel.cs">
+      <Link>Camera\VideoChannel.cs</Link>
+    </Compile>
+    <Compile Include="..\AirMonitor\Chart\ChartManager.cs">
+      <Link>Chart\ChartManager.cs</Link>
+    </Compile>
+    <Compile Include="..\AirMonitor\Chart\ChartOptions.cs">
+      <Link>Chart\ChartOptions.cs</Link>
+    </Compile>
+    <Compile Include="..\AirMonitor\Chart\LinerOptions.cs">
+      <Link>Chart\LinerOptions.cs</Link>
+    </Compile>
+    <Compile Include="..\AirMonitor\Chart\ScatterData.cs">
+      <Link>Chart\ScatterData.cs</Link>
+    </Compile>
+    <Compile Include="..\AirMonitor\Chart\ScatterOptions.cs">
+      <Link>Chart\ScatterOptions.cs</Link>
+    </Compile>
+    <Compile Include="..\AirMonitor\Chart\ScatterSelectManipulator.cs">
+      <Link>Chart\ScatterSelectManipulator.cs</Link>
+    </Compile>
+    <Compile Include="..\AirMonitor\Config\AirPollutant.cs">
+      <Link>Config\AirPollutant.cs</Link>
+    </Compile>
+    <Compile Include="..\AirMonitor\Config\AirPollutantLevel.cs">
+      <Link>Config\AirPollutantLevel.cs</Link>
+    </Compile>
+    <Compile Include="..\AirMonitor\Config\AirSamplesSave.cs">
+      <Link>Config\AirSamplesSave.cs</Link>
+    </Compile>
+    <Compile Include="..\AirMonitor\Config\AirStandardSetting.cs">
+      <Link>Config\AirStandardSetting.cs</Link>
+    </Compile>
+    <Compile Include="..\AirMonitor\Config\CameraSetting.cs">
+      <Link>Config\CameraSetting.cs</Link>
+    </Compile>
+    <Compile Include="..\AirMonitor\Config\FtpProvider.cs">
+      <Link>Config\FtpProvider.cs</Link>
+    </Compile>
+    <Compile Include="..\AirMonitor\Config\FtpSetting.cs">
+      <Link>Config\FtpSetting.cs</Link>
+    </Compile>
+    <Compile Include="..\AirMonitor\Config\SaveManager.cs">
+      <Link>Config\SaveManager.cs</Link>
+    </Compile>
+    <Compile Include="..\AirMonitor\Controls\BlockMarker3D.cs">
+      <Link>Controls\BlockMarker3D.cs</Link>
+    </Compile>
+    <Compile Include="..\AirMonitor\Controls\Map3D.xaml.cs">
+      <Link>Controls\Map3D.xaml.cs</Link>
+      <DependentUpon>Map3D.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="..\AirMonitor\Controls\Map3DBound.cs">
+      <Link>Controls\Map3DBound.cs</Link>
+    </Compile>
+    <Compile Include="..\AirMonitor\Controls\Map3DPoint.cs">
+      <Link>Controls\Map3DPoint.cs</Link>
+    </Compile>
+    <Compile Include="..\AirMonitor\Controls\MapMarker3D.cs">
+      <Link>Controls\MapMarker3D.cs</Link>
+    </Compile>
+    <Compile Include="..\AirMonitor\Controls\Trackball3D.cs">
+      <Link>Controls\Trackball3D.cs</Link>
+    </Compile>
+    <Compile Include="..\AirMonitor\Controls\Trackball3DContext.cs">
+      <Link>Controls\Trackball3DContext.cs</Link>
+    </Compile>
+    <Compile Include="..\AirMonitor\Controls\UavMarker3D.cs">
+      <Link>Controls\UavMarker3D.cs</Link>
+    </Compile>
+    <Compile Include="..\AirMonitor\Core\Logger.cs">
+      <Link>Core\Logger.cs</Link>
+    </Compile>
+    <Compile Include="..\AirMonitor\Core\LoggerListener.cs">
+      <Link>Core\LoggerListener.cs</Link>
+    </Compile>
+    <Compile Include="..\AirMonitor\Core\ResourcesManager.cs">
+      <Link>Core\ResourcesManager.cs</Link>
+    </Compile>
+    <Compile Include="..\AirMonitor\Core\Utils.cs">
+      <Link>Core\Utils.cs</Link>
+    </Compile>
+    <Compile Include="..\AirMonitor\EventArgs\EvtAirSample.cs">
+      <Link>EventArgs\EvtAirSample.cs</Link>
+    </Compile>
+    <Compile Include="..\AirMonitor\EventArgs\EvtCameraConnect.cs">
+      <Link>EventArgs\EvtCameraConnect.cs</Link>
+    </Compile>
+    <Compile Include="..\AirMonitor\EventArgs\EvtCameraError.cs">
+      <Link>EventArgs\EvtCameraError.cs</Link>
+    </Compile>
+    <Compile Include="..\AirMonitor\EventArgs\EvtCameraGetDevices.cs">
+      <Link>EventArgs\EvtCameraGetDevices.cs</Link>
+    </Compile>
+    <Compile Include="..\AirMonitor\EventArgs\EvtChartScatterSelectChanged.cs">
+      <Link>EventArgs\EvtChartScatterSelectChanged.cs</Link>
+    </Compile>
+    <Compile Include="..\AirMonitor\EventArgs\EvtMapBlockChanged.cs">
+      <Link>EventArgs\EvtMapBlockChanged.cs</Link>
+    </Compile>
+    <Compile Include="..\AirMonitor\EventArgs\EvtMapBoundChanged.cs">
+      <Link>EventArgs\EvtMapBoundChanged.cs</Link>
+    </Compile>
+    <Compile Include="..\AirMonitor\EventArgs\EvtMapClearAnalysisArea.cs">
+      <Link>EventArgs\EvtMapClearAnalysisArea.cs</Link>
+    </Compile>
+    <Compile Include="..\AirMonitor\EventArgs\EvtMapClearAspect.cs">
+      <Link>EventArgs\EvtMapClearAspect.cs</Link>
+    </Compile>
+    <Compile Include="..\AirMonitor\EventArgs\EvtMapHorizontalAspect.cs">
+      <Link>EventArgs\EvtMapHorizontalAspect.cs</Link>
+    </Compile>
+    <Compile Include="..\AirMonitor\EventArgs\EvtMapLoad.cs">
+      <Link>EventArgs\EvtMapLoad.cs</Link>
+    </Compile>
+    <Compile Include="..\AirMonitor\EventArgs\EvtMapPointConverted.cs">
+      <Link>EventArgs\EvtMapPointConverted.cs</Link>
+    </Compile>
+    <Compile Include="..\AirMonitor\EventArgs\EvtMapSavePoints.cs">
+      <Link>EventArgs\EvtMapSavePoints.cs</Link>
+    </Compile>
+    <Compile Include="..\AirMonitor\EventArgs\EvtMapSelectAnalysisArea.cs">
+      <Link>EventArgs\EvtMapSelectAnalysisArea.cs</Link>
+    </Compile>
+    <Compile Include="..\AirMonitor\EventArgs\EvtMapUavChanged.cs">
+      <Link>EventArgs\EvtMapUavChanged.cs</Link>
+    </Compile>
+    <Compile Include="..\AirMonitor\EventArgs\EvtMapVerticalAspect.cs">
+      <Link>EventArgs\EvtMapVerticalAspect.cs</Link>
+    </Compile>
+    <Compile Include="..\AirMonitor\EventArgs\EvtSampleSaving.cs">
+      <Link>EventArgs\EvtSampleSaving.cs</Link>
+    </Compile>
+    <Compile Include="..\AirMonitor\EventArgs\EvtSampling.cs">
+      <Link>EventArgs\EvtSampling.cs</Link>
+    </Compile>
+    <Compile Include="..\AirMonitor\EventArgs\EvtSetting.cs">
+      <Link>EventArgs\EvtSetting.cs</Link>
+    </Compile>
+    <Compile Include="..\AirMonitor\Global.cs">
+      <Link>Global.cs</Link>
+    </Compile>
+    <Compile Include="..\AirMonitor\Interfaces\IBackupManager.cs">
+      <Link>Interfaces\IBackupManager.cs</Link>
+    </Compile>
+    <Compile Include="..\AirMonitor\Interfaces\ICameraManager.cs">
+      <Link>Interfaces\ICameraManager.cs</Link>
+    </Compile>
+    <Compile Include="..\AirMonitor\Interfaces\IChartManager.cs">
+      <Link>Interfaces\IChartManager.cs</Link>
+    </Compile>
+    <Compile Include="..\AirMonitor\Interfaces\IConfigManager.cs">
+      <Link>Interfaces\IConfigManager.cs</Link>
+    </Compile>
+    <Compile Include="..\AirMonitor\Interfaces\IDataManager.cs">
+      <Link>Interfaces\IDataManager.cs</Link>
+    </Compile>
+    <Compile Include="..\AirMonitor\Interfaces\IFactory.cs">
+      <Link>Interfaces\IFactory.cs</Link>
+    </Compile>
+    <Compile Include="..\AirMonitor\Interfaces\IMapProvider.cs">
+      <Link>Interfaces\IMapProvider.cs</Link>
+    </Compile>
+    <Compile Include="..\AirMonitor\Interfaces\IMapView.cs">
+      <Link>Interfaces\IMapView.cs</Link>
+    </Compile>
+    <Compile Include="..\AirMonitor\Interfaces\IResourceManager.cs">
+      <Link>Interfaces\IResourceManager.cs</Link>
+    </Compile>
+    <Compile Include="..\AirMonitor\Interfaces\ISaveManager.cs">
+      <Link>Interfaces\ISaveManager.cs</Link>
+    </Compile>
+    <Compile Include="..\AirMonitor\IShell.cs">
+      <Link>IShell.cs</Link>
+    </Compile>
+    <Compile Include="..\AirMonitor\Map\MapBlock.cs">
+      <Link>Map\MapBlock.cs</Link>
+    </Compile>
+    <Compile Include="..\AirMonitor\Map\MapBlockReport.cs">
+      <Link>Map\MapBlockReport.cs</Link>
+    </Compile>
+    <Compile Include="..\AirMonitor\Map\MapBound.cs">
+      <Link>Map\MapBound.cs</Link>
+    </Compile>
+    <Compile Include="..\AirMonitor\Map\MapEventHandler.cs">
+      <Link>Map\MapEventHandler.cs</Link>
+    </Compile>
+    <Compile Include="..\AirMonitor\Map\MapEvents.cs">
+      <Link>Map\MapEvents.cs</Link>
+    </Compile>
+    <Compile Include="..\AirMonitor\Map\MapEx.cs">
+      <Link>Map\MapEx.cs</Link>
+    </Compile>
+    <Compile Include="..\AirMonitor\Map\MapGridOptions.cs">
+      <Link>Map\MapGridOptions.cs</Link>
+    </Compile>
+    <Compile Include="..\AirMonitor\Map\MapPoint.cs">
+      <Link>Map\MapPoint.cs</Link>
+    </Compile>
+    <Compile Include="..\AirMonitor\Map\MapPointData.cs">
+      <Link>Map\MapPointData.cs</Link>
+    </Compile>
+    <Compile Include="..\AirMonitor\Map\MapProvider.cs">
+      <Link>Map\MapProvider.cs</Link>
+    </Compile>
+    <Compile Include="..\AirMonitor\Map\MapUav.cs">
+      <Link>Map\MapUav.cs</Link>
+    </Compile>
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="MainWindow.xaml.cs">
-      <DependentUpon>MainWindow.xaml</DependentUpon>
-      <SubType>Code</SubType>
-    </Compile>
+    <Page Include="ShellView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\MapView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Config\ConfigManager.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -93,5 +370,76 @@
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Caliburn.Micro.Start">
+      <Version>3.2.0</Version>
+    </PackageReference>
+    <PackageReference Include="FluentFTP">
+      <Version>19.2.2</Version>
+    </PackageReference>
+    <PackageReference Include="HockeySDK.WPF">
+      <Version>4.1.6</Version>
+    </PackageReference>
+    <PackageReference Include="MahApps.Metro">
+      <Version>1.6.5</Version>
+    </PackageReference>
+    <PackageReference Include="MQTTnet">
+      <Version>2.7.5</Version>
+    </PackageReference>
+    <PackageReference Include="Newtonsoft.Json">
+      <Version>11.0.2</Version>
+    </PackageReference>
+    <PackageReference Include="OxyPlot.Wpf">
+      <Version>1.0.0</Version>
+    </PackageReference>
+    <PackageReference Include="PropertyChanged.Fody">
+      <Version>2.5.7</Version>
+    </PackageReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="..\AirMonitor\Resources\Images\logo.png">
+      <Link>Resources\Images\logo.png</Link>
+    </Resource>
+    <Resource Include="..\AirMonitor\Resources\Images\map.png">
+      <Link>Resources\Images\map.png</Link>
+    </Resource>
+    <Resource Include="..\AirMonitor\Resources\Images\uav.png">
+      <Link>Resources\Images\uav.png</Link>
+    </Resource>
+  </ItemGroup>
+  <ItemGroup>
+    <TypeScriptCompile Include="..\AirMonitor\Map\map.ts">
+      <Link>Map\map.ts</Link>
+    </TypeScriptCompile>
+    <TypeScriptCompile Include="..\AirMonitor\Map\typing\index.d.ts">
+      <Link>Map\typing\index.d.ts</Link>
+    </TypeScriptCompile>
+    <TypeScriptCompile Include="..\AirMonitor\Map\typing\map.d.ts">
+      <Link>Map\typing\map.d.ts</Link>
+    </TypeScriptCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="..\AirMonitor\Map\jquery.min.js">
+      <Link>Map\jquery.min.js</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\AirMonitor\Map\map.html">
+      <Link>Map\map.html</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\AirMonitor\Map\map.js">
+      <Link>Map\map.js</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\AirMonitor\Map\map.old.html">
+      <Link>Map\map.old.html</Link>
+    </Content>
+    <Resource Include="FodyWeavers.xml" />
+    <Resource Include="..\AirMonitor\Map\marker.png">
+      <Link>Map\marker.png</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
+  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

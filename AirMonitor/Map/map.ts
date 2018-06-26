@@ -788,7 +788,6 @@ class BaiduMapProvider extends MapBase {
         }
     }
 
-
     /**无人机定位。 */
     private onUavLoaction(): any {
         if (this.uavList) {
@@ -835,100 +834,98 @@ class BaiduMapProvider extends MapBase {
             }
         })
     }
+
+    private onMapLoad(map) {
+        this.convertor = new BMap.Convertor();
+        this.analysisArea = new BaiduMapAnalysisArea(map, this);
+        map.centerAndZoom(new BMap.Point(113.140761, 23.033974), 17);  // 初始化地图,设置中心点坐标和地图级别
+        //添加地图类型控件
+        map.addControl(new BMap.MapTypeControl({
+            mapTypes: [
+                BMAP_NORMAL_MAP,
+                BMAP_HYBRID_MAP
+            ]
+        }));
+        //map.addControl(new BMap.ScaleControl());
+        //map.addControl(new BMap.NavigationControl());
+        map.addControl(new BMap.OverviewMapControl());
+        //map.addControl(new BMap.GeolocationControl());
+        map.enableScrollWheelZoom(true);     //开启鼠标滚轮缩放
+        var menu: ContextMenu = new BMap.ContextMenu();
+        var createItem = (name: MapMenuItems, func) => {
+            var i = new BMap.MenuItem(name, func);
+            i.name = name;
+            return i;
+        };
+        this.menuItems = [
+            //createItem(MapMenuItems.compare, o => this.onShowReport()),
+            createItem(MapMenuItems.refresh, o => this.onRefresh()),
+            false,
+            createItem(MapMenuItems.uavLocation, o => this.onUavLoaction()),
+            createItem(MapMenuItems.uavFollow, o => this.uavFollow = !this.uavFollow),
+            createItem(MapMenuItems.uavPath, o => this.uavPath = !this.uavPath),
+            false,
+            createItem(MapMenuItems.savePoints, o => this.onSaveSelectedBlocks()),
+            createItem(MapMenuItems.reports, o => this.onShowSelectedBlockReport()),
+            createItem(MapMenuItems.horizontal, o => this.onShowHorizontalAspect()),
+            createItem(MapMenuItems.vertical, o => this.onShowVerticalAspect()),
+            createItem(MapMenuItems.clear, o => this.onClearSelectedBlock()),
+            false,
+            createItem(MapMenuItems.selectAnalysisArea, o => this.analysisArea.enable()),
+            createItem(MapMenuItems.clearAnalysisArea, o => this.analysisArea.disable()),
+        ];
+        this.menuItems.forEach(o => o ? menu.addItem(o) : menu.addSeparator());
+        menu.addEventListener("open", o => this.onCheckContextMenu());
+        map.addContextMenu(menu);
+        new BaiduMapSelector(map, o => {
+            if (this.analysisArea.isEnabled() && !this.analysisArea.getBounds()) {
+                this.analysisArea.setBounds(o.bound);
+            } else {
+                this.blockGrid.blocks.forEach(b => {
+                    if (o.bound.containsPoint(b.context.center)) {
+                        if (o.event.shiftKey) {
+                            this.onSelectBlock(b, MapBlockSelectAction.focusUnselect);
+                        } else if (o.event.ctrlKey) {
+                            this.onSelectBlock(b, MapBlockSelectAction.focusSelect);
+                        } else {
+                            this.onSelectBlock(b);
+                        }
+                    }
+                })
+            }
+        });
+        this.map = map;
+        this.blockGrid = new MapGrid();
+        this.blockGrid.blocks = new Array<any>();
+        this.uavList = new Array<Uav>();
+        this.subscribe(MapEvents.load, true);
+        this.subscribe(MapEvents.clearAnalysisArea, true);
+        this.subscribe(MapEvents.clearAspect, true);
+        this.subscribe(MapEvents.horizontalAspect, true);
+        this.subscribe(MapEvents.pointConvert, true);
+        this.subscribe(MapEvents.savePoints, true);
+        this.subscribe(MapEvents.selectAnalysisArea, true);
+        this.subscribe(MapEvents.verticalAspect, true);
+        this.on(MapEvents.load);
+        var h = setInterval(() => {
+            var i = $("a[title='到百度地图查看此区域']");
+            var b = $("span[_cid='1']");
+            if (!i.hasClass("hide") || !b.hasClass("hide")) {
+                i.addClass("hide");
+                b.addClass("hide");
+            } else {
+                clearInterval(h);
+            }
+        }, 100);
+        map.addEventListener("moveend", o => this.onMapBoundChanged());
+        map.addEventListener("zoomend", o => this.onMapBoundChanged());
+    }
     /**
      * 初始化地图。
      * @param container 地图容器id
      */
     mapInit(container: string) {
-        this.loadJs("http://api.map.baidu.com/getscript?v=2.0&ak=TCgR2Y0IGMmPR4qteh4McpXzMyYpFrEx", e => {
-            // 百度地图API功能
-            var map = new BMap.Map(container);    // 创建Map实例
-            this.convertor = new BMap.Convertor();
-            this.analysisArea = new BaiduMapAnalysisArea(map, this);
-            map.centerAndZoom(new BMap.Point(113.140761, 23.033974), 17);  // 初始化地图,设置中心点坐标和地图级别
-            //添加地图类型控件
-            map.addControl(new BMap.MapTypeControl({
-                mapTypes: [
-                    BMAP_NORMAL_MAP,
-                    BMAP_HYBRID_MAP
-                ]
-            }));
-            //map.addControl(new BMap.ScaleControl());
-            //map.addControl(new BMap.NavigationControl());
-            map.addControl(new BMap.OverviewMapControl());
-            //map.addControl(new BMap.GeolocationControl());
-            map.enableScrollWheelZoom(true);     //开启鼠标滚轮缩放
-            var menu: ContextMenu = new BMap.ContextMenu();
-            var createItem = (name: MapMenuItems, func) => {
-                var i = new BMap.MenuItem(name, func);
-                i.name = name;
-                return i;
-            };
-            this.menuItems = [
-                //createItem(MapMenuItems.compare, o => this.onShowReport()),
-                createItem(MapMenuItems.refresh, o => this.onRefresh()),
-                false,
-                createItem(MapMenuItems.uavLocation, o => this.onUavLoaction()),
-                createItem(MapMenuItems.uavFollow, o => this.uavFollow = !this.uavFollow),
-                createItem(MapMenuItems.uavPath, o => this.uavPath = !this.uavPath),
-                false,
-                createItem(MapMenuItems.selectAnalysisArea, o => this.analysisArea.enable()),
-                createItem(MapMenuItems.clearAnalysisArea, o => this.analysisArea.disable()),
-                false,
-                createItem(MapMenuItems.savePoints, o => this.onSaveSelectedBlocks()),
-                createItem(MapMenuItems.reports, o => this.onShowSelectedBlockReport()),
-                createItem(MapMenuItems.horizontal, o => this.onShowHorizontalAspect()),
-                createItem(MapMenuItems.vertical, o => this.onShowVerticalAspect()),
-                createItem(MapMenuItems.clear, o => this.onClearSelectedBlock())
-            ];
-
-            this.menuItems.forEach(o => o ? menu.addItem(o) : menu.addSeparator());
-            menu.addEventListener("open", o => this.onCheckContextMenu());
-            map.addContextMenu(menu);
-            new BaiduMapSelector(map, o => {
-                if (this.analysisArea.isEnabled() && !this.analysisArea.getBounds()) {
-                    this.analysisArea.setBounds(o.bound);
-                } else {
-                    this.blockGrid.blocks.forEach(b => {
-                        if (o.bound.containsPoint(b.context.center)) {
-                            if (o.event.shiftKey) {
-                                this.onSelectBlock(b, MapBlockSelectAction.focusUnselect);
-                            } else if (o.event.ctrlKey) {
-                                this.onSelectBlock(b, MapBlockSelectAction.focusSelect);
-                            } else {
-                                this.onSelectBlock(b);
-                            }
-                        }
-                    })
-                }
-            });
-            this.map = map;
-            this.blockGrid = new MapGrid();
-            this.blockGrid.blocks = new Array<any>();
-            this.uavList = new Array<Uav>();
-            this.subscribe(MapEvents.load, true);
-            this.subscribe(MapEvents.clearAnalysisArea, true);
-            this.subscribe(MapEvents.clearAspect, true);
-            this.subscribe(MapEvents.horizontalAspect, true);
-            this.subscribe(MapEvents.pointConvert, true);
-            this.subscribe(MapEvents.savePoints, true);
-            this.subscribe(MapEvents.selectAnalysisArea, true);
-            this.subscribe(MapEvents.verticalAspect, true);
-            this.on(MapEvents.load);
-            var h = setInterval(() => {
-                var i = $("a[title='到百度地图查看此区域']");
-                var b = $("span[_cid='1']");
-                if (!i.hasClass("hide") || !b.hasClass("hide")) {
-                    i.addClass("hide");
-                    b.addClass("hide");
-                } else {
-                    clearInterval(h);
-                }
-            }, 100);
-            map.addEventListener("moveend", o => this.onMapBoundChanged());
-            map.addEventListener("zoomend", o => this.onMapBoundChanged());
-
-        });
+        this.loadJs("http://api.map.baidu.com/getscript?v=2.0&ak=TCgR2Y0IGMmPR4qteh4McpXzMyYpFrEx", () => this.onMapLoad(new BMap.Map(container)));
     }
     /**
      * 地图坐标转换。转换完成的点会以pointConvert事件回调。

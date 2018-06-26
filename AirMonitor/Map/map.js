@@ -817,103 +817,103 @@ var BaiduMapProvider = /** @class */ (function (_super) {
             };
         });
     };
+    BaiduMapProvider.prototype.onMapLoad = function (map) {
+        var _this = this;
+        this.convertor = new BMap.Convertor();
+        this.analysisArea = new BaiduMapAnalysisArea(map, this);
+        map.centerAndZoom(new BMap.Point(113.140761, 23.033974), 17); // 初始化地图,设置中心点坐标和地图级别
+        //添加地图类型控件
+        map.addControl(new BMap.MapTypeControl({
+            mapTypes: [
+                BMAP_NORMAL_MAP,
+                BMAP_HYBRID_MAP
+            ]
+        }));
+        //map.addControl(new BMap.ScaleControl());
+        //map.addControl(new BMap.NavigationControl());
+        map.addControl(new BMap.OverviewMapControl());
+        //map.addControl(new BMap.GeolocationControl());
+        map.enableScrollWheelZoom(true); //开启鼠标滚轮缩放
+        var menu = new BMap.ContextMenu();
+        var createItem = function (name, func) {
+            var i = new BMap.MenuItem(name, func);
+            i.name = name;
+            return i;
+        };
+        this.menuItems = [
+            //createItem(MapMenuItems.compare, o => this.onShowReport()),
+            createItem(MapMenuItems.refresh, function (o) { return _this.onRefresh(); }),
+            false,
+            createItem(MapMenuItems.uavLocation, function (o) { return _this.onUavLoaction(); }),
+            createItem(MapMenuItems.uavFollow, function (o) { return _this.uavFollow = !_this.uavFollow; }),
+            createItem(MapMenuItems.uavPath, function (o) { return _this.uavPath = !_this.uavPath; }),
+            false,
+            createItem(MapMenuItems.savePoints, function (o) { return _this.onSaveSelectedBlocks(); }),
+            createItem(MapMenuItems.reports, function (o) { return _this.onShowSelectedBlockReport(); }),
+            createItem(MapMenuItems.horizontal, function (o) { return _this.onShowHorizontalAspect(); }),
+            createItem(MapMenuItems.vertical, function (o) { return _this.onShowVerticalAspect(); }),
+            createItem(MapMenuItems.clear, function (o) { return _this.onClearSelectedBlock(); }),
+            false,
+            createItem(MapMenuItems.selectAnalysisArea, function (o) { return _this.analysisArea.enable(); }),
+            createItem(MapMenuItems.clearAnalysisArea, function (o) { return _this.analysisArea.disable(); }),
+        ];
+        this.menuItems.forEach(function (o) { return o ? menu.addItem(o) : menu.addSeparator(); });
+        menu.addEventListener("open", function (o) { return _this.onCheckContextMenu(); });
+        map.addContextMenu(menu);
+        new BaiduMapSelector(map, function (o) {
+            if (_this.analysisArea.isEnabled() && !_this.analysisArea.getBounds()) {
+                _this.analysisArea.setBounds(o.bound);
+            }
+            else {
+                _this.blockGrid.blocks.forEach(function (b) {
+                    if (o.bound.containsPoint(b.context.center)) {
+                        if (o.event.shiftKey) {
+                            _this.onSelectBlock(b, MapBlockSelectAction.focusUnselect);
+                        }
+                        else if (o.event.ctrlKey) {
+                            _this.onSelectBlock(b, MapBlockSelectAction.focusSelect);
+                        }
+                        else {
+                            _this.onSelectBlock(b);
+                        }
+                    }
+                });
+            }
+        });
+        this.map = map;
+        this.blockGrid = new MapGrid();
+        this.blockGrid.blocks = new Array();
+        this.uavList = new Array();
+        this.subscribe(MapEvents.load, true);
+        this.subscribe(MapEvents.clearAnalysisArea, true);
+        this.subscribe(MapEvents.clearAspect, true);
+        this.subscribe(MapEvents.horizontalAspect, true);
+        this.subscribe(MapEvents.pointConvert, true);
+        this.subscribe(MapEvents.savePoints, true);
+        this.subscribe(MapEvents.selectAnalysisArea, true);
+        this.subscribe(MapEvents.verticalAspect, true);
+        this.on(MapEvents.load);
+        var h = setInterval(function () {
+            var i = $("a[title='到百度地图查看此区域']");
+            var b = $("span[_cid='1']");
+            if (!i.hasClass("hide") || !b.hasClass("hide")) {
+                i.addClass("hide");
+                b.addClass("hide");
+            }
+            else {
+                clearInterval(h);
+            }
+        }, 100);
+        map.addEventListener("moveend", function (o) { return _this.onMapBoundChanged(); });
+        map.addEventListener("zoomend", function (o) { return _this.onMapBoundChanged(); });
+    };
     /**
      * 初始化地图。
      * @param container 地图容器id
      */
     BaiduMapProvider.prototype.mapInit = function (container) {
         var _this = this;
-        this.loadJs("http://api.map.baidu.com/getscript?v=2.0&ak=TCgR2Y0IGMmPR4qteh4McpXzMyYpFrEx", function (e) {
-            // 百度地图API功能
-            var map = new BMap.Map(container); // 创建Map实例
-            _this.convertor = new BMap.Convertor();
-            _this.analysisArea = new BaiduMapAnalysisArea(map, _this);
-            map.centerAndZoom(new BMap.Point(113.140761, 23.033974), 17); // 初始化地图,设置中心点坐标和地图级别
-            //添加地图类型控件
-            map.addControl(new BMap.MapTypeControl({
-                mapTypes: [
-                    BMAP_NORMAL_MAP,
-                    BMAP_HYBRID_MAP
-                ]
-            }));
-            //map.addControl(new BMap.ScaleControl());
-            //map.addControl(new BMap.NavigationControl());
-            map.addControl(new BMap.OverviewMapControl());
-            //map.addControl(new BMap.GeolocationControl());
-            map.enableScrollWheelZoom(true); //开启鼠标滚轮缩放
-            var menu = new BMap.ContextMenu();
-            var createItem = function (name, func) {
-                var i = new BMap.MenuItem(name, func);
-                i.name = name;
-                return i;
-            };
-            _this.menuItems = [
-                //createItem(MapMenuItems.compare, o => this.onShowReport()),
-                createItem(MapMenuItems.refresh, function (o) { return _this.onRefresh(); }),
-                false,
-                createItem(MapMenuItems.uavLocation, function (o) { return _this.onUavLoaction(); }),
-                createItem(MapMenuItems.uavFollow, function (o) { return _this.uavFollow = !_this.uavFollow; }),
-                createItem(MapMenuItems.uavPath, function (o) { return _this.uavPath = !_this.uavPath; }),
-                false,
-                createItem(MapMenuItems.selectAnalysisArea, function (o) { return _this.analysisArea.enable(); }),
-                createItem(MapMenuItems.clearAnalysisArea, function (o) { return _this.analysisArea.disable(); }),
-                false,
-                createItem(MapMenuItems.savePoints, function (o) { return _this.onSaveSelectedBlocks(); }),
-                createItem(MapMenuItems.reports, function (o) { return _this.onShowSelectedBlockReport(); }),
-                createItem(MapMenuItems.horizontal, function (o) { return _this.onShowHorizontalAspect(); }),
-                createItem(MapMenuItems.vertical, function (o) { return _this.onShowVerticalAspect(); }),
-                createItem(MapMenuItems.clear, function (o) { return _this.onClearSelectedBlock(); })
-            ];
-            _this.menuItems.forEach(function (o) { return o ? menu.addItem(o) : menu.addSeparator(); });
-            menu.addEventListener("open", function (o) { return _this.onCheckContextMenu(); });
-            map.addContextMenu(menu);
-            new BaiduMapSelector(map, function (o) {
-                if (_this.analysisArea.isEnabled() && !_this.analysisArea.getBounds()) {
-                    _this.analysisArea.setBounds(o.bound);
-                }
-                else {
-                    _this.blockGrid.blocks.forEach(function (b) {
-                        if (o.bound.containsPoint(b.context.center)) {
-                            if (o.event.shiftKey) {
-                                _this.onSelectBlock(b, MapBlockSelectAction.focusUnselect);
-                            }
-                            else if (o.event.ctrlKey) {
-                                _this.onSelectBlock(b, MapBlockSelectAction.focusSelect);
-                            }
-                            else {
-                                _this.onSelectBlock(b);
-                            }
-                        }
-                    });
-                }
-            });
-            _this.map = map;
-            _this.blockGrid = new MapGrid();
-            _this.blockGrid.blocks = new Array();
-            _this.uavList = new Array();
-            _this.subscribe(MapEvents.load, true);
-            _this.subscribe(MapEvents.clearAnalysisArea, true);
-            _this.subscribe(MapEvents.clearAspect, true);
-            _this.subscribe(MapEvents.horizontalAspect, true);
-            _this.subscribe(MapEvents.pointConvert, true);
-            _this.subscribe(MapEvents.savePoints, true);
-            _this.subscribe(MapEvents.selectAnalysisArea, true);
-            _this.subscribe(MapEvents.verticalAspect, true);
-            _this.on(MapEvents.load);
-            var h = setInterval(function () {
-                var i = $("a[title='到百度地图查看此区域']");
-                var b = $("span[_cid='1']");
-                if (!i.hasClass("hide") || !b.hasClass("hide")) {
-                    i.addClass("hide");
-                    b.addClass("hide");
-                }
-                else {
-                    clearInterval(h);
-                }
-            }, 100);
-            map.addEventListener("moveend", function (o) { return _this.onMapBoundChanged(); });
-            map.addEventListener("zoomend", function (o) { return _this.onMapBoundChanged(); });
-        });
+        this.loadJs("http://api.map.baidu.com/getscript?v=2.0&ak=TCgR2Y0IGMmPR4qteh4McpXzMyYpFrEx", function () { return _this.onMapLoad(new BMap.Map(container)); });
     };
     /**
      * 地图坐标转换。转换完成的点会以pointConvert事件回调。

@@ -6,7 +6,7 @@
              xmlns:local="clr-namespace:AirMonitor.Views"
              mc:Ignorable="d" 
              xmlns:cal="http://www.caliburnproject.org"
-             xmlns:form="clr-namespace:System.Windows.Forms;assembly=System.Windows.Forms"
+             xmlns:ctrl="clr-namespace:AirMonitor.Controls"
              xmlns:control="http://metro.mahapps.com/winfx/xaml/controls"
              d:DesignHeight="450" d:DesignWidth="800">
 
@@ -215,8 +215,8 @@
         <Border>
             <Grid>
                 <WebBrowser Name="Map" Tag="{Binding MapContainer,Mode=OneWayToSource}"/>
-                <Popup Placement="Top"  VerticalOffset="{Binding ElementName=Map,Path=ActualHeight}" IsOpen="True" AllowsTransparency="True" >
-                    <Grid Width="{Binding ElementName=Map,Path=ActualWidth}" Height="{Binding ElementName=Map,Path=ActualHeight}">
+                <Popup ctrl:PopupHelper.AttachWindow="{Binding RelativeSource={RelativeSource Mode=FindAncestor,  AncestorType={x:Type Window}}}" Placement="Top" Width="{Binding ElementName=Map,Path=ActualWidth}" Height="{Binding ElementName=Map,Path=ActualHeight}"  VerticalOffset="{Binding ElementName=Map,Path=ActualHeight}" IsOpen="True" AllowsTransparency="True" >
+                    <Grid>
                         <Border  VerticalAlignment="Bottom"
                             Background="White"
                             Visibility="{Binding PropertyPanel,Converter={StaticResource AnyVisiable}}" >
@@ -242,7 +242,6 @@
                                 <ToggleButton IsChecked="{Binding Map3DFullScreen}" Width="30" Height="30" 
                                               Visibility="{Binding Show3DView,Converter={StaticResource IsVisible}}" 
                                               Style="{DynamicResource MetroCircleButtonStyle}" VerticalAlignment="Top" HorizontalAlignment="Right">〓</ToggleButton>
-
                             </Grid>
                         </Border>
                     </Grid>

@@ -1,9 +1,33 @@
-﻿<Application x:Class="AirDetector.App"
+﻿<Application x:Class="AirMonitor.App"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:local="clr-namespace:AirDetector"
-             StartupUri="MainWindow.xaml">
+             xmlns:converter="clr-namespace:AirMonitor.Converter"
+             xmlns:local="clr-namespace:AirMonitor">
     <Application.Resources>
-         
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary>
+                    <local:AppBootstrapper x:Key="bootstrapper" />
+                    <converter:RoundConverter x:Key="Round"/>
+                    <converter:IsNullConverter x:Key="IsNull"/>
+                    <converter:WarningConverter x:Key="Warning"/>
+                    <converter:IsVisibleConverter x:Key="IsVisible"/>
+                    <converter:AnyVisiableConverter x:Key="AnyVisiable"/>
+                    <converter:MultipleConverter x:Key="Multiple"/>
+                    <converter:IsHiddenConverter x:Key="IsHidden"/>
+                    <converter:IsConnectConvert x:Key="IsConnect"/>
+                    <converter:NotConverter x:Key="Not"/>
+                </ResourceDictionary>
+                <!-- MahApps.Metro resource dictionaries. Make sure that all file names are Case Sensitive! -->
+                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Controls.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Fonts.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Colors.xaml" />
+                <!-- Accent and AppTheme setting -->
+                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Accents/Blue.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Accents/BaseLight.xaml" />
+                <ResourceDictionary Source="/Resources/strings.xaml" />
+                <ResourceDictionary Source="/Resources/NamedStyles.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
     </Application.Resources>
 </Application>

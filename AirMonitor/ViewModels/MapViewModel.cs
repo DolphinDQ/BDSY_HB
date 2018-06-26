@@ -84,8 +84,6 @@ namespace AirMonitor.ViewModels
 
         public object Map3DPanel { get; set; }
 
-        public object CameraPanel { get; set; }
-
         public MapViewModel(
             IEventAggregator eventAggregator,
             IMapProvider mapProvider,
@@ -268,7 +266,6 @@ namespace AirMonitor.ViewModels
                     break;
             }
         }
-
 
         private void OnShowAnalysisPanel(MapBlock[] blocks, AnalysisMode mode)
         {
