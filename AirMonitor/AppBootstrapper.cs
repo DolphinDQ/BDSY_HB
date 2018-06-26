@@ -2,6 +2,9 @@ namespace AirMonitor
 {
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics;
+    using System.Runtime.InteropServices;
+    using System.Windows;
     using System.Windows.Threading;
     using AirMonitor.Camera;
     using AirMonitor.Chart;
@@ -12,13 +15,32 @@ namespace AirMonitor
     using AirMonitor.Map;
     using AirMonitor.ViewModels;
     using Caliburn.Micro;
+    using System.Linq;
 
     public class AppBootstrapper : BootstrapperBase, IFactory
     {
+        [DllImport("user32.dll")]
+        private static extern bool SetForegroundWindow(IntPtr hWnd);
+        [DllImport("user32.dll")]
+        private static extern int ShowWindow(IntPtr hWnd, int nCmdShow);
+
         static SimpleContainer container;
 
         public AppBootstrapper()
         {
+            var process = Process.GetCurrentProcess();
+            var arr = Process.GetProcessesByName(process.ProcessName);
+            if (arr.Length > 1)
+            {
+                var hanler = arr.FirstOrDefault(o => o.Id != process.Id)?.MainWindowHandle;
+                if (hanler != null)
+                {
+                    Console.WriteLine(ShowWindow(hanler.Value, 1));
+                    Console.WriteLine(SetForegroundWindow(hanler.Value));
+                    Application.Current.Shutdown();
+                    return;
+                }
+            }
             Initialize();
         }
 

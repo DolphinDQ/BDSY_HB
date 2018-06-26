@@ -270,6 +270,7 @@ namespace AirMonitor.ViewModels
             if (VideoModel != null)
             {
                 var view = VideoModel;
+                VideoModel = null;
                 var dir = new Dictionary<string, object>();
                 //dir.Add("WindowState", 2);
                 //dir.Add("Width", 1280);

@@ -15,23 +15,6 @@ namespace AirMonitor
     /// </summary>
     public partial class App : Application
     {
-        //protected override void OnStartup(StartupEventArgs e)
-        //{
-        //    base.OnStartup(e);
-        //    //Task.Factory.StartNew(() =>
-        //    //{
-
-        //    //});
-
-
-
-
-        //    // throw new Exception("test");
-        //    //await HockeyClient.Current.CheckForUpdatesAsync(true, () =>
-        //    //{
-        //    //    if (Current.MainWindow != null) { Current.MainWindow.Close(); }
-        //    //    return true;
-        //    //});
-        //}
+    
     }
 }
