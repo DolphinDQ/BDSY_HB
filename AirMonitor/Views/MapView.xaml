@@ -49,8 +49,7 @@
                     <control:NumericUpDown Value="{Binding MapGridOptions.sideLength}" Minimum="5"/>
                     <Label Content="透明度"></Label>
                     <control:NumericUpDown Value="{Binding MapGridOptions.opacity}" Maximum="1" Minimum="0" Interval="0.1"/>
-                    <Button Margin="3 0" Name="RefreshBlock" Content="{StaticResource T_RefreshBlock}"></Button>
-                    <Button Name="ClearSamples" Visibility="Collapsed" Content="{StaticResource T_ClearMap}"></Button>
+
                     <ToggleButton Visibility="Collapsed" Content="{StaticResource T_AnalysisSamples}" IsChecked="{Binding EnableAnalysis}"></ToggleButton>
                 </StackPanel>
             </DockPanel>
@@ -143,15 +142,18 @@
                                     Height="{Binding ElementName=Map,Path=ActualHeight}"  
                                     Visibility="{Binding Map3DFullPanel,Converter={StaticResource AnyVisiable}}" 
                                     cal:View.Model="{Binding Map3DFullPanel}"/>
-                                <ToggleButton IsChecked="{Binding Show3DView}"
+                                <StackPanel Orientation="Horizontal" VerticalAlignment="Top" HorizontalAlignment="Left">
+                                    <Button Name="RefreshBlock" cal:Message.Attach="[Event Click]=[Action RefreshBlock]" Content="{StaticResource T_RefreshBlock}" Style="{DynamicResource Btn_Cirle}" ctrl:IconHelper.Icon="{StaticResource appbar_refresh}"  />
+                                    <Button Name="ClearSamples" cal:Message.Attach="[Event Click]=[Action ClearSamples]" Content="{StaticResource T_ClearMap}"  Style="{DynamicResource Btn_Cirle}" ctrl:IconHelper.Icon="{StaticResource appbar_clean}"  />
+                                    <ToggleButton IsChecked="{Binding Show3DView}"
                                               Style="{StaticResource Btn_Cirle}" 
-                                              ctrl:IconHelper.Icon="{StaticResource appbar_axis_three}" 
-                                              VerticalAlignment="Top" HorizontalAlignment="Left"/>
-                                <ToggleButton IsChecked="{Binding Map3DFullScreen}"
+                                              ctrl:IconHelper.Icon="{StaticResource appbar_axis_three}"  />
+                                    <ToggleButton IsChecked="{Binding Map3DFullScreen}"
                                               Visibility="{Binding Show3DView,Converter={StaticResource IsVisible}}" 
                                               Style="{DynamicResource Btn_Cirle}" 
-                                              ctrl:IconHelper.Icon="{StaticResource appbar_arrow_expand}"
-                                              VerticalAlignment="Top" HorizontalAlignment="Left" Margin="0 45"/>
+                                              ctrl:IconHelper.Icon="{StaticResource appbar_arrow_expand}"/>
+
+                                </StackPanel>
                             </Grid>
                         </ContentControl>
                     </Grid>

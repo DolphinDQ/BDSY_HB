@@ -167,6 +167,7 @@
         <Setter Property="CornerRadius" Value="2"/>
     </Style>
 
+    <BitmapImage  x:Key="Img_Uav" UriSource="./Images/uav.png"></BitmapImage>
     <BitmapImage  x:Key="App_Logo" UriSource="./Images/logo.png"></BitmapImage>
     <BitmapImage  x:Key="Img_User" UriSource="./Images/user.jpg"></BitmapImage>
 </ResourceDictionary>

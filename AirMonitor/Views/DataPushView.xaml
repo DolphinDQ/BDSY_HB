@@ -43,6 +43,37 @@
                     <Label Style="{StaticResource Lbl_Title}" Content="{StaticResource T_UavStatus}" ctrl:IconHelper.Icon="{StaticResource appbar_globe_wire}"/>
                 </DockPanel>
                 <Grid Name="UavStatusPanel">
+                    <!--<DockPanel>
+                        <Border Margin="10 10 0 10" Width="200" Padding="5" Background="{DynamicResource AccentColorBrush4}">
+                            <Image Source="{StaticResource Img_Uav}"  DockPanel.Dock="Left"/>
+                        </Border>
+                        <StackPanel Margin="0 10 10 10">
+                            <StackPanel.Resources>
+                                <Style TargetType="Label">
+                                    <Setter Property="Margin" Value="3"/>
+                                    <Setter Property="Template">
+                                        <Setter.Value>
+                                            <ControlTemplate TargetType="Label">
+                                                <StackPanel Orientation="Horizontal">
+                                                    <TextBlock TextDecorations="Strikethrough" Text="———" FontSize="{TemplateBinding FontSize}" Foreground="{DynamicResource AccentColorBrush}"></TextBlock>
+                                                    <ContentControl  Content="{TemplateBinding Content}"></ContentControl>
+                                                </StackPanel>
+                                            </ControlTemplate>
+                                        </Setter.Value>
+                                    </Setter>
+                                </Style>
+                            </StackPanel.Resources>
+                            <Label Content="电量"></Label>
+                            <Label Content="电量"></Label>
+                            <Label Content="电量"></Label>
+                            <Label Content="电量"></Label>
+                            <Label Content="电量"></Label>
+                            <Label Content="电量"></Label>
+                            <Label Content="电量"></Label>
+                            <Label Content="电量"></Label>
+                            <Label Content="电量"></Label>
+                        </StackPanel>
+                    </DockPanel>-->
                     <UniformGrid Columns="4">
                         <UniformGrid.Resources>
                             <Style TargetType="Button" BasedOn="{StaticResource MetroButton}">
@@ -73,7 +104,6 @@
                         <controls:NumericUpDown Value="{Binding CorrectAltitude,Converter={StaticResource Round}}"></controls:NumericUpDown>
                         <Label Content="{StaticResource T_RelativeHeight}"></Label>
                         <Label Content="{Binding NewestData.RelativeHeight,Converter={StaticResource Round}}"></Label>
-                        <!--<Label Content="{StaticResource T_RelativeAltitude}"></Label>-->
                     </UniformGrid>
                     <ContentControl Visibility="{Binding VideoModel,Converter={StaticResource AnyVisiable}}" cal:View.Model="{Binding VideoModel}"/>
                 </Grid>
