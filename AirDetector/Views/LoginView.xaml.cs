@@ -16,14 +16,13 @@ using System.Windows.Shapes;
 namespace AirMonitor.Views
 {
     /// <summary>
-    /// MapView.xaml 的交互逻辑
+    /// LoginView.xaml 的交互逻辑
     /// </summary>
-    public partial class MapView : UserControl
+    public partial class LoginView : UserControl
     {
-        public MapView()
+        public LoginView()
         {
             InitializeComponent();
-            Map.Tag = Map;
         }
     }
 }

@@ -8,6 +8,7 @@ namespace AirMonitor
 {
     interface IShell
     {
+        string LoginUser { get; }
 
     }
 }

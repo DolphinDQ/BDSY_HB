@@ -402,6 +402,7 @@
     <Content Include="Map\marker.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Resource Include="Resources\Images\user.jpg" />
     <Content Include="useie.exe">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>

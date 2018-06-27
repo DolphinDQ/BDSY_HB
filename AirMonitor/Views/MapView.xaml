@@ -12,9 +12,7 @@
 
     <DockPanel >
         <DockPanel.Resources>
-            <Style TargetType="Border">
-                <Setter Property="BorderBrush" Value="LightGray"/>
-                <Setter Property="BorderThickness" Value="1"/>
+            <Style TargetType="Border" BasedOn="{StaticResource G_Border}">
                 <Setter Property="Margin" Value="1"/>
             </Style>
         </DockPanel.Resources>
@@ -118,7 +116,7 @@
                 <Label Content="透明度"></Label>
                 <control:NumericUpDown Value="{Binding MapGridOptions.opacity}" Maximum="1" Minimum="0" Interval="0.1"/>
                 <Button Name="RefreshBlock" Content="{StaticResource T_RefreshBlock}"></Button>
-               </StackPanel>
+            </StackPanel>
         </Border>
         <Border DockPanel.Dock="Left" >
             <ListView Margin="5" Width="40" ItemsSource="{Binding MapGridOptions.pollutant.Levels}" >

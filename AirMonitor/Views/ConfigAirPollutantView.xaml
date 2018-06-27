@@ -24,11 +24,8 @@
         <Style TargetType="DockPanel">
             <Setter Property="Margin" Value="3"/>
         </Style>
-        <Style x:Key="ColorBlock" TargetType="Border">
+        <Style x:Key="ColorBlock" TargetType="Border" BasedOn="{StaticResource G_Border}">
             <!--BorderBrush="LightGray" BorderThickness="1" CornerRadius="1" Width="60" Height="18" Cursor="Hand"-->
-            <Setter Property="BorderBrush" Value="LightGray"/>
-            <Setter Property="BorderThickness" Value="1"/>
-            <Setter Property="CornerRadius" Value="2"/>
             <Setter Property="Width" Value="60"/>
             <Setter Property="Height" Value="18"/>
             <Setter Property="Cursor" Value="Hand"/>

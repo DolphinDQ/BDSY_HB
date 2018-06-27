@@ -49,6 +49,7 @@ namespace AirMonitor
 
         public string SettingTitle { get; set; }
 
+
         protected override async void OnViewLoaded(object view)
         {
             base.OnViewLoaded(view);

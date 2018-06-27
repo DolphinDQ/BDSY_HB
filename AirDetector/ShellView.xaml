@@ -6,19 +6,50 @@
              xmlns:local="clr-namespace:AirMonitor"
              xmlns:control="http://metro.mahapps.com/winfx/xaml/controls"
              xmlns:ctrl="clr-namespace:AirMonitor.Controls"
-             Name="Main"
-                     
-             mc:Ignorable="d" Width="1280" Height="720">
-    <Grid>
-        <ContentControl Content="{Binding MainContent}"></ContentControl>
-        <CheckBox Name="Open"  />
-        <Popup Placement="Bottom" ctrl:PopupHelper.AttachWindow="{Binding ElementName=Main}" IsOpen="{Binding ElementName=Open,Path=IsChecked}"
+             xmlns:cal="http://www.caliburnproject.org"
+             mc:Ignorable="d"
+             Icon="{StaticResource App_Logo}"
+                     IconScalingMode="ScaleDownLargerFrame" ShowIconOnTitleBar="True"
+                     IconEdgeMode="Aliased"
+             MinWidth="1366"  MinHeight="768"
+             Width="1366" Height="768"
+             GlowBrush="{DynamicResource AccentColorBrush}">
+    <control:MetroWindow.RightWindowCommands>
+        <control:WindowCommands>
+            <Button cal:Message.Attach="ClearAllSample"  Content="{StaticResource T_ClearSamples}"></Button>
+            <Button cal:Message.Attach="SaveSamples" Content="{StaticResource T_SaveSamples}"></Button>
+            <Button cal:Message.Attach="LoadSamples" Content="{StaticResource T_LoadSamples}"></Button>
+        </control:WindowCommands>
+    </control:MetroWindow.RightWindowCommands>
+    <DockPanel>
+        <Border DockPanel.Dock="Right" Visibility="{Binding Sider,Converter={StaticResource AnyVisiable}}">
+            <control:Flyout Position="Right" Width="300" 
+                        Theme="Accent" AnimateOpacity="True"
+                        IsOpen="{Binding ShowSider}"
+                        Header="{Binding SiderTitle}">
+                <ContentControl cal:View.Model="{Binding Sider}"></ContentControl>
+            </control:Flyout>
+        </Border>
+        <Grid>
+            <ContentControl cal:View.Model="{Binding MainContent}"/>
+            <control:ProgressRing Visibility="{Binding MainContent,Converter={StaticResource AnyVisiable},ConverterParameter='not'}"/>
+            <Popup Placement="Top"
+               ctrl:PopupHelper.AttachWindow="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}}"
+               AllowsTransparency="True"
+               VerticalOffset="{Binding ElementName=LeftTopPanel,Path=ActualHeight}" >
+                <Grid Name="LeftTopPanel">
+
+                </Grid>
+            </Popup>
+            <Popup Placement="Bottom" 
+               ctrl:PopupHelper.AttachWindow="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}}"
                AllowsTransparency="True"
                VerticalOffset="{Binding ElementName=BottomPanel,Path=ActualHeight,Converter={StaticResource Multiple} ,ConverterParameter=-1}">
-            <Grid Name="BottomPanel" Width="{Binding ElementName=Main,Path=ActualWidth}" Background="Red" Height="100">
+                <Grid Name="BottomPanel" Width="{Binding RelativeSource={RelativeSource Mode=FindAncestor,AncestorType=Grid},Path=ActualWidth}" Background="Red" Height="100">
 
-            </Grid>
-        </Popup>
+                </Grid>
+            </Popup>
 
-    </Grid>
+        </Grid>
+    </DockPanel>
 </control:MetroWindow>

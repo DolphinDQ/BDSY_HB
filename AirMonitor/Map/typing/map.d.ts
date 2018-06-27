@@ -59,6 +59,7 @@ interface Block {
 }
 interface IMapProvider {
     mapInit(container: string);
+    mapInitMenu(edit: boolean);
     mapPointConvert(seq: number, p: Point[]);
     mapShowTempReport(d: any);
     mapClearTempReport();

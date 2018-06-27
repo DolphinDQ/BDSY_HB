@@ -186,7 +186,6 @@ namespace AirMonitor.Controls
             InitializeComponent();
             MapBound = new Map3DBound();
             View3D.DataContext = MapBound;
-
         }
 
         public object MapContainer
@@ -315,8 +314,6 @@ namespace AirMonitor.Controls
                 });
             }
         }
-
-
 
         private void OnUavCollectionChanged(DependencyPropertyChangedEventArgs e)
         {

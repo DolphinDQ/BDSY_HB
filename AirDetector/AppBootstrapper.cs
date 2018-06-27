@@ -37,6 +37,7 @@
             container.PerRequest<IMapProvider, MapProvider>();
             container.RegisterInstance(typeof(IFactory), null, this);
             container.PerRequest<MapViewModel>();
+            container.PerRequest<LoginViewModel>();
 
         }
 

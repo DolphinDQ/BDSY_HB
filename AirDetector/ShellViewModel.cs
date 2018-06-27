@@ -3,9 +3,14 @@ using AirMonitor.EventArgs;
 using AirMonitor.Interfaces;
 using AirMonitor.ViewModels;
 using Caliburn.Micro;
+using FluentFTP;
 using Microsoft.HockeyApp;
+using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Net.Sockets;
+using System.Threading.Tasks;
 using System.Windows;
 
 namespace AirMonitor
@@ -16,33 +21,75 @@ namespace AirMonitor
     {
         private IFactory m_factory;
         private IResourceManager m_res;
+        private IConfigManager m_config;
+        private IWindowManager m_window;
         private ISaveManager m_saveManager;
         private IEventAggregator m_eventAggregator;
 
         public ShellViewModel(
             IFactory factory,
+            IConfigManager config,
+            IWindowManager window,
             ISaveManager saveManager,
             IEventAggregator eventAggregator,
             IResourceManager res)
         {
             m_factory = factory;
             m_res = res;
+            m_config = config;
+            m_window = window;
             m_saveManager = saveManager;
             m_eventAggregator = eventAggregator;
             eventAggregator.Subscribe(this);
             LogManager.GetLog = o => factory.Create<Caliburn.Micro.ILog>();
             DisplayName = m_res.GetText("T_ViewerName") + " - " + AppVersion.VERSION;
-        }
 
+            //MainContent = m_factory.Create<MapViewModel>();
+        }
+        public object MainContent { get; set; }
+
+        #region Sider
         public object Sider { get; set; }
 
-        public object Container { get; set; }
+        public bool ShowSider { get; set; }
 
-        public object Setting { get; set; }
+        public string SiderTitle { get; set; }
 
-        public bool EnableSetting { get; set; }
+        public async void OnShowSiderChanged()
+        {
+            if (!ShowSider)
+            {
+                if (Sider is Screen screen)
+                {
+                    screen.TryClose();
+                }
+                await Task.Delay(300);
+                Sider = null;
+            }
+        }
 
-        public string SettingTitle { get; set; }
+        public void OnSiderChanged()
+        {
+            if (!ShowSider && Sider != null)
+            {
+                ShowSider = true;
+            }
+        }
+        /// <summary>
+        /// 侧边栏显示和隐藏。
+        /// </summary>
+        /// <param name="model">要显示的内容，如果为null则隐藏侧边栏。</param>
+        private void SiderDisplay(object model)
+        {
+            ShowSider = false;
+            if (model != null)
+            {
+                Sider = model;
+            }
+        }
+        #endregion
+
+        public string LoginUser { get; set; }
 
         protected override async void OnViewLoaded(object view)
         {
@@ -55,6 +102,45 @@ namespace AirMonitor
             };
 #endif
             await HockeyClient.Current.SendCrashesAsync(true);
+            await OnLogin();
+        }
+
+        private async Task OnLogin()
+        {
+            var setting = m_config.GetConfig<FtpSetting>();
+            try
+            {
+                var provier = new FtpProvider(setting);
+                await provier.Ftp.ConnectAsync();
+                LoginUser = setting.Account;
+                OnLoginCompleted();
+                return;
+            }
+            catch (FtpCommandException e) when (e.CompletionCode == "530")
+            {
+                MessageBox.Show(m_res.GetText("T_IncorrentLogin"));
+            }
+            catch (Exception e)
+            {
+                this.Warn("connect ftp error :{0}", e.Message);
+                this.Error(e);
+            }
+            var dir = new Dictionary<string, object>();
+            dir.Add("ResizeMode", 0);
+            if (m_window.ShowDialog(m_factory.Create<LoginViewModel>(), null, dir) == true)
+            {
+                await OnLogin();
+            }
+            else
+            {
+                Application.Current.Shutdown();
+            }
+        }
+
+        private void OnLoginCompleted()
+        {
+            MainContent = m_factory.Create<MapViewModel>();
+
         }
 
         public override void TryClose(bool? dialogResult = null)
@@ -63,10 +149,9 @@ namespace AirMonitor
             m_eventAggregator.Unsubscribe(this);
         }
 
-     
         private void CloseSetting()
         {
-            if (Setting is Screen screen)
+            if (Sider is Screen screen)
             {
                 screen.TryClose();
             }
@@ -82,11 +167,13 @@ namespace AirMonitor
 
         public void SaveSamples()
         {
+            SiderDisplay(m_factory.Create<MapViewModel>());
             m_eventAggregator.PublishOnBackgroundThread(new EvtSampleSaving() { Type = SaveType.SaveSamplesRequest });
         }
 
         public void LoadSamples()
         {
+            SiderDisplay(null);
             m_eventAggregator.PublishOnBackgroundThread(new EvtSampleSaving() { Type = SaveType.LoadSamplesRequest });
         }
 

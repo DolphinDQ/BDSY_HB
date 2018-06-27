@@ -35,6 +35,15 @@ namespace AirMonitor.Map
         {
             map.Invoke("map.mapClearTempReport");
         }
+        /// <summary>
+        /// 初始化地图右键菜单。
+        /// </summary>
+        /// <param name="map"></param>
+        /// <param name="edit">编辑模式。</param>
+        public static void MapInitMenu(this IMapProvider map, bool edit)
+        {
+            map.Invoke("map.mapInitMenu", edit);
+        }
 
 
         ///// <summary>

@@ -338,6 +338,7 @@ namespace AirMonitor.ViewModels
             var s = Samples.Where(o => o.ActualLat != 0 && o.ActualLng != 0).ToList();
             var first = s.FirstOrDefault();
             if (first == null) return;
+            MapProvider.MapInitMenu(true);
             MapProvider.UavAdd(new MapUav { name = name, data = s, lat = first.ActualLat, lng = first.ActualLng });
             MapProvider.GridInit(MapGridOptions);
             MapProvider.UavFocus(name);

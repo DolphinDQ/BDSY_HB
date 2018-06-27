@@ -834,32 +834,6 @@ var BaiduMapProvider = /** @class */ (function (_super) {
         map.addControl(new BMap.OverviewMapControl());
         //map.addControl(new BMap.GeolocationControl());
         map.enableScrollWheelZoom(true); //开启鼠标滚轮缩放
-        var menu = new BMap.ContextMenu();
-        var createItem = function (name, func) {
-            var i = new BMap.MenuItem(name, func);
-            i.name = name;
-            return i;
-        };
-        this.menuItems = [
-            //createItem(MapMenuItems.compare, o => this.onShowReport()),
-            createItem(MapMenuItems.refresh, function (o) { return _this.onRefresh(); }),
-            false,
-            createItem(MapMenuItems.uavLocation, function (o) { return _this.onUavLoaction(); }),
-            createItem(MapMenuItems.uavFollow, function (o) { return _this.uavFollow = !_this.uavFollow; }),
-            createItem(MapMenuItems.uavPath, function (o) { return _this.uavPath = !_this.uavPath; }),
-            false,
-            createItem(MapMenuItems.savePoints, function (o) { return _this.onSaveSelectedBlocks(); }),
-            createItem(MapMenuItems.reports, function (o) { return _this.onShowSelectedBlockReport(); }),
-            createItem(MapMenuItems.horizontal, function (o) { return _this.onShowHorizontalAspect(); }),
-            createItem(MapMenuItems.vertical, function (o) { return _this.onShowVerticalAspect(); }),
-            createItem(MapMenuItems.clear, function (o) { return _this.onClearSelectedBlock(); }),
-            false,
-            createItem(MapMenuItems.selectAnalysisArea, function (o) { return _this.analysisArea.enable(); }),
-            createItem(MapMenuItems.clearAnalysisArea, function (o) { return _this.analysisArea.disable(); }),
-        ];
-        this.menuItems.forEach(function (o) { return o ? menu.addItem(o) : menu.addSeparator(); });
-        menu.addEventListener("open", function (o) { return _this.onCheckContextMenu(); });
-        map.addContextMenu(menu);
         new BaiduMapSelector(map, function (o) {
             if (_this.analysisArea.isEnabled() && !_this.analysisArea.getBounds()) {
                 _this.analysisArea.setBounds(o.bound);
@@ -879,6 +853,148 @@ var BaiduMapProvider = /** @class */ (function (_super) {
                     }
                 });
             }
+        });
+        //map.setMapStyle({
+        //    style: 'midnight'
+        //});
+        // 地图自定义样式
+        map.setMapStyle({
+            styleJson: [{
+                    "featureType": "water",
+                    "elementType": "all",
+                    "stylers": {
+                        "color": "#044161"
+                    }
+                }, {
+                    "featureType": "land",
+                    "elementType": "all",
+                    "stylers": {
+                        "color": "#091934"
+                    }
+                }, {
+                    "featureType": "boundary",
+                    "elementType": "geometry",
+                    "stylers": {
+                        "color": "#064f85"
+                    }
+                }, {
+                    "featureType": "railway",
+                    "elementType": "all",
+                    "stylers": {
+                        "visibility": "off"
+                    }
+                }, {
+                    "featureType": "highway",
+                    "elementType": "geometry",
+                    "stylers": {
+                        "color": "#004981"
+                    }
+                }, {
+                    "featureType": "highway",
+                    "elementType": "geometry.fill",
+                    "stylers": {
+                        "color": "#005b96",
+                        "lightness": 1
+                    }
+                }, {
+                    "featureType": "highway",
+                    "elementType": "labels",
+                    "stylers": {
+                        "visibility": "on"
+                    }
+                }, {
+                    "featureType": "arterial",
+                    "elementType": "geometry",
+                    "stylers": {
+                        "color": "#004981",
+                        "lightness": -39
+                    }
+                }, {
+                    "featureType": "arterial",
+                    "elementType": "geometry.fill",
+                    "stylers": {
+                        "color": "#00508b"
+                    }
+                }, {
+                    "featureType": "poi",
+                    "elementType": "all",
+                    "stylers": {
+                        "visibility": "off"
+                    }
+                }, {
+                    "featureType": "green",
+                    "elementType": "all",
+                    "stylers": {
+                        "color": "#056197",
+                        "visibility": "off"
+                    }
+                }, {
+                    "featureType": "subway",
+                    "elementType": "all",
+                    "stylers": {
+                        "visibility": "off"
+                    }
+                }, {
+                    "featureType": "manmade",
+                    "elementType": "all",
+                    "stylers": {
+                        "visibility": "off"
+                    }
+                }, {
+                    "featureType": "local",
+                    "elementType": "all",
+                    "stylers": {
+                        "visibility": "off"
+                    }
+                }, {
+                    "featureType": "arterial",
+                    "elementType": "labels",
+                    "stylers": {
+                        "visibility": "off"
+                    }
+                }, {
+                    "featureType": "boundary",
+                    "elementType": "geometry.fill",
+                    "stylers": {
+                        "color": "#029fd4"
+                    }
+                }, {
+                    "featureType": "building",
+                    "elementType": "all",
+                    "stylers": {
+                        "color": "#1a5787"
+                    }
+                }, {
+                    "featureType": "label",
+                    "elementType": "all",
+                    "stylers": {
+                        "visibility": "off"
+                    }
+                }, {
+                    "featureType": "poi",
+                    "elementType": "labels.text.fill",
+                    "stylers": {
+                        "color": "#ffffff"
+                    }
+                }, {
+                    "featureType": "poi",
+                    "elementType": "labels.text.stroke",
+                    "stylers": {
+                        "color": "#1e1c1c"
+                    }
+                }, {
+                    "featureType": "administrative",
+                    "elementType": "labels",
+                    "stylers": {
+                        "visibility": "off"
+                    }
+                }, {
+                    "featureType": "road",
+                    "elementType": "labels",
+                    "stylers": {
+                        "visibility": "off"
+                    }
+                }]
         });
         this.map = map;
         this.blockGrid = new MapGrid();
@@ -914,6 +1030,49 @@ var BaiduMapProvider = /** @class */ (function (_super) {
     BaiduMapProvider.prototype.mapInit = function (container) {
         var _this = this;
         this.loadJs("http://api.map.baidu.com/getscript?v=2.0&ak=TCgR2Y0IGMmPR4qteh4McpXzMyYpFrEx", function () { return _this.onMapLoad(new BMap.Map(container)); });
+    };
+    BaiduMapProvider.prototype.mapInitMenu = function (edit) {
+        var _this = this;
+        var menu = new BMap.ContextMenu();
+        var createItem = function (name, func) {
+            var i = new BMap.MenuItem(name, func);
+            i.name = name;
+            return i;
+        };
+        if (edit) {
+            this.menuItems = [
+                //createItem(MapMenuItems.compare, o => this.onShowReport()),
+                createItem(MapMenuItems.refresh, function (o) { return _this.onRefresh(); }),
+                false,
+                createItem(MapMenuItems.uavLocation, function (o) { return _this.onUavLoaction(); }),
+                createItem(MapMenuItems.uavFollow, function (o) { return _this.uavFollow = !_this.uavFollow; }),
+                createItem(MapMenuItems.uavPath, function (o) { return _this.uavPath = !_this.uavPath; }),
+                false,
+                createItem(MapMenuItems.savePoints, function (o) { return _this.onSaveSelectedBlocks(); }),
+                createItem(MapMenuItems.reports, function (o) { return _this.onShowSelectedBlockReport(); }),
+                createItem(MapMenuItems.horizontal, function (o) { return _this.onShowHorizontalAspect(); }),
+                createItem(MapMenuItems.vertical, function (o) { return _this.onShowVerticalAspect(); }),
+                createItem(MapMenuItems.clear, function (o) { return _this.onClearSelectedBlock(); }),
+                false,
+                createItem(MapMenuItems.selectAnalysisArea, function (o) { return _this.analysisArea.enable(); }),
+                createItem(MapMenuItems.clearAnalysisArea, function (o) { return _this.analysisArea.disable(); }),
+            ];
+        }
+        else {
+            this.menuItems = [
+                //createItem(MapMenuItems.compare, o => this.onShowReport()),
+                createItem(MapMenuItems.refresh, function (o) { return _this.onRefresh(); }),
+                false,
+                createItem(MapMenuItems.savePoints, function (o) { return _this.onSaveSelectedBlocks(); }),
+                createItem(MapMenuItems.reports, function (o) { return _this.onShowSelectedBlockReport(); }),
+                createItem(MapMenuItems.horizontal, function (o) { return _this.onShowHorizontalAspect(); }),
+                createItem(MapMenuItems.vertical, function (o) { return _this.onShowVerticalAspect(); }),
+                createItem(MapMenuItems.clear, function (o) { return _this.onClearSelectedBlock(); }),
+            ];
+        }
+        this.menuItems.forEach(function (o) { return o ? menu.addItem(o) : menu.addSeparator(); });
+        menu.addEventListener("open", function (o) { return _this.onCheckContextMenu(); });
+        this.map.addContextMenu(menu);
     };
     /**
      * 地图坐标转换。转换完成的点会以pointConvert事件回调。

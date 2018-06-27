@@ -5,5 +5,11 @@
         <Setter Property="FontWeight" Value="Bold"/>
         <Setter Property="FontSize" Value="20"/>
     </Style>
+    <Style x:Key="G_Border" TargetType="Border">
+        <Setter Property="BorderBrush" Value="{DynamicResource WindowTitleColorBrush}"/>
+        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="CornerRadius" Value="2"/>
+    </Style>
     <BitmapImage  x:Key="App_Logo" UriSource="./Images/logo.png"></BitmapImage>
+    <BitmapImage  x:Key="Img_User" UriSource="./Images/user.jpg"></BitmapImage>
 </ResourceDictionary>
