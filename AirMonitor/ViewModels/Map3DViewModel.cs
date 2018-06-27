@@ -21,9 +21,11 @@ namespace AirMonitor.ViewModels
         IHandle<EvtMapPointConverted>
     {
         private IEventAggregator m_eventAggregator;
+        private IConfigManager m_config;
 
         public Map3DViewModel(IConfigManager config, IEventAggregator eventAggregator)
         {
+            m_config = config;
             Setting = config.GetConfig<AirStandardSetting>();
             eventAggregator.Subscribe(this);
             m_eventAggregator = eventAggregator;
@@ -32,7 +34,7 @@ namespace AirMonitor.ViewModels
         public override void TryClose(bool? dialogResult = null)
         {
             base.TryClose(dialogResult);
-            m_eventAggregator.Subscribe(this);
+            m_eventAggregator.Unsubscribe(this);
         }
 
         public Map3DBound MapBound { get; set; } = new Map3DBound()
@@ -58,6 +60,10 @@ namespace AirMonitor.ViewModels
         public IMapView MapView { get; set; }
 
         public AirStandardSetting Setting { get; private set; }
+
+        public double MapOpacity { get; set; } = 1d;
+
+        public double WallHeight { get; set; } = 400;
 
         public double Angle { get; set; }
 
@@ -154,14 +160,6 @@ namespace AirMonitor.ViewModels
             };
         }
 
-        public void SetAngle(int angle)
-        {
-            if (angle >= 0 && angle <= 360)
-            {
-                Angle = angle;
-            }
-        }
-
         public void Handle(EvtSampling message)
         {
             switch (message.Status)
@@ -190,10 +188,54 @@ namespace AirMonitor.ViewModels
                     if (message.SettingObject is AirStandardSetting setting)
                     {
                         Setting = setting;
+                        OnBoundChanged();
+                        Refresh();
                     }
                     break;
                 default:
                     break;
+            }
+        }
+
+        public void TurnLeft()
+        {
+            if (Angle % 45 != 0)
+            {
+                Angle = ((int)Angle / 45) * 45;
+            }
+            else
+            {
+                Angle -= 45;
+            }
+        }
+
+        public void TurnRight()
+        {
+            if (Angle % 45 != 0)
+            {
+                Angle = ((int)Angle / 45) * 45;
+            }
+            else
+            {
+                Angle += 45;
+            }
+        }
+
+        public void LayerUp()
+        {
+            if (Setting.MaxAltitude > 20)
+            {
+                Setting.MaxAltitude -= 10;
+                m_config.SaveConfig(Setting);
+            }
+        }
+
+        public void LayerDown()
+        {
+            if (Setting.MaxAltitude < 200)
+            {
+                Setting.MaxAltitude += 10;
+                m_config.SaveConfig(Setting);
             }
         }
     }

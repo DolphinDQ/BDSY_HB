@@ -11,7 +11,7 @@
     
     <Border>
         <DockPanel>
-            <StackPanel Orientation="Horizontal" DockPanel.Dock="Top">
+            <StackPanel Orientation="Horizontal" DockPanel.Dock="Top" Background="{DynamicResource AccentColorBrush4}" >
                 <StackPanel.Resources>
                     <Style TargetType="Label" >
                         <Setter Property="VerticalAlignment" Value="Bottom"/>
@@ -28,7 +28,7 @@
                 <Label>高度差</Label>
                 <Label Content="{Binding HeightDifference,Converter={StaticResource Round}}"></Label>
             </StackPanel>
-            <oxy:PlotView Model="{Binding PlotModel}"></oxy:PlotView>
+            <oxy:PlotView Model="{Binding PlotModel}"  ></oxy:PlotView>
         </DockPanel>
     </Border>
 </UserControl>

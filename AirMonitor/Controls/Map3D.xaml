@@ -92,7 +92,7 @@
                                 <DiffuseMaterial Viewport2DVisual3D.IsVisualHostMaterial="True"/>
                             </Viewport2DVisual3D.Material>
                             <Viewport2DVisual3D.Visual>
-                                <Canvas x:Name="WallNorthPanel" Opacity="{Binding ElementName=Root,Path=MapOpacity}" Background="#aaa">
+                                <Canvas x:Name="WallNorthPanel" Opacity="{Binding ElementName=Root,Path=MapOpacity}"  Background="{StaticResource WallColor1}">
                                     <Label>
                                         North
                                     </Label>
@@ -107,7 +107,7 @@
                                 <DiffuseMaterial Viewport2DVisual3D.IsVisualHostMaterial="True"/>
                             </Viewport2DVisual3D.Material>
                             <Viewport2DVisual3D.Visual>
-                                <Canvas x:Name="WallSouthPanel" Opacity="{Binding ElementName=Root,Path=MapOpacity}"  Background="#aaa">
+                                <Canvas x:Name="WallSouthPanel" Opacity="{Binding ElementName=Root,Path=MapOpacity}"   Background="{StaticResource WallColor1}">
                                     <Label>
                                         South
                                     </Label>
@@ -122,7 +122,7 @@
                                 <DiffuseMaterial Viewport2DVisual3D.IsVisualHostMaterial="True"/>
                             </Viewport2DVisual3D.Material>
                             <Viewport2DVisual3D.Visual>
-                                <Canvas x:Name="WallEastPanel"  Opacity="{Binding ElementName=Root,Path=MapOpacity}" Background="#888">
+                                <Canvas x:Name="WallEastPanel"  Opacity="{Binding ElementName=Root,Path=MapOpacity}" Background="{StaticResource WallColor}">
                                     <Label>
                                         East
                                     </Label>
@@ -137,7 +137,7 @@
                                 <DiffuseMaterial Viewport2DVisual3D.IsVisualHostMaterial="True"/>
                             </Viewport2DVisual3D.Material>
                             <Viewport2DVisual3D.Visual>
-                                <Canvas x:Name="WallWestPanel" Opacity="{Binding ElementName=Root,Path=MapOpacity}" Background="#888">
+                                <Canvas x:Name="WallWestPanel" Opacity="{Binding ElementName=Root,Path=MapOpacity}"  Background="{StaticResource WallColor}">
                                     <Label>
                                         West
                                     </Label>

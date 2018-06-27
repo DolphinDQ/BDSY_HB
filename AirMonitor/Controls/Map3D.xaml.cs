@@ -146,8 +146,6 @@ namespace AirMonitor.Controls
             }
         }
 
-
-
         public double Angle
         {
             get { return (double)GetValue(AngleProperty); }
@@ -301,17 +299,18 @@ namespace AirMonitor.Controls
                 DrawWallGrid(WallSouthPanel, bound.Max.Lng, bound.Min.Lng, bound.Max.Height, bound.Min.Height, true);
                 DrawWallGrid(WallEastPanel, bound.Max.Lat, bound.Min.Lat, bound.Max.Height, bound.Min.Height, true);
                 DrawWallGrid(WallWestPanel, bound.Max.Lat, bound.Min.Lat, bound.Max.Height, bound.Min.Height);
-                Dispatcher.Invoke(() =>
-                {
-                    var block = BlockGroup.Children.ToArray();
-                    if (block != null && block.Any())
-                    {
-                        foreach (var item in block)
-                        {
-                            InitGeometryModel3D(item as GeometryModel3D);
-                        }
-                    }
-                });
+                //Dispatcher.Invoke(() =>
+                //{
+                //    var block = BlockGroup.Children.ToArray();
+                //    if (block != null && block.Any())
+                //    {
+                //        foreach (var item in block)
+                //        {
+                //            InitGeometryModel3D(item as GeometryModel3D);
+                //        }
+                //    }
+                //});
+                OnReloadBlock();
             }
         }
 
@@ -396,15 +395,56 @@ namespace AirMonitor.Controls
 
         private void OnReloadBlock()
         {
-            BlockGroup.Children.Clear();
+            //BlockGroup.Children.Clear();
+            if (BlockCollection == null) return;
             var block = BlockCollection.ToArray();//copy
             if (block != null && MapBound != null)
             {
+                var block3d = BlockGroup.Children.ToArray();
                 foreach (var item in block)
                 {
-                    BlockGroup.Children.Add(CreateBlock(item));
+                    if (InMapArea(item.Bound))
+                    {
+                        var temp = block3d.FirstOrDefault(o => o.GetValue(MapMarker3D.MapMarkerProperty) == item);
+                        if (temp is GeometryModel3D model3D)
+                        {
+                            InitGeometryModel3D(model3D);
+                        }
+                        else
+                        {
+                            BlockGroup.Children.Add(CreateBlock(item));
+                        }
+                    }
+                }
+                foreach (var item in block3d)
+                {
+                    var marker = item.GetValue(MapMarker3D.MapMarkerProperty);
+                    if (marker is BlockMarker3D m)
+                    {
+                        if (!block.Contains(m) || !InMapArea(m.Bound))
+                        {
+                            BlockGroup.Children.Remove(item);
+                            continue;
+                        }
+                    }
+                    else
+                    {
+                        BlockGroup.Children.Remove(item);
+                    }
                 }
             }
+            else
+            {
+                BlockGroup.Children.Clear();
+            }
+        }
+
+        private bool InMapArea(Map3DBound bound)
+        {
+            return bound.Min.Lat > MapBound.Min.Lat
+                        && bound.Min.Lng > MapBound.Min.Lng
+                        && bound.Max.Lat < MapBound.Max.Lat
+                        && bound.Max.Lng < MapBound.Max.Lng;
         }
 
         private Model3D CreateBlock(BlockMarker3D item)
@@ -457,10 +497,13 @@ namespace AirMonitor.Controls
                         {
                             if (item is BlockMarker3D block)
                             {
-                                Dispatcher.Invoke(() =>
+                                if (InMapArea(block.Bound))
                                 {
-                                    BlockGroup.Children.Add(CreateBlock(block));
-                                });
+                                    Dispatcher.Invoke(() =>
+                                    {
+                                        BlockGroup.Children.Add(CreateBlock(block));
+                                    });
+                                }
                             }
                         }
                     }

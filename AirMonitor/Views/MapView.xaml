@@ -18,77 +18,44 @@
         </DockPanel.Resources>
         <Border DockPanel.Dock="Top">
             <DockPanel>
-                <Label DockPanel.Dock="Left" Style="{StaticResource Lbl_Title}" Content="{StaticResource T_Visualization}"></Label>
-                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                <Label DockPanel.Dock="Left" Style="{StaticResource Lbl_Title}" Content="{StaticResource T_Visualization}" ctrl:IconHelper.Icon="{StaticResource appbar_location_checkin}" >
+                </Label>
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="2 17 2 2" >
                     <StackPanel.Resources>
                         <Style TargetType="Label" BasedOn="{StaticResource MetroLabel}">
                             <Setter Property="VerticalContentAlignment" Value="Bottom"/>
                             <Setter Property="Margin" Value="0 0 5 0"/>
                         </Style>
-                        <Style TargetType="Button" BasedOn="{StaticResource MetroButton}">
-                            <Setter Property="Height" Value="25"/>
-                            <Setter Property="VerticalAlignment" Value="Bottom"/>
-                            <Setter Property="Margin" Value="2"/>
-                        </Style>
-                        <Style TargetType="ToggleButton" BasedOn="{StaticResource MetroToggleButton}">
-                            <Setter Property="Height" Value="20"/>
-                            <Setter Property="VerticalAlignment" Value="Bottom"/>
-                            <Setter Property="Margin" Value="2"/>
-                        </Style>
-                        <Style TargetType="Border">
-                            <Setter Property="Height" Value="30"/>
-                            <Setter Property="VerticalAlignment" Value="Bottom"/>
-                            <Setter Property="Margin" Value="2"/>
-                            <Setter Property="BorderBrush" Value="LightGray"/>
-                            <Setter Property="BorderThickness" Value="1"/>
-                            <Setter Property="CornerRadius" Value="3"/>
-                        </Style>
                     </StackPanel.Resources>
+
                     <Label Content="{StaticResource T_SamplingStatus}"></Label>
                     <Label Content="{Binding Sampling}"></Label>
                     <Label Content="{StaticResource T_ValidSamples}"></Label>
-                    <Label Content="{Binding Samples.Count}"></Label>
-                    <Label Content="{StaticResource T_InvalidSamples }"></Label>
-                    <Label Content="{Binding InvalidSamples.Count}"></Label>
-                    <Button Name="ClearSamples" Content="{StaticResource T_ClearMap}"></Button>
-                    <!--<Button Name="SaveSamples" Content="{StaticResource T_SaveSamples}"></Button>
-                    <Button Name="LoadSamples" Content="{StaticResource T_LoadSamples}"></Button>-->
-
-                    <!--<Border>
-                        <control:DropDownButton Margin="1" Height="18" FontWeight="Bold" Content="{StaticResource T_SaveSamples}" BorderThickness="0">
-                            <control:DropDownButton.Items>
-                                <ItemsControl cal:Message.Attach="[Event MouseDown]=[Action SaveSamplesToLocal()]">
-                                    <TextBlock Text="{StaticResource T_LocalSamples}"></TextBlock>
-                                </ItemsControl>
-                                <ItemsControl cal:Message.Attach="[Event MouseDown]=[Action SaveSamplesToCloud()]">
-                                    <TextBlock Text="{StaticResource T_RemotingSamples}"></TextBlock>
-                                </ItemsControl>
-                                <ItemsControl cal:Message.Attach="[Event MouseDown]=[Action SaveSamplesToShared()]">
-                                    <TextBlock Text="{StaticResource T_SharedSamples}"></TextBlock>
-                                </ItemsControl>
-                            </control:DropDownButton.Items>
-                        </control:DropDownButton>
-                    </Border>
-                    <Border>
-                        <control:DropDownButton Margin="1" Height="18" FontWeight="Bold" Content="{StaticResource T_LoadSamples}" BorderThickness="0">
-                            <control:DropDownButton.Items>
-                                <ItemsControl cal:Message.Attach="[Event MouseDown]=[Action LoadSamplesFromLocal()]">
-                                    <TextBlock Text="{StaticResource T_LocalSamples}"></TextBlock>
-                                </ItemsControl>
-                                <ItemsControl cal:Message.Attach="[Event MouseDown]=[Action LoadSamplesFromCloud()]">
-                                    <TextBlock Text="{StaticResource T_RemotingSamples}"></TextBlock>
-                                </ItemsControl>
-                                <ItemsControl cal:Message.Attach="[Event MouseDown]=[Action LoadSamplesFromShared()]">
-                                    <TextBlock Text="{StaticResource T_SharedSamples}"></TextBlock>
-                                </ItemsControl>
-                            </control:DropDownButton.Items>
-                        </control:DropDownButton>
-                    </Border>-->
+                    <Label >
+                        <TextBlock>
+                            <TextBlock.Text >
+                                <MultiBinding  StringFormat="{}【{1}-√】【{0}-×】"  >
+                                    <Binding Path="InvalidSamples.Count"></Binding>
+                                    <Binding Path="Samples.Count"></Binding>
+                                </MultiBinding>
+                            </TextBlock.Text>
+                        </TextBlock>
+                    </Label>
+                    <!--<Label Content="{StaticResource T_InvalidSamples }"></Label>-->
+                    <!--<Label Content="{Binding InvalidSamples.Count}"></Label>-->
+                    <Label Content="{StaticResource T_MapDisplay}"></Label>
+                    <ComboBox ItemsSource="{Binding MapGridOptions.pollutants}" SelectedItem="{Binding MapGridOptions.pollutant}" DisplayMemberPath="DisplayName" SelectedValuePath="Name" />
+                    <Label Content="{StaticResource T_SideLength}"></Label>
+                    <control:NumericUpDown Value="{Binding MapGridOptions.sideLength}" Minimum="5"/>
+                    <Label Content="透明度"></Label>
+                    <control:NumericUpDown Value="{Binding MapGridOptions.opacity}" Maximum="1" Minimum="0" Interval="0.1"/>
+                    <Button Margin="3 0" Name="RefreshBlock" Content="{StaticResource T_RefreshBlock}"></Button>
+                    <Button Name="ClearSamples" Visibility="Collapsed" Content="{StaticResource T_ClearMap}"></Button>
                     <ToggleButton Visibility="Collapsed" Content="{StaticResource T_AnalysisSamples}" IsChecked="{Binding EnableAnalysis}"></ToggleButton>
                 </StackPanel>
             </DockPanel>
         </Border>
-        <Border DockPanel.Dock="Bottom">
+        <!--<Border DockPanel.Dock="Bottom" Visibility="Collapsed">
             <StackPanel Orientation="Horizontal" Margin="3">
                 <StackPanel.Resources>
                     <Style TargetType="Button" BasedOn="{StaticResource MetroButton}">
@@ -117,7 +84,7 @@
                 <control:NumericUpDown Value="{Binding MapGridOptions.opacity}" Maximum="1" Minimum="0" Interval="0.1"/>
                 <Button Name="RefreshBlock" Content="{StaticResource T_RefreshBlock}"></Button>
             </StackPanel>
-        </Border>
+        </Border>-->
         <Border DockPanel.Dock="Left" >
             <ListView Margin="5" Width="40" ItemsSource="{Binding MapGridOptions.pollutant.Levels}" >
                 <ListView.ItemsPanel>
@@ -152,18 +119,19 @@
         </Border>
         <Border>
             <Grid>
-                <WebBrowser Name="Map" Tag="{Binding MapContainer,Mode=OneWayToSource}"/>
-                <Popup ctrl:PopupHelper.AttachWindow="{Binding RelativeSource={RelativeSource Mode=FindAncestor,  AncestorType={x:Type Window}}}" Placement="Top" Width="{Binding ElementName=Map,Path=ActualWidth}" Height="{Binding ElementName=Map,Path=ActualHeight}"  VerticalOffset="{Binding ElementName=Map,Path=ActualHeight}" IsOpen="True" AllowsTransparency="True" >
+                <WebBrowser Name="Map" Tag="{Binding MapContainer,Mode=OneWayToSource}" Margin="1"/>
+                <Popup ctrl:PopupHelper.AttachWindow="{Binding RelativeSource={RelativeSource Mode=FindAncestor,  AncestorType={x:Type Window}}}"
+                       Placement="Top" Width="{Binding ElementName=Map,Path=ActualWidth}" 
+                       Height="{Binding ElementName=Map,Path=ActualHeight}"  
+                       VerticalOffset="{Binding ElementName=Map,Path=ActualHeight}" 
+                       IsOpen="True" 
+                       AllowsTransparency="True" >
                     <Grid>
-                        <Border  VerticalAlignment="Bottom"
-                            Background="White"
+                        <ContentControl VerticalAlignment="Bottom"
                             Visibility="{Binding PropertyPanel,Converter={StaticResource AnyVisiable}}" >
                             <control:TransitioningContentControl  cal:View.Model="{Binding PropertyPanel}"/>
-                        </Border>
-                        <Border 
-                            Background="White"
-                            VerticalAlignment="Top"
-                            HorizontalAlignment="Left">
+                        </ContentControl>
+                        <ContentControl VerticalAlignment="Top"  HorizontalAlignment="Left" Background="{DynamicResource  AccentColor4}">
                             <Grid>
                                 <control:TransitioningContentControl  
                                     Visibility="{Binding Map3DPanel,Converter={StaticResource AnyVisiable}}" 
@@ -175,13 +143,17 @@
                                     Height="{Binding ElementName=Map,Path=ActualHeight}"  
                                     Visibility="{Binding Map3DFullPanel,Converter={StaticResource AnyVisiable}}" 
                                     cal:View.Model="{Binding Map3DFullPanel}"/>
-                                <ToggleButton IsChecked="{Binding Show3DView}" Width="30" Height="30" 
-                                              Style="{DynamicResource MetroCircleButtonStyle}" VerticalAlignment="Top" HorizontalAlignment="Left">3D</ToggleButton>
-                                <ToggleButton IsChecked="{Binding Map3DFullScreen}" Width="30" Height="30" 
+                                <ToggleButton IsChecked="{Binding Show3DView}"
+                                              Style="{StaticResource Btn_Cirle}" 
+                                              ctrl:IconHelper.Icon="{StaticResource appbar_axis_three}" 
+                                              VerticalAlignment="Top" HorizontalAlignment="Left"/>
+                                <ToggleButton IsChecked="{Binding Map3DFullScreen}"
                                               Visibility="{Binding Show3DView,Converter={StaticResource IsVisible}}" 
-                                              Style="{DynamicResource MetroCircleButtonStyle}" VerticalAlignment="Top" HorizontalAlignment="Right">〓</ToggleButton>
+                                              Style="{DynamicResource Btn_Cirle}" 
+                                              ctrl:IconHelper.Icon="{StaticResource appbar_arrow_expand}"
+                                              VerticalAlignment="Top" HorizontalAlignment="Left" Margin="0 45"/>
                             </Grid>
-                        </Border>
+                        </ContentControl>
                     </Grid>
                 </Popup>
             </Grid>

@@ -13,7 +13,7 @@
     <sys:String x:Key="T_AltitudeUnit">高度单位</sys:String>
     <sys:String x:Key="T_MaxAltitude">最高海拔</sys:String>
     <sys:String x:Key="T_Speed">速度</sys:String>
-    <sys:String x:Key="T_RealtimeAirSamples">实时空气采样</sys:String>
+    <sys:String x:Key="T_RealtimeAirSamples">实时采样</sys:String>
     <sys:String x:Key="T_SensorStatus">传感器状态</sys:String>
     <sys:String x:Key="T_DataServiceStatus">数据服务</sys:String>
     <sys:String x:Key="T_VideoServiceStatus">视频服务</sys:String>

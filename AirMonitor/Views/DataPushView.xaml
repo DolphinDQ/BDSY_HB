@@ -5,6 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:AirMonitor.Views"
              xmlns:oxy="clr-namespace:OxyPlot.Wpf;assembly=OxyPlot.Wpf" 
+             xmlns:ctrl="clr-namespace:AirMonitor.Controls"
              xmlns:controls="http://metro.mahapps.com/winfx/xaml/controls"
              mc:Ignorable="d" 
              xmlns:cal="http://www.caliburnproject.org"
@@ -19,28 +20,27 @@
                     </Style>
                 </Style.Resources>
             </Style>
-            <Style TargetType="Border">
-                <Setter Property="BorderBrush" Value="LightGray"/>
-                <Setter Property="BorderThickness" Value="1"/>
+            <Style TargetType="Border" BasedOn="{StaticResource G_Border}">
                 <Setter Property="Margin" Value="1"/>
+                <Setter Property="Padding" Value="2"/>
             </Style>
         </DockPanel.Resources>
-
         <Border DockPanel.Dock="Top">
             <StackPanel>
                 <DockPanel>
                     <DockPanel.Resources>
-                        <Style x:Key="VideoButton" TargetType="Button" BasedOn="{StaticResource MetroButton}">
+                        <Style x:Key="VideoButton" TargetType="Button" BasedOn="{StaticResource Btn_Cirle}">
                             <Setter Property="DockPanel.Dock" Value="Right"/>
-                            <Setter Property="Height" Value="Auto"/>
                             <Setter Property="VerticalAlignment" Value="Bottom"/>
                             <Setter Property="Margin" Value="0 0 3 0"/>
+                            <Setter Property="Width" Value="35"/>
+                            <Setter Property="Height" Value="35"/>
                             <Setter Property="Visibility" Value="{Binding VideoModel,Converter={StaticResource AnyVisiable}}" />
                         </Style>
                     </DockPanel.Resources>
-                    <Button Name="CloseVideo" Style="{StaticResource VideoButton}" Content="{StaticResource T_CloseVideo}"></Button>
-                    <Button Name="OpenVideoDialog" Style="{StaticResource VideoButton}" Content="{StaticResource T_OpenVideoDialog}"></Button>
-                    <Label Style="{StaticResource Lbl_Title}" Content="{StaticResource T_UavStatus}"></Label>
+                    <Button Name="CloseVideo" Style="{StaticResource VideoButton}" ctrl:IconHelper.Icon="{StaticResource appbar_close}"></Button>
+                    <Button Name="OpenVideoDialog" Style="{StaticResource VideoButton}" ctrl:IconHelper.Icon="{StaticResource appbar_window_maximize }"></Button>
+                    <Label Style="{StaticResource Lbl_Title}" Content="{StaticResource T_UavStatus}" ctrl:IconHelper.Icon="{StaticResource appbar_globe_wire}"/>
                 </DockPanel>
                 <Grid Name="UavStatusPanel">
                     <UniformGrid Columns="4">
@@ -91,10 +91,10 @@
                             <Style TargetType="ComboBox" BasedOn="{StaticResource MetroComboBox}">
                                 <Setter Property="Margin" Value="5"/>
                             </Style>
-                            <Style TargetType="oxy:PlotView">
+                            <Style TargetType="oxy:PlotView" BasedOn="{StaticResource G_OxyPlot}">
                                 <Setter Property="Height" Value="50"/>
                                 <Setter Property="Margin" Value="5"/>
-                                <Setter Property="BorderThickness" Value="1"/>
+                                <Setter Property="BorderThickness" Value="0"/>
                                 <!--<Setter Property="IsMouseWheelEnabled" Value="False"/>-->
                             </Style>
                         </Style.Resources>
@@ -102,14 +102,15 @@
                 </DockPanel.Resources>
                 <StackPanel DockPanel.Dock="Top">
                     <DockPanel>
-                        <Label Style="{StaticResource Lbl_Title}" Content="{StaticResource T_RealtimeAirSamples}"/>
+                        <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" VerticalAlignment="Bottom">
+                            <Button Visibility="Collapsed" Name="ClearData" Width="65" Margin="0 5 5 5" Content="{StaticResource T_ClearReport}"  DockPanel.Dock="Right" ></Button>
+                            <controls:ToggleSwitch Margin="5 0" IsChecked="{Binding EnableSampling}"  OffLabel="{StaticResource T_StopSimpling}" OnLabel="{StaticResource T_StartSimpling}"/>
+                        </StackPanel>
+                        <Label Style="{StaticResource Lbl_Title}" Content="{StaticResource T_RealtimeAirSamples}" ctrl:IconHelper.Icon="{StaticResource appbar_tree_leaf}"/>
                         <!--<Button Name="Config" HorizontalAlignment="Right" Margin=" 5" Width="65" Content="{StaticResource T_Setting}" ></Button>-->
                     </DockPanel>
 
                     <DockPanel>
-                        <Label Content="{StaticResource T_DataDisplay}"></Label>
-                        <Button Name="ClearData" Width="65" Margin="0 5 5 5" Content="{StaticResource T_ClearReport}"  DockPanel.Dock="Right" ></Button>
-                        <controls:ToggleSwitch Margin="5 0" OffLabel="{StaticResource T_StopSimpling}" IsChecked="{Binding EnableSampling}" OnLabel="{StaticResource T_StartSimpling}"/>
                     </DockPanel>
                 </StackPanel>
                 <ScrollViewer VerticalScrollBarVisibility="Auto">

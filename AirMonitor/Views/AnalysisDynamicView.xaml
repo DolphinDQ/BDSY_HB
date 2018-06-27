@@ -8,10 +8,9 @@
              xmlns:oxy="http://oxyplot.org/wpf"
              mc:Ignorable="d" 
              d:DesignHeight="300" Height="300" d:DesignWidth="1000">
-    
     <Border>
         <DockPanel>
-            <StackPanel Orientation="Horizontal" DockPanel.Dock="Top">
+            <StackPanel  Background="{DynamicResource AccentColorBrush4}" Orientation="Horizontal" DockPanel.Dock="Top">
                 <StackPanel.Resources>
                     <Style TargetType="Label" >
                         <Setter Property="VerticalAlignment" Value="Bottom"/>
@@ -29,7 +28,7 @@
                 <Label>高度差</Label>
                 <Label Content="{Binding HeightDifference,Converter={StaticResource Round}}"></Label>
             </StackPanel>
-            <oxy:PlotView Model="{Binding PlotModel}"></oxy:PlotView>
+            <oxy:PlotView Model="{Binding PlotModel}" ></oxy:PlotView>
         </DockPanel>
     </Border>
 </UserControl>

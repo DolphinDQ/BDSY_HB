@@ -16,11 +16,15 @@
             UavCollection="{Binding UavList}"  
             Angle="{Binding Angle}"
             BlockCollection="{Binding BlockList}"
-            MapOpacity="{Binding ElementName=MapOpacity,Path=Value}"
-            WallHeight="{Binding ElementName=WallHeight,Path=Value}"
+            MapOpacity="{Binding MapOpacity}"
+            WallHeight="{Binding WallHeight}"
             />
-        <StackPanel Orientation="Horizontal" VerticalAlignment="Bottom">
-            <Border BorderBrush="LightGray" BorderThickness="1"  Margin="2" CornerRadius="3">
+        <StackPanel Orientation="Vertical" VerticalAlignment="Bottom" HorizontalAlignment="Left">
+            <StackPanel.Resources>
+                <Style TargetType="Button" BasedOn="{StaticResource Btn_Cirle}">
+                </Style>
+            </StackPanel.Resources>
+            <!--<Border BorderBrush="LightGray" BorderThickness="1"  Margin="2" CornerRadius="3">
                 <controls:DropDownButton Content="方向调整"  BorderThickness="0">
                     <controls:DropDownButton.Items>
                         <TextBlock Padding="20 5" cal:Message.Attach="[Event MouseUp]=[Action SetAngle(0)]" Text="0度"/>
@@ -30,12 +34,16 @@
                         <TextBlock Padding="20 5" cal:Message.Attach="[Event MouseUp]=[Action SetAngle(180)]" Text="180度"/>
                     </controls:DropDownButton.Items>
                 </controls:DropDownButton>
-            </Border>
-            <Label VerticalContentAlignment="Center">地图透明</Label>
+            </Border>-->
+            <!--<Label VerticalContentAlignment="Center">地图透明</Label>
             <Slider Width="100" Name="MapOpacity" Minimum="0" Maximum="1" Value="1"></Slider>
             <Label  VerticalContentAlignment="Center">测量高度</Label>
-            <Slider Width="100" Name="WallHeight" Minimum="100" Maximum="3000" Value="500"></Slider>
-
+            <Slider Width="100" Name="WallHeight" Minimum="100" Maximum="3000" Value="500"></Slider>-->
+            <Button Name="LayerUp"  ctrl:IconHelper.Icon="{StaticResource appbar_layer_up}" />
+            <Button Name="LayerDown"  ctrl:IconHelper.Icon="{StaticResource appbar_layer_down}" />
+            <Button Name="ChangeBackgroud" Visibility="Collapsed" ctrl:IconHelper.Icon="{StaticResource appbar_layer_arrange_sendbackward}" />
+            <Button Name="TurnLeft" ctrl:IconHelper.Icon="{StaticResource appbar_transform_rotate_counterclockwise}" />
+            <Button Name="TurnRight" ctrl:IconHelper.Icon="{StaticResource appbar_transform_rotate_clockwise}"/>
         </StackPanel>
     </Grid>
 </UserControl>
