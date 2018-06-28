@@ -38,7 +38,7 @@
         <DockPanel>
             <Label Style="{StaticResource  LblSettingTitle}" Content="{StaticResource T_SamplingInterval}"></Label>
             <Label Style="{StaticResource  LblSettingUnit}" Content="ms"></Label>
-            <control:NumericUpDown Value="{Binding Interval}" Minimum="100" Maximum="5000"  Interval="100"></control:NumericUpDown>
+            <control:NumericUpDown Value="{Binding Interval}" Minimum="500" Maximum="5000"  Interval="100"></control:NumericUpDown>
         </DockPanel>
         <DockPanel>
             <Label Style="{StaticResource  LblSettingTitle}" Content="{StaticResource T_Progress}"></Label>

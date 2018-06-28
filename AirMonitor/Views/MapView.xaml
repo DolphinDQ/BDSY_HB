@@ -144,7 +144,7 @@
                                     cal:View.Model="{Binding Map3DFullPanel}"/>
                                 <StackPanel Orientation="Horizontal" VerticalAlignment="Top" HorizontalAlignment="Left">
                                     <Button Name="RefreshBlock" cal:Message.Attach="[Event Click]=[Action RefreshBlock]" Content="{StaticResource T_RefreshBlock}" Style="{DynamicResource Btn_Cirle}" ctrl:IconHelper.Icon="{StaticResource appbar_refresh}"  />
-                                    <Button Name="ClearSamples" cal:Message.Attach="[Event Click]=[Action ClearSamples]" Content="{StaticResource T_ClearMap}"  Style="{DynamicResource Btn_Cirle}" ctrl:IconHelper.Icon="{StaticResource appbar_clean}"  />
+                                    <!--<Button Name="ClearSamples" cal:Message.Attach="[Event Click]=[Action ClearSamples]" Content="{StaticResource T_ClearMap}"  Style="{DynamicResource Btn_Cirle}" ctrl:IconHelper.Icon="{StaticResource appbar_clean}"  />-->
                                     <ToggleButton IsChecked="{Binding Show3DView}"
                                               Style="{StaticResource Btn_Cirle}" 
                                               ctrl:IconHelper.Icon="{StaticResource appbar_axis_three}"  />

@@ -114,6 +114,7 @@ namespace AirMonitor.Core
             switch (message.Status)
             {
                 case SamplingStatus.Stop:
+                    if (CacheFilePath == null) return;
                     await OnSaveToCloud(CacheFilePath);
                     CacheFilePath = null;
                     break;

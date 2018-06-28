@@ -1,0 +1,74 @@
+﻿<UserControl x:Class="AirMonitor.Views.PollutantView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:AirMonitor.Views"
+             xmlns:oxy="http://oxyplot.org/wpf"
+             mc:Ignorable="d" 
+             d:DesignHeight="100" d:DesignWidth="300">
+    <DockPanel  Margin="1 0 1 1">
+        <Border DockPanel.Dock="Right" Style="{StaticResource G_Border}">
+            <UniformGrid  Rows="2" Columns="2">
+                <UniformGrid.Resources>
+                    <Style TargetType="TextBlock">
+                        <Setter Property="FontFamily" Value="微软雅黑"/>
+                        <Setter Property="HorizontalAlignment" Value="Center"/>
+                    </Style>
+                </UniformGrid.Resources>
+                <Label Width="50" Background="{StaticResource ThemeColorBrush4}" HorizontalContentAlignment="Center">
+                    <DockPanel Margin="0 3">
+                        <TextBlock  DockPanel.Dock="Bottom" FontSize="10" Text="{StaticResource T_Realtime}"></TextBlock>
+                        <TextBlock MaxHeight="19" FontSize="15" FontWeight="Bold" TextWrapping="Wrap" Foreground="{Binding RealtimeColor}" Text="{Binding RealtimeValue,Converter={StaticResource Round}}"></TextBlock>
+                    </DockPanel>
+                </Label>
+                <Label Width="50" Background="{StaticResource ThemeColorBrush3}" HorizontalContentAlignment="Center">
+                    <DockPanel Margin="0 3">
+                        <TextBlock DockPanel.Dock="Bottom"  FontSize="10" Text="{StaticResource T_Max}"></TextBlock>
+                        <TextBlock MaxHeight="19" FontSize="15" FontWeight="Bold" TextWrapping="Wrap" Foreground="{Binding MaxColor}" Text="{Binding MaxValue,Converter={StaticResource Round}}"></TextBlock>
+                    </DockPanel>
+                </Label>
+                <Label Width="50" Background="{StaticResource ThemeColorBrush3}" HorizontalContentAlignment="Center">
+                    <DockPanel Margin="0 3">
+                        <TextBlock DockPanel.Dock="Bottom" FontSize="10" Text="{StaticResource T_Avg}"></TextBlock>
+                        <TextBlock MaxHeight="19" FontSize="15" FontWeight="Bold" TextWrapping="Wrap" Foreground="{Binding AvgColor}" Text="{Binding AvgValue,Converter={StaticResource Round}}"></TextBlock>
+                    </DockPanel>
+                </Label>
+                <Label Width="50" Background="{StaticResource ThemeColorBrush4}" HorizontalContentAlignment="Center">
+                    <DockPanel Margin="0 3">
+                        <TextBlock DockPanel.Dock="Bottom" FontSize="10" Text="{StaticResource T_Min}"></TextBlock>
+                        <TextBlock MaxHeight="19" FontSize="15" FontWeight="Bold" TextWrapping="Wrap" Foreground="{Binding MinColor}" Text="{Binding MinValue,Converter={StaticResource Round}}"></TextBlock>
+                    </DockPanel>
+                </Label>
+            </UniformGrid>
+        </Border>
+        <Border Style="{StaticResource G_Border}" Margin="0 0 1 0">
+            <DockPanel>
+                <Label DockPanel.Dock="Top" Background="{StaticResource ThemeColorBrush4}">
+                    <StackPanel Orientation="Horizontal">
+                        <Ellipse Width="15" Height="15" VerticalAlignment="Bottom" Margin="2 0" Fill="{Binding IsWarning,Converter={StaticResource Warning}}">
+                            <Ellipse.Stroke>
+                                <RadialGradientBrush>
+                                    <GradientStop Color="{Binding IsWarning,Converter={StaticResource Warning}}" Offset="0"/>
+                                    <GradientStop Color="#00ffffff" Offset="1"/>
+                                </RadialGradientBrush>
+                            </Ellipse.Stroke>
+                        </Ellipse>
+                        <TextBlock Text="{Binding Standard.DisplayName}" FontWeight="Bold" FontSize="13"></TextBlock>
+                        <TextBlock FontSize="10"  VerticalAlignment="Bottom" Margin="3 1">
+                            <TextBlock.Text>
+                                <MultiBinding StringFormat="{}({0}-{1})({2})">
+                                    <Binding Path="Standard.MinValue"/>
+                                    <Binding Path="Standard.MaxValue"/>
+                                    <Binding Path="Standard.Unit"/>
+                                </MultiBinding>
+                            </TextBlock.Text>
+                        </TextBlock>
+                    </StackPanel>
+                </Label>
+
+                <oxy:PlotView Model="{Binding ChartModel}" BorderThickness="0" />
+            </DockPanel>
+        </Border>
+    </DockPanel>
+</UserControl>

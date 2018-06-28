@@ -73,31 +73,5 @@ namespace AirMonitor.Map
         //[JsonIgnore]
         //public double[] ValueStep { get; private set; }
 
-        public string GetColor(double value)
-        {
-            if (pollutant.Levels != null)
-            {
-                var minValue = pollutant.MinValue;
-                var maxValue = pollutant.MaxValue;
-                if (value > maxValue) value = maxValue;
-                if (value < minValue) value = minValue;
-                var level = pollutant.Levels.FirstOrDefault(o => o.MaxValue >= value && o.MinValue <= value);
-                maxValue = level.MaxValue;
-                minValue = level.MinValue;
-                var percent = (value - minValue) / (maxValue - minValue);
-                var begin = (Color)ColorConverter.ConvertFromString(level.MinColor);
-                var end = (Color)ColorConverter.ConvertFromString(level.MaxColor);
-                var r = GetColorValue(percent, begin.R, end.R);
-                var g = GetColorValue(percent, begin.G, end.G);
-                var b = GetColorValue(percent, begin.B, end.B);
-                return "#" + r + g + b;
-            }
-            return "#ffffff";
-        }
-
-        private string GetColorValue(double percent, double begin, double end)
-        {
-            return ((int)((end - begin) * percent + begin)).ToString("x2");
-        }
     }
 }

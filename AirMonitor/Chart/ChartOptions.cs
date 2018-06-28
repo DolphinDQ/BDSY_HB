@@ -15,5 +15,8 @@ namespace AirMonitor.Chart
         public double? MaxY { get; set; }
 
         public double? MinY { get; set; }
+
+    
+
     }
 }

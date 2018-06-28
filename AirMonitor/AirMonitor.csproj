@@ -140,6 +140,7 @@
     <Compile Include="Controls\UavMarker3D.cs" />
     <Compile Include="Converter\AirLevelToGradientConverter.cs" />
     <Compile Include="Converter\AnyVisiableConverter.cs" />
+    <Compile Include="Converter\ConverterBase.cs" />
     <Compile Include="Converter\IsConnectConvert.cs" />
     <Compile Include="Converter\IsHiddenConverter.cs" />
     <Compile Include="Converter\IsNullConverter.cs" />
@@ -203,6 +204,7 @@
     </Compile>
     <Compile Include="Config\ConfigManager.cs" />
     <Compile Include="Interfaces\IConfigManager.cs" />
+    <Compile Include="ViewModels\AirSampleDisplayViewModel.cs" />
     <Compile Include="ViewModels\AnalysisMode.cs" />
     <Compile Include="ViewModels\AnalysisDynamicViewModel.cs" />
     <Compile Include="ViewModels\ConfigCameraViewModel.cs" />
@@ -213,9 +215,13 @@
     <Compile Include="ViewModels\MapViewModel.cs" />
     <Compile Include="ViewModels\ConfigAirPollutantViewModel.cs" />
     <Compile Include="ViewModels\AnalysisStaticViewModel.cs" />
+    <Compile Include="ViewModels\PollutantViewModel.cs" />
     <Compile Include="ViewModels\SaveSampleViewModel.cs" />
     <Compile Include="ViewModels\SimulatorViewModel.cs" />
     <Compile Include="ViewModels\VideoViewModel.cs" />
+    <Compile Include="Views\AirSampleDisplayView.xaml.cs">
+      <DependentUpon>AirSampleDisplayView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\AnalysisDynamicView.xaml.cs">
       <DependentUpon>AnalysisDynamicView.xaml</DependentUpon>
     </Compile>
@@ -239,6 +245,9 @@
     </Compile>
     <Compile Include="Views\AnalysisStaticView.xaml.cs">
       <DependentUpon>AnalysisStaticView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\PollutantView.xaml.cs">
+      <DependentUpon>PollutantView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\SaveSampleView.xaml.cs">
       <DependentUpon>SaveSampleView.xaml</DependentUpon>
@@ -273,6 +282,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Page Include="Views\AirSampleDisplayView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Views\AnalysisDynamicView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -302,6 +315,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\AnalysisStaticView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\PollutantView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

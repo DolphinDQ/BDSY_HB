@@ -1,4 +1,5 @@
-﻿using System;
+﻿using AirMonitor.Interfaces;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
@@ -11,12 +12,13 @@ namespace AirMonitor.Converter
 {
     class WarningConverter : IValueConverter
     {
-        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+
+        public  object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            return ((bool)value) ? Brushes.Red : Brushes.LightGray;
+            return ((bool)value) ? Brushes.Red : Brushes.Green;
         }
 
-        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        public  object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
             throw new NotImplementedException();
         }

@@ -139,9 +139,6 @@
                         <Label Style="{StaticResource Lbl_Title}" Content="{StaticResource T_RealtimeAirSamples}" ctrl:IconHelper.Icon="{StaticResource appbar_tree_leaf}"/>
                         <!--<Button Name="Config" HorizontalAlignment="Right" Margin=" 5" Width="65" Content="{StaticResource T_Setting}" ></Button>-->
                     </DockPanel>
-
-                    <DockPanel>
-                    </DockPanel>
                 </StackPanel>
                 <ScrollViewer VerticalScrollBarVisibility="Auto">
                     <StackPanel>

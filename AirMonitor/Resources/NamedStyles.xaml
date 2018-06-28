@@ -55,8 +55,20 @@
             </Setter.Value>
         </Setter>
     </Style>-->
-    <SolidColorBrush x:Key="WallColor" Color="{DynamicResource AccentColor3}" />
-    <SolidColorBrush x:Key="WallColor1" Color="{DynamicResource AccentColor2}" />
+    <SolidColorBrush x:Key="ThemeColorBrush2" Color="{DynamicResource AccentColor2}" />
+    <SolidColorBrush x:Key="ThemeColorBrush3" Color="{DynamicResource AccentColor3}" />
+    <SolidColorBrush x:Key="ThemeColorBrush4" Color="{DynamicResource AccentColor4}" />
+    <SolidColorBrush x:Key="ThemeColorBrush" Color="{DynamicResource AccentColor}" />
+    <SolidColorBrush x:Key="GrayBrush1" Color="{StaticResource Gray1}"  />
+    <SolidColorBrush x:Key="GrayBrush2" Color="{StaticResource Gray2}"  />
+    <SolidColorBrush x:Key="GrayBrush3" Color="{StaticResource Gray3}"  />
+    <SolidColorBrush x:Key="GrayBrush4" Color="{StaticResource Gray4}"  />
+    <SolidColorBrush x:Key="GrayBrush5" Color="{StaticResource Gray5}"  />
+    <SolidColorBrush x:Key="GrayBrush6" Color="{StaticResource Gray6}"  />
+    <SolidColorBrush x:Key="GrayBrush7" Color="{StaticResource Gray7}"  />
+    <SolidColorBrush x:Key="GrayBrush8" Color="{StaticResource Gray8}"  />
+    <SolidColorBrush x:Key="GrayBrush9" Color="{StaticResource Gray9}"  />
+    <SolidColorBrush x:Key="GrayBrush10" Color="{StaticResource Gray10}" />
     <Style TargetType="{x:Type oxy:PlotView}" BasedOn="{StaticResource G_OxyPlot}">
         <Setter Property="FocusVisualStyle" Value="{x:Null}" />
         <Setter Property="DefaultTrackerTemplate">
@@ -77,7 +89,7 @@
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
-        
+
     </Style>
 
     <!--<Style TargetType="{x:Type oxy:Plot}">

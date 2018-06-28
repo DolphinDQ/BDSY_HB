@@ -10,6 +10,8 @@ using System.Collections.ObjectModel;
 using Caliburn.Micro;
 using AirMonitor.EventArgs;
 using System.Threading.Tasks;
+using System.Collections;
+using System.Collections.Generic;
 
 namespace AirMonitor.Chart
 {
@@ -21,6 +23,51 @@ namespace AirMonitor.Chart
         {
             m_eventAggregator = eventAggregator;
         }
+
+        public object CreateLiner(ObservableCollection<EvtAirSample> data, string xKey, string yKey)
+        {
+            var plot = new PlotModel { IsLegendVisible = false, Padding = new OxyThickness(2), PlotAreaBorderThickness = new OxyThickness(0) };
+            plot.Axes.Add(new LinearAxis()
+            {
+                IsAxisVisible = false,
+                Key = yKey
+            });
+            var yAxis = new DateTimeAxis()
+            {
+                IsAxisVisible = false,
+                Key = xKey,
+                Position = AxisPosition.Bottom,
+            };
+            plot.Axes.Add(yAxis);
+            var series = new LineSeries { MarkerType = MarkerType.None };
+            series.ItemsSource = data;
+            series.XAxisKey = xKey;
+            series.DataFieldX = xKey;
+            series.YAxisKey = yKey;
+            series.DataFieldY = yKey;
+            data.CollectionChanged += (s, e) =>
+            {
+                switch (e.Action)
+                {
+                    case NotifyCollectionChangedAction.Add:
+                        var max = data.Max(o => o.RecordTime);
+                        yAxis.Maximum = DateTimeAxis.ToDouble(max);
+                        yAxis.Minimum = DateTimeAxis.ToDouble(max - Span);
+                        break;
+                    case NotifyCollectionChangedAction.Reset:
+                        series.Points.Clear();
+                        break;
+                    default:
+                        break;
+                }
+
+                plot.InvalidatePlot(true);
+            };
+            plot.Series.Add(series);
+            return plot;
+        }
+
+
 
         private static TimeSpan Span { get; set; } = TimeSpan.FromSeconds(60);
 
@@ -113,8 +160,6 @@ namespace AirMonitor.Chart
             plot.Updated -= Plot_Updated;
         }
 
-
-
         private async void Series_SelectionChanged(object sender, System.EventArgs e)
         {
             var serise = sender as ScatterSeries;
@@ -151,7 +196,6 @@ namespace AirMonitor.Chart
             }
 
         }
-
 
     }
 }

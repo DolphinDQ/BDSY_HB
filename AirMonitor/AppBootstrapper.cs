@@ -24,7 +24,7 @@ namespace AirMonitor
         [DllImport("user32.dll")]
         private static extern int ShowWindow(IntPtr hWnd, int nCmdShow);
 
-        static SimpleContainer container;
+        public static SimpleContainer Container { get; private set; }
 
         public AppBootstrapper()
         {
@@ -46,31 +46,33 @@ namespace AirMonitor
 
         protected override void Configure()
         {
-            container = new SimpleContainer();
-            container.Singleton<IWindowManager, WindowManager>();
-            container.Singleton<IEventAggregator, EventAggregator>();
-            container.Singleton<IResourceManager, ResourceProvider>();
-            container.Singleton<ILog, Logger>();
-            container.Singleton<ISaveManager, SaveManager>();
-            container.Singleton<IDataManager, MqttDataManager>();
-            container.Singleton<IConfigManager, ConfigManager>();
-            container.Singleton<IChartManager, ChartManager>();
-            container.Singleton<ICameraManager, BVCUCameraManager>();
-            container.Singleton<IBackupManager, BackupManager>();
-            container.PerRequest<IShell, ShellViewModel>();
-            container.PerRequest<IMapProvider, MapProvider>();
-            container.RegisterInstance(typeof(IFactory), null, this);
-            container.PerRequest<DataPushViewModel>();
-            container.PerRequest<MapViewModel>();
-            container.PerRequest<ConfigAirPollutantViewModel>();
-            container.PerRequest<AnalysisStaticViewModel>();
-            container.PerRequest<AnalysisDynamicViewModel>();
-            container.PerRequest<ConfigPushServerViewModel>();
-            container.PerRequest<ConfigCameraViewModel>();
-            container.PerRequest<Map3DViewModel>();
-            container.Singleton<SimulatorViewModel>();
-            container.Singleton<SaveSampleViewModel>();
-            container.PerRequest<VideoViewModel>();
+            Container = new SimpleContainer();
+            Container.Singleton<IWindowManager, WindowManager>();
+            Container.Singleton<IEventAggregator, EventAggregator>();
+            Container.Singleton<IResourceManager, ResourceProvider>();
+            Container.Singleton<ILog, Logger>();
+            Container.Singleton<ISaveManager, SaveManager>();
+            Container.Singleton<IDataManager, MqttDataManager>();
+            Container.Singleton<IConfigManager, ConfigManager>();
+            Container.Singleton<IChartManager, ChartManager>();
+            Container.Singleton<ICameraManager, BVCUCameraManager>();
+            Container.Singleton<IBackupManager, BackupManager>();
+            Container.PerRequest<IShell, ShellViewModel>();
+            Container.PerRequest<IMapProvider, MapProvider>();
+            Container.RegisterInstance(typeof(IFactory), null, this);
+            Container.PerRequest<DataPushViewModel>();
+            Container.PerRequest<MapViewModel>();
+            Container.PerRequest<ConfigAirPollutantViewModel>();
+            Container.PerRequest<AnalysisStaticViewModel>();
+            Container.PerRequest<AnalysisDynamicViewModel>();
+            Container.PerRequest<ConfigPushServerViewModel>();
+            Container.PerRequest<ConfigCameraViewModel>();
+            Container.PerRequest<Map3DViewModel>();
+            Container.Singleton<SimulatorViewModel>();
+            Container.Singleton<SaveSampleViewModel>();
+            Container.PerRequest<VideoViewModel>();
+            Container.PerRequest<AirSampleDisplayViewModel>();
+            Container.PerRequest<PollutantViewModel>();
         }
 
         protected override void OnUnhandledException(object sender, DispatcherUnhandledExceptionEventArgs e)
@@ -83,17 +85,17 @@ namespace AirMonitor
 
         protected override object GetInstance(Type service, string key)
         {
-            return container.GetInstance(service, key);
+            return Container.GetInstance(service, key);
         }
 
         protected override IEnumerable<object> GetAllInstances(Type service)
         {
-            return container.GetAllInstances(service);
+            return Container.GetAllInstances(service);
         }
 
         protected override void BuildUp(object instance)
         {
-            container.BuildUp(instance);
+            Container.BuildUp(instance);
         }
 
         protected override void OnStartup(object sender, System.Windows.StartupEventArgs e)
@@ -103,7 +105,7 @@ namespace AirMonitor
 
         public T Create<T>(string name = null)
         {
-            return container.GetInstance<T>(name);
+            return Container.GetInstance<T>(name);
         }
     }
 

@@ -1,0 +1,41 @@
+﻿<UserControl x:Class="AirMonitor.Views.AirSampleDisplayView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:AirMonitor.Views"
+             xmlns:controls="http://metro.mahapps.com/winfx/xaml/controls"
+             xmlns:ctrl="clr-namespace:AirMonitor.Controls"
+             xmlns:cal="http://www.caliburnproject.org"
+             mc:Ignorable="d" Width="300"
+             d:DesignHeight="450" d:DesignWidth="800">
+    <Border Style="{StaticResource G_Border}" Margin="1">
+        <DockPanel>
+            <DockPanel DockPanel.Dock="Top">
+                <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" VerticalAlignment="Bottom">
+                    <Button Visibility="Collapsed" Name="ClearData" Width="65" Margin="0 5 5 5" Content="{StaticResource T_ClearReport}"  DockPanel.Dock="Right" ></Button>
+                    <controls:ToggleSwitch Margin="5 0" IsChecked="{Binding Sampling}"  OffLabel="{StaticResource T_StopSimpling}" OnLabel="{StaticResource T_StartSimpling}"/>
+                </StackPanel>
+                <Label Style="{StaticResource Lbl_Title}" Content="{StaticResource T_RealtimeAirSamples}" ctrl:IconHelper.Icon="{StaticResource appbar_tree_leaf}"/>
+            </DockPanel>
+            <ListView Background="Transparent" Focusable="False" BorderThickness="0" ItemTemplateSelector="{x:Null}" ItemsSource="{Binding PollutantViewList}">
+                <ListBox.ItemContainerStyle>
+                    <Style TargetType="{x:Type ListBoxItem}">
+                        <Setter Property="Template">
+                            <Setter.Value>
+                                <ControlTemplate TargetType="{x:Type ListBoxItem}">
+                                    <ContentPresenter />
+                                </ControlTemplate>
+                            </Setter.Value>
+                        </Setter>
+                    </Style>
+                </ListBox.ItemContainerStyle>
+                <ListView.ItemTemplate>
+                    <ItemContainerTemplate>
+                        <ContentControl cal:View.Model="{Binding}"/>
+                    </ItemContainerTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+        </DockPanel>
+    </Border>
+</UserControl>

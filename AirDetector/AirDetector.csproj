@@ -68,6 +68,9 @@
     <Compile Include="..\AirMonitor\Converter\AnyVisiableConverter.cs">
       <Link>Converter\AnyVisiableConverter.cs</Link>
     </Compile>
+    <Compile Include="..\AirMonitor\Converter\ConverterBase.cs">
+      <Link>Converter\ConverterBase.cs</Link>
+    </Compile>
     <Compile Include="..\AirMonitor\Converter\IsConnectConvert.cs">
       <Link>Converter\IsConnectConvert.cs</Link>
     </Compile>
