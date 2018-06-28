@@ -1,0 +1,100 @@
+﻿<UserControl x:Class="AirMonitor.Views.UavStatusDisplayView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:AirMonitor.Views"
+             xmlns:cal="http://www.caliburnproject.org"
+             mc:Ignorable="d" Width="300" Height="140"
+             xmlns:ctrl="clr-namespace:AirMonitor.Controls"
+             d:DesignHeight="250" d:DesignWidth="800">
+    <DockPanel>
+        <Label DockPanel.Dock="Top" Style="{StaticResource Lbl_Title}" Content="{StaticResource T_UavStatus}" ctrl:IconHelper.Icon="{StaticResource appbar_globe_wire}"/>
+        <UniformGrid Columns="4">
+            <UniformGrid.Resources>
+                <Style TargetType="ContentControl">
+                    <Setter Property="Template">
+                        <Setter.Value>
+                            <ControlTemplate>
+                                <StackPanel Cursor="Hand" Background="Transparent" Name="PART_Panel" VerticalAlignment="Center">
+                                    <Border Width="40" Height="40">
+                                        <Rectangle VerticalAlignment="Bottom" HorizontalAlignment="Center" Width="{Binding RelativeSource={RelativeSource TemplatedParent},Path=(ctrl:IconHelper.IconWidth)}" Height="{Binding RelativeSource={RelativeSource TemplatedParent},Path=(ctrl:IconHelper.IconHeight)}" >
+                                            <Rectangle.Fill>
+                                                <VisualBrush Visual="{Binding RelativeSource={RelativeSource TemplatedParent},Path=(ctrl:IconHelper.Icon)}"></VisualBrush>
+                                            </Rectangle.Fill>
+                                        </Rectangle>
+                                    </Border>
+                                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                        <Ellipse Width="15" Height="15" StrokeThickness="3" 
+                                                     Visibility="{Binding Path=(ctrl:IconHelper.Status),RelativeSource={RelativeSource TemplatedParent},Converter={StaticResource AnyVisiable}}"
+                                                     Fill="{Binding Path=(ctrl:IconHelper.Status),RelativeSource={RelativeSource TemplatedParent},Converter={StaticResource StatusToBrush}}" >
+                                            <Ellipse.Stroke>
+                                                <RadialGradientBrush>
+                                                    <GradientStop Offset="0" Color="{Binding Path=(ctrl:IconHelper.Status),RelativeSource={RelativeSource TemplatedParent},Converter={StaticResource StatusToBrush}}"></GradientStop>
+                                                    <GradientStop Offset="1" Color="#00ffffff"></GradientStop>
+                                                </RadialGradientBrush>
+                                            </Ellipse.Stroke>
+                                        </Ellipse>
+                                        <Label VerticalAlignment="Bottom" FontSize="13" FontWeight="Bold" Margin="5" HorizontalAlignment="Center" Content="{Binding Path=(ctrl:IconHelper.Title),RelativeSource={RelativeSource TemplatedParent}}"></Label>
+                                    </StackPanel>
+                                </StackPanel>
+                                <ControlTemplate.Triggers>
+                                    <EventTrigger RoutedEvent="MouseEnter" >
+                                        <EventTrigger.Actions>
+                                            <BeginStoryboard>
+                                                <Storyboard >
+                                                    <ColorAnimation Duration="0:0:0.5"  
+                                                                    Storyboard.TargetName="PART_Panel"
+                                                                    Storyboard.TargetProperty="(StackPanel.Background).(SolidColorBrush.Color)"
+                                                                    To="{StaticResource AccentColor3}"
+                                                                    FillBehavior="HoldEnd"
+                                                                    From="Transparent"/>
+                                                </Storyboard>
+                                            </BeginStoryboard>
+                                        </EventTrigger.Actions>
+                                    </EventTrigger>
+                                    <EventTrigger RoutedEvent="MouseLeave" >
+                                        <EventTrigger.Actions>
+                                            <BeginStoryboard >
+                                                <Storyboard>
+                                                    <ColorAnimation Duration="0:0:0.5"  
+                                                                    Storyboard.TargetName="PART_Panel"
+                                                                    Storyboard.TargetProperty="(StackPanel.Background).(SolidColorBrush.Color)"
+                                                                    From="{StaticResource AccentColor3}"
+                                                                    FillBehavior="HoldEnd"
+                                                                    To="Transparent"/>
+                                                </Storyboard>
+                                            </BeginStoryboard>
+                                        </EventTrigger.Actions>
+                                    </EventTrigger>
+                                </ControlTemplate.Triggers>
+                            </ControlTemplate>
+
+                        </Setter.Value>
+                    </Setter>
+                </Style>
+            </UniformGrid.Resources>
+            <!--<ContentControl ctrl:IconHelper.Icon="{StaticResource appbar_battery_1}" ctrl:IconHelper.IconWidth="40" ctrl:IconHelper.IconHeight="20" ctrl:IconHelper.Title="90%"/>-->
+            <ContentControl cal:Message.Attach="[Event MouseUp]=[Action DataServiceSetting]" ctrl:IconHelper.Status="{Binding DataManager.IsConnected}" ctrl:IconHelper.Icon="{StaticResource appbar_database}" ctrl:IconHelper.IconWidth="30" ctrl:IconHelper.IconHeight="30" ctrl:IconHelper.Title="{StaticResource T_DataServiceStatus}"/>
+            <ContentControl cal:Message.Attach="[Event MouseUp]=[Action VideoServiceSetting]" ctrl:IconHelper.Status="{Binding CameraManager.IsConnected}" ctrl:IconHelper.Icon="{StaticResource appbar_video}" ctrl:IconHelper.IconWidth="40" ctrl:IconHelper.IconHeight="30" ctrl:IconHelper.Title="{StaticResource T_VideoServiceStatus}"/>
+            <ContentControl cal:Message.Attach="[Event MouseUp]=[Action OpenVideoDialog]" ctrl:IconHelper.Status="{Binding IsCameraOnline}" ctrl:IconHelper.Icon="{StaticResource appbar_camera}" ctrl:IconHelper.IconWidth="40" ctrl:IconHelper.IconHeight="30" ctrl:IconHelper.Title="{StaticResource T_CameraStatus}"/>
+            <ContentControl cal:Message.Attach="[Event MouseUp]=[Action SampleSetting]" ctrl:IconHelper.Status="{Binding Current.ghight,Converter={StaticResource IsNull}}" ctrl:IconHelper.Icon="{StaticResource appbar_map_gps}" ctrl:IconHelper.IconWidth="40" ctrl:IconHelper.IconHeight="30" ctrl:IconHelper.Title="{StaticResource T_GPS}"/>
+            <!--<ContentControl ctrl:IconHelper.Icon="{StaticResource appbar_dimension_box_height}" ctrl:IconHelper.IconWidth="25" ctrl:IconHelper.IconHeight="30"  >
+                <ctrl:IconHelper.Title>
+                    <MultiBinding StringFormat="{}{0}({1})">
+                        <Binding Path="Current.hight"/>
+                        <Binding Path="PollutantSetting.AltitudeUnit"/>
+                    </MultiBinding>
+                </ctrl:IconHelper.Title>
+            </ContentControl>-->
+            <!--<ContentControl ctrl:IconHelper.Icon="{StaticResource appbar_dimension_arrow_line_height}" ctrl:IconHelper.IconWidth="10" ctrl:IconHelper.IconHeight="30"  >
+                <ctrl:IconHelper.Title>
+                    <MultiBinding StringFormat="{}{0}({1})">
+                        <Binding Path="Current.ghight"/>
+                        <Binding Path="PollutantSetting.AltitudeUnit"/>
+                    </MultiBinding>
+                </ctrl:IconHelper.Title>
+            </ContentControl>-->
+        </UniformGrid>
+    </DockPanel>
+</UserControl>

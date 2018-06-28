@@ -147,6 +147,7 @@
     <Compile Include="Converter\IsVisibleConverter.cs" />
     <Compile Include="Converter\MultipleConverter.cs" />
     <Compile Include="Converter\NotConverter.cs" />
+    <Compile Include="Converter\StatusToBrushConverter.cs" />
     <Compile Include="Converter\WarningConverter.cs" />
     <Compile Include="Chart\ChartManager.cs" />
     <Compile Include="Core\BackupManager.cs" />
@@ -217,7 +218,9 @@
     <Compile Include="ViewModels\AnalysisStaticViewModel.cs" />
     <Compile Include="ViewModels\PollutantViewModel.cs" />
     <Compile Include="ViewModels\SaveSampleViewModel.cs" />
+    <Compile Include="ViewModels\SiderViewModel.cs" />
     <Compile Include="ViewModels\SimulatorViewModel.cs" />
+    <Compile Include="ViewModels\UavStatusDisplayViewModel.cs" />
     <Compile Include="ViewModels\VideoViewModel.cs" />
     <Compile Include="Views\AirSampleDisplayView.xaml.cs">
       <DependentUpon>AirSampleDisplayView.xaml</DependentUpon>
@@ -252,8 +255,14 @@
     <Compile Include="Views\SaveSampleView.xaml.cs">
       <DependentUpon>SaveSampleView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\SiderView.xaml.cs">
+      <DependentUpon>SiderView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\SimulatorView.xaml.cs">
       <DependentUpon>SimulatorView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\UavStatusDisplayView.xaml.cs">
+      <DependentUpon>UavStatusDisplayView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\VideoView.xaml.cs">
       <DependentUpon>VideoView.xaml</DependentUpon>
@@ -326,7 +335,15 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Views\SiderView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Views\SimulatorView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\UavStatusDisplayView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

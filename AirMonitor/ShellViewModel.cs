@@ -136,7 +136,7 @@ namespace AirMonitor
         protected override void OnViewAttached(object view, object context)
         {
             base.OnViewAttached(view, context);
-            Sider = m_factory.Create<AirSampleDisplayViewModel>();
+            Sider = m_factory.Create<SiderViewModel>();
             Container = m_factory.Create<MapViewModel>();
         }
 

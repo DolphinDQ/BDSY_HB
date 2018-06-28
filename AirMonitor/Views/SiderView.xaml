@@ -1,0 +1,23 @@
+﻿<UserControl x:Class="AirMonitor.Views.SiderView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:AirMonitor.Views"
+             xmlns:cal="http://www.caliburnproject.org"
+             mc:Ignorable="d" Width="300"
+             d:DesignHeight="450" d:DesignWidth="800">
+    <DockPanel>
+        <DockPanel.Resources>
+            <Style TargetType="Border" BasedOn="{StaticResource G_Border}">
+                <Setter Property="Margin" Value="1"/>
+            </Style>
+        </DockPanel.Resources>
+        <Border DockPanel.Dock="Top" >
+            <ContentControl cal:View.Model="{Binding Top}"></ContentControl>
+        </Border>
+        <Border>
+            <ContentControl cal:View.Model="{Binding Content}"></ContentControl>
+        </Border>
+    </DockPanel>
+</UserControl>

@@ -49,7 +49,7 @@ namespace AirMonitor.ViewModels
         public void Add(EvtAirSample sample)
         {
             if (Standard == null) return;
-            m_samples.Add(sample);
+            Execute.OnUIThread(() => m_samples.Add(sample));
             var param = Expression.Parameter(typeof(EvtAirSample));
             var property = Expression.Property(param, Standard.Name);
             var lamda = (Expression<Func<EvtAirSample, double>>)Expression.Lambda(property, param);

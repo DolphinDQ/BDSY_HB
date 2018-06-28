@@ -15,8 +15,8 @@
     <sys:String x:Key="T_Speed">速度</sys:String>
     <sys:String x:Key="T_RealtimeAirSamples">实时采样</sys:String>
     <sys:String x:Key="T_SensorStatus">传感器状态</sys:String>
-    <sys:String x:Key="T_DataServiceStatus">数据服务</sys:String>
-    <sys:String x:Key="T_VideoServiceStatus">视频服务</sys:String>
+    <sys:String x:Key="T_DataServiceStatus">数据流</sys:String>
+    <sys:String x:Key="T_VideoServiceStatus">视频流</sys:String>
     <sys:String x:Key="T_OpenVideo">打开视频</sys:String>
     <sys:String x:Key="T_CloseVideo">关闭视频</sys:String>
     <sys:String x:Key="T_OpenVideoDialog">窗口化</sys:String>
@@ -100,7 +100,8 @@
     <sys:String x:Key="T_ServiceStatus">服务状态</sys:String>
     <sys:String x:Key="T_ClickToReconnect">点击重连</sys:String>
     <sys:String x:Key="T_RefreshList">刷新列表</sys:String>
-    <sys:String x:Key="T_CameraStatus">摄像机状态</sys:String>
+    <sys:String x:Key="T_CameraStatus">摄像机</sys:String>
+    <sys:String x:Key="T_GPS">GPS</sys:String>
     <sys:String x:Key="T_DataServiceSetting">数据服务配置</sys:String>
     <sys:String x:Key="T_SaveLocation">存档位置</sys:String>
     <sys:String x:Key="T_SaveDir">存档目录</sys:String>

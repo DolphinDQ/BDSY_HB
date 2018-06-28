@@ -73,6 +73,9 @@ namespace AirMonitor
             Container.PerRequest<VideoViewModel>();
             Container.PerRequest<AirSampleDisplayViewModel>();
             Container.PerRequest<PollutantViewModel>();
+            Container.PerRequest<UavStatusDisplayViewModel>();
+            Container.PerRequest<SiderViewModel>();
+            
         }
 
         protected override void OnUnhandledException(object sender, DispatcherUnhandledExceptionEventArgs e)
