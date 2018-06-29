@@ -45,12 +45,13 @@
                     <!--<Label Content="{Binding InvalidSamples.Count}"></Label>-->
                     <Label Content="{StaticResource T_MapDisplay}"></Label>
                     <ComboBox ItemsSource="{Binding MapGridOptions.pollutants}" SelectedItem="{Binding MapGridOptions.pollutant}" DisplayMemberPath="DisplayName" SelectedValuePath="Name" />
+                    <ComboBox ItemsSource="{Binding MapStyleList}" DisplayMemberPath="Item1" SelectedItem="{Binding MapStyle}" Visibility="{Binding MapStyleList,Converter={StaticResource AnyVisiable}}"></ComboBox>
                     <Label Content="{StaticResource T_SideLength}"></Label>
                     <control:NumericUpDown Value="{Binding MapGridOptions.sideLength}" Minimum="5"/>
                     <Label Content="透明度"></Label>
                     <control:NumericUpDown Value="{Binding MapGridOptions.opacity}" Maximum="1" Minimum="0" Interval="0.1"/>
-
                     <ToggleButton Visibility="Collapsed" Content="{StaticResource T_AnalysisSamples}" IsChecked="{Binding EnableAnalysis}"></ToggleButton>
+
                 </StackPanel>
             </DockPanel>
         </Border>

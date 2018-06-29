@@ -69,6 +69,10 @@ namespace AirMonitor.ViewModels
 
         public bool Map3DFullScreen { get; set; }
 
+        public IEnumerable<Tuple<string, string>> MapStyleList { get; set; }
+
+        public Tuple<string, string> MapStyle { get; set; }
+
         private void SetPropertyPanel(object obj)
         {
             if (!(obj is Screen) && obj != null)
@@ -106,12 +110,28 @@ namespace AirMonitor.ViewModels
             {
                 pollutants = setting.Pollutant
             };
+            MapStyleList = new[] {
+                Tuple.Create("默认","normal"),
+                Tuple.Create("深色","dark"),
+                Tuple.Create("浅色","light"),
+                Tuple.Create("夜间","midnight"),
+                Tuple.Create("自定义","custom"),
+            };
+            MapStyle = MapStyleList.First();
         }
 
         public override void TryClose(bool? dialogResult = null)
         {
             m_eventAggregator.Unsubscribe(this);
             base.TryClose(dialogResult);
+        }
+
+        public void OnMapStyleChanged()
+        {
+            if (MapLoad)
+            {
+                MapProvider.MapStyle(MapStyle.Item2);
+            }
         }
 
         public void OnMapContainerChanged()
@@ -121,6 +141,7 @@ namespace AirMonitor.ViewModels
 
         public void OnMapLoadChanged()
         {
+            OnMapStyleChanged();
             if (!MapLoad)
             {
                 SetPropertyPanel(null);

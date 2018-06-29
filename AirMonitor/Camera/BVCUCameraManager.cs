@@ -93,12 +93,12 @@ namespace AirMonitor.Camera
                     var chnl = dev.Channel.FirstOrDefault(o => o.Channel == 0);
                     if (chnl == null)
                     {
-                        (dev.Channel as List<VideoChannel>).Add(new VideoChannel() { Camera = dev, Channel = channel.iChannelIndex, Name = channel.szName, IsOnline = channel.iMediaDir != 0, Tag = channel });
+                        (dev.Channel as List<VideoChannel>).Add(new VideoChannel() { Camera = dev, Channel = channel.iChannelIndex, Name = channel.szName, IsOnline = status == 1 , Tag = channel });
                     }
                     else
                     {
                         chnl.Name = channel.szName;
-                        chnl.IsOnline = channel.iMediaDir != 0;
+                        chnl.IsOnline = status == 1;
                         chnl.Tag = channel;
                     }
                 }

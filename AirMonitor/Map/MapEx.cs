@@ -44,7 +44,15 @@ namespace AirMonitor.Map
         {
             map.Invoke("map.mapInitMenu", edit);
         }
-
+        /// <summary>
+        /// 设置地图样式。
+        /// </summary>
+        /// <param name="map"></param>
+        /// <param name="style"></param>
+        public static void MapStyle(this IMapProvider map, string style)
+        {
+            map.Invoke("map.mapStyle", style);
+        }
 
         ///// <summary>
         ///// 地图边界变更事件。
