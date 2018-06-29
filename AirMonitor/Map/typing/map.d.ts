@@ -77,3 +77,8 @@ interface IMapProvider {
 declare var BMap;
 declare var BMAP_NORMAL_MAP;
 declare var BMAP_HYBRID_MAP;
+
+declare module "*.json" {
+    const value: any;
+    export default value;
+}
