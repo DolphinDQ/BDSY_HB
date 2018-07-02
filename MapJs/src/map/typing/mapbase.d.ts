@@ -1,14 +1,4 @@
-﻿interface Array<T> {
-    first(query: (a: T) => boolean): T;
-    min(query: (a: T) => number): T;
-    max(query: (a: T) => number): T;
-    avg(query: (a: T) => number): T;
-    select<I>(query: (a: T) => I): Array<I>;
-    selectMany<I>(query: (a: T) => Array<I>): Array<I>;
-}
-interface External {
-    On(eventName: string, arg: any);
-}
+﻿
 
 interface IEventAggregator {
     on(eventName: MapEvents, arg?: any);
@@ -47,6 +37,71 @@ interface InfoWindow {
     addEventListener(name: string, callFn: Function);
     targetBorder: any;
 }
+
+
+interface PollutantReport {
+    pollutant: Pollutant;//污染物;
+    count: number;
+    avg: number;
+    sum: number;
+    max: number;
+    min: number;
+}
+
+interface PollutantLevel {
+    Name: string;
+    MinValue: number;
+    MaxValue: number;
+    MaxColor: string;
+    MinColor: string;
+}
+
+interface Pollutant {
+    Name: string ;
+    DisplayName: string ;
+    MaxValue: number;
+    MinValue: number;
+    Unit: string;
+    Levels: PollutantLevel[] ;
+}
+
+interface MapGridOptions {
+    sideLength: number;
+    blockList: any[];
+    opacity: number;
+    pollutants: Pollutant[];
+    pollutant: Pollutant;
+}
+
+interface MapGrid {
+    options: MapGridOptions;
+    blocks: Block[];
+    firstPoint: Point;
+    infoWindow: InfoWindow;
+    selectedBlocks: Block[];
+    selectedBlockLine: any[] ;
+}
+
+interface Uav {
+    pathPoint: Point[];
+    name: string;
+    marker: any;
+    pathMarker: any;
+}
+
+interface EventSubscribe {
+    name: MapEvents;
+    enable: boolean;
+}
+interface BlockContext{
+    readonly center: Point;
+    color: string;
+    time: string;
+    addPoint(p: Point) 
+    getPoints(query: (o: Point) => boolean): Array<Point> 
+    getReports(query: (o: PollutantReport) => boolean): Array<PollutantReport> 
+}
+
 //方块
 interface Block {
     context: BlockContext;
@@ -77,8 +132,5 @@ interface IMapProvider {
 declare var BMap;
 declare var BMAP_NORMAL_MAP;
 declare var BMAP_HYBRID_MAP;
-
-declare module "*.json" {
-    const value: any;
-    export default value;
-}
+/**地图方块选择动作 */
+ 

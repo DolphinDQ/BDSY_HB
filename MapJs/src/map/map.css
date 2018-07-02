@@ -1,0 +1,44 @@
+body, html, #container {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    margin: 0;
+    font-family: "微软雅黑";
+}
+
+.pollutant_message {
+    float: left;
+    padding: 2px;
+}
+
+.pollutant_block {
+    float: left;
+    width: 18px;
+    height: 18px;
+    background-color: red;
+    opacity: 0.5;
+    margin: 3px;
+}
+
+.pollutant_title {
+    float: left;
+    font-weight: bold;
+    width: 80px;
+}
+
+.pollutant_unit {
+    float: left;
+    font-style: italic;
+    font-size: small;
+}
+
+.pollutant_val {
+    float: left;
+    margin: 0 5px;
+    width: 80px;
+}
+
+.hide {
+    display: none;
+    visibility: hidden;
+}

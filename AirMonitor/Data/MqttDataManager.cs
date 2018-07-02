@@ -15,7 +15,9 @@ using System.Threading.Tasks;
 namespace AirMonitor.Data
 {
     [PropertyChanged.AddINotifyPropertyChangedInterface]
-    class MqttDataManager : IDataManager, IHandle<EvtSampling>
+    class MqttDataManager : IDataManager
+        , IHandle<EvtSampling>
+        , IHandle<EvtSetting>
     {
         private IEventAggregator m_eventAggregator;
         private IMqttClient m_client;
@@ -161,6 +163,18 @@ namespace AirMonitor.Data
                     break;
                 default:
                     break;
+            }
+        }
+
+        public async void Handle(EvtSetting message)
+        {
+            if (message.Command == SettingCommands.Changed)
+            {
+                if (message.SettingObject is MqttSetting s)
+                {
+                    m_setting = s;
+                    await m_client.DisconnectAsync();
+                }
             }
         }
     }
