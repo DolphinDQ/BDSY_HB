@@ -25,17 +25,11 @@
                                         </Rectangle>
                                     </Border>
                                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                                        <Ellipse Width="15" Height="15" StrokeThickness="3" 
+                                        <Ellipse Width="13" Height="13"
                                                      Visibility="{Binding Path=(ctrl:IconHelper.Status),RelativeSource={RelativeSource TemplatedParent},Converter={StaticResource AnyVisiable}}"
-                                                     Fill="{Binding Path=(ctrl:IconHelper.Status),RelativeSource={RelativeSource TemplatedParent},Converter={StaticResource StatusToBrush}}" >
-                                            <Ellipse.Stroke>
-                                                <RadialGradientBrush>
-                                                    <GradientStop Offset="0" Color="{Binding Path=(ctrl:IconHelper.Status),RelativeSource={RelativeSource TemplatedParent},Converter={StaticResource StatusToBrush}}"></GradientStop>
-                                                    <GradientStop Offset="1" Color="#00ffffff"></GradientStop>
-                                                </RadialGradientBrush>
-                                            </Ellipse.Stroke>
-                                        </Ellipse>
-                                        <Label VerticalAlignment="Bottom" FontSize="13" FontWeight="Bold" Margin="5" HorizontalAlignment="Center" Content="{Binding Path=(ctrl:IconHelper.Title),RelativeSource={RelativeSource TemplatedParent}}"></Label>
+                                                     Fill="{Binding Path=(ctrl:IconHelper.Status),RelativeSource={RelativeSource TemplatedParent},Converter={StaticResource  StatusToBrush}}" 
+                                                     ></Ellipse>
+                                        <Label VerticalAlignment="Bottom" Padding="1 0" FontSize="13" FontWeight="Bold" Margin="5" HorizontalAlignment="Center" Content="{Binding Path=(ctrl:IconHelper.Title),RelativeSource={RelativeSource TemplatedParent}}"></Label>
                                     </StackPanel>
                                 </StackPanel>
                                 <ControlTemplate.Triggers>

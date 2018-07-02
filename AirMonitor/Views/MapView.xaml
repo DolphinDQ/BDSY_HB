@@ -127,11 +127,10 @@
                        IsOpen="True" 
                        AllowsTransparency="True" >
                     <Grid>
-                        <ContentControl VerticalAlignment="Bottom"
-                            Visibility="{Binding PropertyPanel,Converter={StaticResource AnyVisiable}}" >
-                            <control:TransitioningContentControl  cal:View.Model="{Binding PropertyPanel}"/>
-                        </ContentControl>
-                        <ContentControl VerticalAlignment="Top"  HorizontalAlignment="Left" Background="{DynamicResource  AccentColor4}">
+                        <Border VerticalAlignment="Bottom"  Visibility="{Binding PropertyPanel,Converter={StaticResource AnyVisiable}}"  Background="{DynamicResource WhiteColorBrush}">
+                            <control:TransitioningContentControl cal:View.Model="{Binding PropertyPanel}"/>
+                        </Border>
+                        <Border VerticalAlignment="Top"  HorizontalAlignment="Left"  Background="{DynamicResource WhiteColorBrush}">
                             <Grid>
                                 <control:TransitioningContentControl  
                                     Visibility="{Binding Map3DPanel,Converter={StaticResource AnyVisiable}}" 
@@ -156,7 +155,7 @@
 
                                 </StackPanel>
                             </Grid>
-                        </ContentControl>
+                        </Border>
                     </Grid>
                 </Popup>
             </Grid>
