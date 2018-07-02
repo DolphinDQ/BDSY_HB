@@ -172,8 +172,11 @@ namespace AirMonitor.Data
             {
                 if (message.SettingObject is MqttSetting s)
                 {
-                    m_setting = s;
-                    await m_client.DisconnectAsync();
+                    if (m_client != null)
+                    {
+                        m_setting = s;
+                        await m_client.DisconnectAsync();
+                    }
                 }
             }
         }
