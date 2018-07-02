@@ -2,7 +2,7 @@ const path = require('path');
 
 module.exports = {
   entry: './src/index.ts',
-  mode:'development',//production
+    mode: 'production',//development
   devtool: 'inline-source-map',
   module:{
     rules:[

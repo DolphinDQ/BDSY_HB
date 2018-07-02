@@ -259,3 +259,11 @@ paket-files/
 # Python Tools for Visual Studio (PTVS)
 __pycache__/
 *.pyc
+/MapJs/src/map/mapbase.js.map
+/MapJs/src/map/mapbase.js
+/MapJs/src/map/common.js.map
+/MapJs/src/map/common.js
+/MapJs/src/map/baidu.js.map
+/MapJs/src/map/baidu.js
+/MapJs/src/index.js.map
+/MapJs/src/index.js
