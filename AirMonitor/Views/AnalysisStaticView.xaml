@@ -11,11 +11,10 @@
     
     <Border>
         <DockPanel>
-            <StackPanel Orientation="Horizontal" DockPanel.Dock="Top" Background="{DynamicResource AccentColorBrush4}" >
+            <StackPanel Orientation="Horizontal" DockPanel.Dock="Top" Background="{DynamicResource AccentColorBrush3}" >
                 <StackPanel.Resources>
                     <Style TargetType="Label" >
                         <Setter Property="VerticalAlignment" Value="Bottom"/>
-   
                     </Style>
                 </StackPanel.Resources>
                 <Label Style="{StaticResource Lbl_Title}">数据投影数据</Label>

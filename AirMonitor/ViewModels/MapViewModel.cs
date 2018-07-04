@@ -108,7 +108,7 @@ namespace AirMonitor.ViewModels
             InvalidSamples = new List<EvtAirSample>();
             MapGridOptions = new MapGridOptions()
             {
-                pollutants = setting.Pollutant
+                settings = setting
             };
             MapStyleList = new[] {
                 Tuple.Create("默认","normal"),
@@ -209,7 +209,7 @@ namespace AirMonitor.ViewModels
         {
             if (message.Command == SettingCommands.Changed && message.SettingObject is AirStandardSetting setting)
             {
-                MapGridOptions.pollutants = setting.Pollutant;
+                MapGridOptions.settings = setting;
             }
         }
 

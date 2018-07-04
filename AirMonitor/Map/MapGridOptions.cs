@@ -17,61 +17,68 @@ namespace AirMonitor.Map
     [AddINotifyPropertyChangedInterface]
     public class MapGridOptions
     {
-        public MapGridOptions()
-        {
-            //Reload();
-        }
-
-        /// <summary>
-        /// 网格边长。单位（米）
-        /// </summary>
-        public double sideLength { get; set; } = 15;
         ///// <summary>
-        ///// 渐变色开始。格式："#ffffff"，"#0f0f0f"
+        ///// 网格边长。单位（米）
         ///// </summary>
-        //public string colorBegin { get; set; } = "#00ff00";
+        //[JsonIgnore]
+        //[DependsOn(nameof(settings))]
+        //public double sideLength
+        //{
+        //    get => settings?.SideLength ?? 15;
+        //    set
+        //    {
+        //        if (settings != null)
+        //        {
+        //            settings.SideLength = value;
+        //        }
+        //    }
+        //}
         ///// <summary>
-        ///// 渐变色结束。格式："#ffffff"，"#0f0f0f"
+        ///// 透明度。0-1
         ///// </summary>
-        //public string colorEnd { get; set; } = "#ff0000";
-        /// <summary>
-        /// 透明度。0-1
-        /// </summary>
-        public double opacity { get; set; } = 0.8;
-        /// <summary>
-        /// 污染物。
-        /// </summary>
-        public AirPollutant[] pollutants { get; set; }
+        //[JsonIgnore]
+        //[DependsOn(nameof(settings))]
+        //public double opacity
+        //{
+        //    get => settings?.Opacity ?? 0.8;
+        //    set
+        //    {
+        //        if (settings != null)
+        //        {
+        //            settings.Opacity = value;
+        //        }
+        //    }
+        //}
+        ///// <summary>
+        ///// 污染物。
+        ///// </summary>
+        //[JsonIgnore]
+        //[DependsOn(nameof(settings))]
+        //public AirPollutant[] pollutants { get; set; }
         /// <summary>
         /// 当前选中的污染物。
         /// </summary>
         public AirPollutant pollutant { get; set; }
+        /// <summary>
+        /// 配置文件。
+        /// </summary>
+        public AirStandardSetting settings { get; set; }
 
-        public void OnpollutantsChanged()
+
+        public void OnsettingsChanged()
         {
-            pollutant = pollutants?.FirstOrDefault();
-            //Reload();
+            if (settings != null)
+            {
+                if (pollutant == null)
+                {
+                    pollutant = settings.Pollutant.FirstOrDefault();
+                }
+                else
+                {
+                    pollutant = settings.Pollutant.FirstOrDefault(o => o.Name == pollutant.Name);
+                }
+            }
         }
-
-        //public void Reload()
-        //{
-        //    var maxValue = pollutant?.MaxValue ?? 0;
-        //    var minValue = pollutant?.MinValue ?? 0;
-        //    var val = maxValue - minValue;
-        //    if (val > 0)
-        //    {
-        //        double[] res = new double[6];
-        //        for (int i = 0; i < 5; i++)
-        //        {
-        //            res[i] = minValue + val / 5 * i;
-        //        }
-        //        res[5] = maxValue;
-        //        ValueStep = res;
-        //    }
-        //}
-
-        //[JsonIgnore]
-        //public double[] ValueStep { get; private set; }
 
     }
 }

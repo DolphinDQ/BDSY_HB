@@ -5,7 +5,7 @@
                     xmlns:oxy="http://oxyplot.org/wpf"
                     xmlns:local="clr-namespace:AirMonitor.Resources">
     <Style x:Key="G_OxyPlot" TargetType="oxy:PlotView">
-        <Setter Property="Background" Value="{DynamicResource AccentColorBrush4}"/>
+        <Setter Property="Background" Value="{DynamicResource AccentColorBrush3}"/>
         <Setter Property="BorderBrush" Value="{DynamicResource WindowTitleColorBrush}"/>
         <Setter Property="Template">
             <Setter.Value>

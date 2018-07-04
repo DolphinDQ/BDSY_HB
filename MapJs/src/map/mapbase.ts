@@ -1,16 +1,17 @@
+import './map.css'
 
-  export class BlockContextImp implements BlockContext {
+export class BlockContextImp implements BlockContext {
     constructor(center: Point, pollutants: Pollutant[]) {
         this.center = center;
         pollutants.forEach(o => {
             var report = <PollutantReport>{};
             report.pollutant = o;
-            report.count= 0;
-            report.avg= 0;
-            report.avg= 0;
-            report.sum= 0;
-            report.max= 0;
-            report.min= 0;
+            report.count = 0;
+            report.avg = 0;
+            report.avg = 0;
+            report.sum = 0;
+            report.max = 0;
+            report.min = 0;
             this.reports.push(report);
         })
     }
@@ -53,21 +54,23 @@
 }
 
 
-export  abstract class MapBase implements IMapProvider, IEventAggregator {
+export abstract class MapBase implements IMapProvider, IEventAggregator {
 
+    abstract mapCenter(point: Point): Point;
     abstract mapClearTempReport();
     abstract mapShowTempReport(d: any);
     abstract mapPointConvert(seq: number, p: Point[]);
+    abstract mapInit(container: string);
+    abstract mapInitMenu(edit: boolean);
+    abstract mapStyle(name: string);
     abstract uavPathRefresh(name: string);
     abstract uavRemove(name: string);
     abstract uavExist(name: string): boolean;
     abstract uavFocus(name: string);
-    abstract gridClear();
     abstract uavAdd(name: string, lng: number, lat: number, d: any);
     abstract uavMove(name: string, lng: number, lat: number, d: any);
+    abstract gridClear();
     abstract gridInit(opt: MapGridOptions);
-    abstract mapInit(container: string);
-    abstract mapInitMenu(edit: boolean);
     abstract gridRefresh();
     abstract onSubscribe(eventName: MapEvents);
     protected loadJs(url: string, onLoad: (e) => any) {

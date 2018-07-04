@@ -24,5 +24,13 @@ namespace AirMonitor.Config
         /// 高度单位。
         /// </summary>
         public string AltitudeUnit { get; set; }
+        /// <summary>
+        /// 标识透明度。
+        /// </summary>
+        public double Opacity { get; set; }
+        /// <summary>
+        /// 边长。地图上显示探测范围（方块边长）。
+        /// </summary>
+        public double SideLength { get; set; }
     }
 }

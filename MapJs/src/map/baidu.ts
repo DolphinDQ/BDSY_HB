@@ -1,11 +1,16 @@
 import './common'
 import {
-    MapBase,BlockContextImp
-} from  './mapbase'
-import './map.css'
+    MapBase, BlockContextImp
+} from './mapbase'
 import * as $ from 'jquery'
-
+declare var BMap;
+declare var BMAP_NORMAL_MAP;
+declare var BMAP_HYBRID_MAP;
+declare var BMAP_SATELLITE_MAP;
+declare var BMAP_PERSPECTIVE_MAP;
+/**地图方块选择动作 */
 class BaiduMapProvider extends MapBase {
+
 
     private map: any;
     private menuItems: MenuItem[];
@@ -76,7 +81,7 @@ class BaiduMapProvider extends MapBase {
             avg: Math.round(report.avg * 100) / 100,
             unit: report.pollutant.Unit,
             background: this.getColorByReport(report),
-            opacity: this.blockGrid.options.opacity,
+            opacity: this.blockGrid.options.settings.Opacity,
         });
     }
     /**
@@ -86,8 +91,8 @@ class BaiduMapProvider extends MapBase {
      */
     private createBlock(point: Point, opt: MapGridOptions): Block {
         var center = this.blockGrid.firstPoint;
-        var sideLength = opt.sideLength * 0.00001;
-        var opacity = opt.opacity;
+        var sideLength = opt.settings.SideLength * 0.00001;
+        var opacity = opt.settings.Opacity;
         var offset = sideLength / 2;//计算偏移经纬度。
         var lng = center.lng + sideLength * Math.round((point.lng - center.lng) / sideLength);
         var lat = center.lat + sideLength * Math.round((point.lat - center.lat) / sideLength)
@@ -105,7 +110,7 @@ class BaiduMapProvider extends MapBase {
                 strokeColor: "white"
             }
         );
-        var context = new BlockContextImp(new BMap.Point(lng, lat), opt.pollutants);
+        var context = new BlockContextImp(new BMap.Point(lng, lat), opt.settings.Pollutant);
         context.addPoint(point);
         polygon.context = context;
         polygon.addEventListener("click", o => this.onShowBlockReport(o.target));
@@ -405,7 +410,7 @@ class BaiduMapProvider extends MapBase {
                 points: o.context.getPoints(i => true).select(i => i.data),
                 reports: o.context.getReports(i => true),
                 color: o.context.color,
-                opacity: this.blockGrid.options.opacity
+                opacity: this.blockGrid.options.settings.Opacity
             }
         })
     }
@@ -420,15 +425,15 @@ class BaiduMapProvider extends MapBase {
         map.addControl(new BMap.MapTypeControl({
             mapTypes: [
                 BMAP_NORMAL_MAP,
-                BMAP_HYBRID_MAP
+                BMAP_HYBRID_MAP,
             ]
         }));
+
         //map.addControl(new BMap.ScaleControl());
         //map.addControl(new BMap.NavigationControl());
         map.addControl(new BMap.OverviewMapControl());
         //map.addControl(new BMap.GeolocationControl());
         map.enableScrollWheelZoom(true);     //开启鼠标滚轮缩放
-
         new BaiduMapSelector(map, o => {
             if (this.analysisArea.isEnabled() && !this.analysisArea.getBounds()) {
                 this.analysisArea.setBounds(o.bound);
@@ -453,8 +458,8 @@ class BaiduMapProvider extends MapBase {
 
         this.blockGrid = <MapGrid>{};
         this.blockGrid.blocks = new Array<any>();
-        this.blockGrid.selectedBlockLine=[];
-        this.blockGrid.selectedBlocks=[];
+        this.blockGrid.selectedBlockLine = [];
+        this.blockGrid.selectedBlocks = [];
         this.uavList = new Array<Uav>();
         this.subscribe(MapEvents.load, true);
         this.subscribe(MapEvents.clearAnalysisArea, true);
@@ -527,7 +532,12 @@ class BaiduMapProvider extends MapBase {
         menu.addEventListener("open", o => this.onCheckContextMenu());
         this.map.addContextMenu(menu);
     }
-
+    mapCenter(point: Point): Point {
+        if (point) {
+            this.map.setCenter(point);
+        }
+        return this.map.getCenter();
+    }
     /**
      * 地图坐标转换。转换完成的点会以pointConvert事件回调。
      * @param seq 序列号
@@ -552,7 +562,7 @@ class BaiduMapProvider extends MapBase {
             var reports: PollutantReport[] = [];
             var time: string;
             var blocks: Block[] = [];
-            this.blockGrid.options.pollutants.forEach(pollutant => {
+            this.blockGrid.options.settings.Pollutant.forEach(pollutant => {
                 var rp = <PollutantReport>{};
                 rp.pollutant = pollutant;
                 rp.count = 0;
@@ -595,19 +605,19 @@ class BaiduMapProvider extends MapBase {
     gridInit(opt: MapGridOptions) {
         opt = this.parseJson(opt);
         if (!opt) opt = <MapGridOptions>{};
-        if (!opt.sideLength) opt.sideLength = 100;//默认边长100米，地图比例尺约1米约等于0.00001经纬度
         if (!opt.blockList) opt.blockList = [];//网格列表。
         //if (!opt.colorBegin) opt.colorBegin = "#FF0000";
         //if (!opt.colorEnd) opt.colorEnd = "#00FF00";
-        if (!opt.opacity) opt.opacity = 0.5;
         if (!opt.pollutant) opt.pollutant = <Pollutant>{};
-
         if (!opt.pollutant.Name) opt.pollutant.Name = "sample";
         if (!opt.pollutant.MaxValue) opt.pollutant.MaxValue = 100;
         if (!opt.pollutant.MinValue) opt.pollutant.MinValue = 0;
-        if (!opt.pollutants) opt.pollutants = [<Pollutant>{Name:"",DisplayName:"",MaxValue:0,MinValue:0,Unit:""}];//格式：{Name:"",DisplayName:"",MaxValue:0,MinValue:0,Unit:""}
+        if (!opt.settings) opt.settings = <PollutantSetting>{};//格式：{Name:"",DisplayName:"",MaxValue:0,MinValue:0,Unit:""}
+        if (!opt.settings.Opacity) opt.settings.Opacity = 0.5;
+        if (!opt.settings.SideLength) opt.settings.SideLength = 100;//默认边长100米，地图比例尺约1米约等于0.00001经纬度
+        if (!opt.settings.Pollutant) opt.settings.Pollutant = [<Pollutant>{ Name: "", DisplayName: "", MaxValue: 0, MinValue: 0, Unit: "" }];//格式：{Name:"",DisplayName:"",MaxValue:0,MinValue:0,Unit:""}
         this.blockGrid.options = opt;
-      
+
     }
     gridRefresh() {
         var points: Point[] = [];
@@ -916,20 +926,7 @@ class BaiduMapProvider extends MapBase {
             });
         }
     }
-    testGrid() {
-        var opt=<MapGridOptions>{};
-        this.gridInit(opt);
-        var p = this.map.getCenter();
-        this.uavAdd("default", p.lng, p.lat,JSON.stringify([ { sample: Math.random() * 100, time: (new Date).toLocaleDateString()}]));
-        for (var i = 0; i < 20; i++) {
-            if (i > 10) {
-                this.uavMove("default", p.lng + (i / 10000), p.lat + ((i - 10) / 10000), { sample: Math.random() * 100, time: (new Date).toLocaleDateString() })
-            } else {
-                this.uavMove("default", p.lng + (i / 10000), p.lat, { sample: Math.random() * 100, time: (new Date).toLocaleDateString() })
-            }
-        }
-        this.gridRefresh();
-    }
+
 }
 
 /**
@@ -1012,7 +1009,7 @@ class BaiduMapAnalysisArea {
     private border: any;
     private bound: Bound;
 
-    constructor(map:any, evt: IEventAggregator) {
+    constructor(map: any, evt: IEventAggregator) {
         this.map = map;
         this.evt = evt;
     }
@@ -1063,9 +1060,9 @@ class BaiduMapAnalysisArea {
             this.evt.on(MapEvents.clearAnalysisArea);
         }
     }
-   
+
 
 }
 
 
-export default <IMapProvider> new BaiduMapProvider();
+export default <IMapProvider>new BaiduMapProvider();

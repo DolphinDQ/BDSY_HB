@@ -24,11 +24,15 @@ namespace AirMonitor.Config
         //private string SharedDir { get; }
 
         private FtpProvider Provider { get; }
+
+        private IConfigManager m_configManager;
+
         private string TempDir { get; } = "temp\\";
 
         public SaveManager(IConfigManager configManager)
         {
             Provider = new FtpProvider(configManager.GetConfig<FtpSetting>());
+            m_configManager = configManager;//
             if (Directory.Exists(TempDir))
             {
                 Directory.Delete(TempDir, true);
@@ -88,6 +92,11 @@ namespace AirMonitor.Config
 
         public void Save(string path, AirSamplesSave data)
         {
+            if (data == null) return;
+            if (data.Standard == null)
+            {
+                data.Standard = m_configManager.GetConfig<AirStandardSetting>();
+            }
             var json = JsonConvert.SerializeObject(data);
             File.WriteAllText(path, json);
         }
@@ -145,7 +154,12 @@ namespace AirMonitor.Config
 
         public async Task SaveToCloud(string filename, AirSamplesSave data, CloudRoot root, string basedir = null)
         {
-            var path = GetTempPath(filename, root, basedir);
+            //var path = GetTempPath(filename, root, basedir);
+            if (data == null) return;
+            if (data.Standard == null)
+            {
+                data.Standard = m_configManager.GetConfig<AirStandardSetting>();
+            }
             using (var nux = new AutoResetEvent(true))
             {
                 var action = new Action<double>(o =>

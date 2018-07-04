@@ -1,21 +1,6 @@
 ﻿
-
 interface IEventAggregator {
     on(eventName: MapEvents, arg?: any);
-}
-
-interface MenuItem {
-    setText(text: String);
-    enable();
-    disable();
-    name: MapMenuItems;
-}
-interface ContextMenu {
-    addItem(item: MenuItem);
-    getItem(index: Number): MenuItem
-    removeItem(item: MenuItem);
-    addSeparator();
-    addEventListener(name, call);
 }
 
 interface Point {
@@ -23,21 +8,6 @@ interface Point {
     lng: number;
     data: any;//采样数据
 }
-interface Bound {
-    getSouthWest(): Point;
-    getNorthEast(): Point;
-    containsPoint(point: Point): boolean;
-    getCenter(): Point;
-}
-
-interface InfoWindow {
-    setContent(text: string);
-    setWidth(width: Number);
-    setHeight(height: Number);
-    addEventListener(name: string, callFn: Function);
-    targetBorder: any;
-}
-
 
 interface PollutantReport {
     pollutant: Pollutant;//污染物;
@@ -57,20 +27,27 @@ interface PollutantLevel {
 }
 
 interface Pollutant {
-    Name: string ;
-    DisplayName: string ;
+    Name: string;
+    DisplayName: string;
     MaxValue: number;
     MinValue: number;
     Unit: string;
-    Levels: PollutantLevel[] ;
+    Levels: PollutantLevel[];
+}
+
+interface PollutantSetting {
+    Pollutant: Pollutant[];
+    CorrectAltitude: number;
+    MaxAltitude: number;
+    AltitudeUnit: string;
+    Opacity: number;
+    SideLength: number;
 }
 
 interface MapGridOptions {
-    sideLength: number;
     blockList: any[];
-    opacity: number;
-    pollutants: Pollutant[];
     pollutant: Pollutant;
+    settings: PollutantSetting;
 }
 
 interface MapGrid {
@@ -79,7 +56,7 @@ interface MapGrid {
     firstPoint: Point;
     infoWindow: InfoWindow;
     selectedBlocks: Block[];
-    selectedBlockLine: any[] ;
+    selectedBlockLine: any[];
 }
 
 interface Uav {
@@ -93,31 +70,23 @@ interface EventSubscribe {
     name: MapEvents;
     enable: boolean;
 }
-interface BlockContext{
+interface BlockContext {
     readonly center: Point;
     color: string;
     time: string;
-    addPoint(p: Point) 
-    getPoints(query: (o: Point) => boolean): Array<Point> 
-    getReports(query: (o: PollutantReport) => boolean): Array<PollutantReport> 
+    addPoint(p: Point)
+    getPoints(query: (o: Point) => boolean): Array<Point>
+    getReports(query: (o: PollutantReport) => boolean): Array<PollutantReport>
 }
 
-//方块
-interface Block {
-    context: BlockContext;
-    getBounds(): Bound;
-    setFillColor(color: String);
-    setStrokeColor(color: String);
-    setStrokeStyle(style: String);
-    setStrokeWeight(weight: Number);
-    setStrokeOpacity(opacity: Number);
-}
 interface IMapProvider {
     mapInit(container: string);
     mapInitMenu(edit: boolean);
     mapPointConvert(seq: number, p: Point[]);
     mapShowTempReport(d: any);
     mapClearTempReport();
+    mapStyle(name: string);
+    mapCenter(point: Point): Point;
     gridInit(opt: MapGridOptions);
     gridRefresh();
     gridClear();
@@ -129,8 +98,3 @@ interface IMapProvider {
     uavFocus(name: string);
     subscribe(eventName: MapEvents, enable: boolean): any;
 }
-declare var BMap;
-declare var BMAP_NORMAL_MAP;
-declare var BMAP_HYBRID_MAP;
-/**地图方块选择动作 */
- 

@@ -45,7 +45,8 @@
     <sys:String x:Key="T_UavPath">无人机路径</sys:String>
     <sys:String x:Key="T_MaxValue">最大值</sys:String>
     <sys:String x:Key="T_MinValue">最小值</sys:String>
-    <sys:String x:Key="T_SideLength">采样距离(米)</sys:String>
+    <sys:String x:Key="T_Opacity">透明度</sys:String>
+    <sys:String x:Key="T_SideLength">采样距离</sys:String>
     <sys:String x:Key="T_UavLocation">无人机定位</sys:String>
     <sys:String x:Key="T_SamplingStatus">采样状态</sys:String>
     <sys:String x:Key="T_ValidSamples">有效样本</sys:String>

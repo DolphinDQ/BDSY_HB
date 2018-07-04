@@ -17,7 +17,10 @@
 >Data:主要是项目数据采集管理，以及数据结构。
 >Interface:主要是定义项目接口。
 >Map:地图模块的实现。ts脚本的语法,可以在[GitHub](https://github.com/Microsoft/TypeScript/blob/master/doc/spec.md)上面找到
->EventArgs:IEventAggregator回调的事件类型，可以通过IHandler<T>处理事件。
+>EventArgs:IEventAggregator回调的事件类型，可以通过IHandler<T>处理事件。可以参考[Caliburn.Micro](https://caliburnmicro.com/documentation)事件机制。
 >ViewModels:视图模型。
 >Views:视图
+>libBVCU:视频组件。
+
+
 
