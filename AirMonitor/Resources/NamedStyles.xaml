@@ -2,8 +2,7 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:control="http://metro.mahapps.com/winfx/xaml/controls"
                     xmlns:ctrl="clr-namespace:AirMonitor.Controls"
-                    xmlns:oxy="http://oxyplot.org/wpf"
-                    xmlns:local="clr-namespace:AirMonitor.Resources">
+                    xmlns:oxy="http://oxyplot.org/wpf">
     <Style x:Key="G_OxyPlot" TargetType="oxy:PlotView">
         <Setter Property="Background" Value="{DynamicResource AccentColorBrush3}"/>
         <Setter Property="BorderBrush" Value="{DynamicResource WindowTitleColorBrush}"/>

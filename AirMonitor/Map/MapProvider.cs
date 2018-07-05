@@ -24,7 +24,10 @@ namespace AirMonitor.Map
         {
             try
             {
-                using (var reg = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\WOW6432Node\Microsoft\Internet Explorer\Main\FeatureControl\FEATURE_BROWSER_EMULATION", false))
+                var key = Environment.Is64BitOperatingSystem
+                                    ? @"SOFTWARE\WOW6432Node\Microsoft\Internet Explorer\Main\FeatureControl\FEATURE_BROWSER_EMULATION"
+                                    : @"SOFTWARE\Microsoft\Internet Explorer\Main\FeatureControl\FEATURE_BROWSER_EMULATION";
+                using (var reg = Registry.LocalMachine.OpenSubKey(key, false))
                 {
                     var name = Process.GetCurrentProcess().ProcessName + ".exe";
                     var version = reg.GetValue(name);

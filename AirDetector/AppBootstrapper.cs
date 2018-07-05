@@ -16,7 +16,7 @@
 
     public class AppBootstrapper : BootstrapperBase, IFactory
     {
-        static SimpleContainer container;
+        public static SimpleContainer Container { get; private set; }
 
         public AppBootstrapper()
         {
@@ -25,19 +25,19 @@
 
         protected override void Configure()
         {
-            container = new SimpleContainer();
-            container.Singleton<IWindowManager, WindowManager>();
-            container.Singleton<IEventAggregator, EventAggregator>();
-            container.Singleton<IResourceManager, ResourceProvider>();
-            container.Singleton<Caliburn.Micro.ILog, Logger>();
-            container.Singleton<ISaveManager, SaveManager>();
-            container.Singleton<IConfigManager, ConfigManager>();
-            container.Singleton<IChartManager, ChartManager>();
-            container.PerRequest<IShell, ShellViewModel>();
-            container.PerRequest<IMapProvider, MapProvider>();
-            container.RegisterInstance(typeof(IFactory), null, this);
-            container.PerRequest<MapViewModel>();
-            container.PerRequest<LoginViewModel>();
+            Container = new SimpleContainer();
+            Container.Singleton<IWindowManager, WindowManager>();
+            Container.Singleton<IEventAggregator, EventAggregator>();
+            Container.Singleton<IResourceManager, ResourceProvider>();
+            Container.Singleton<Caliburn.Micro.ILog, Logger>();
+            Container.Singleton<ISaveManager, SaveManager>();
+            Container.Singleton<IConfigManager, ConfigManager>();
+            Container.Singleton<IChartManager, ChartManager>();
+            Container.PerRequest<IShell, ShellViewModel>();
+            Container.PerRequest<IMapProvider, MapProvider>();
+            Container.RegisterInstance(typeof(IFactory), null, this);
+            Container.PerRequest<MapViewModel>();
+            Container.PerRequest<LoginViewModel>();
 
         }
 
@@ -51,17 +51,17 @@
 
         protected override object GetInstance(Type service, string key)
         {
-            return container.GetInstance(service, key);
+            return Container.GetInstance(service, key);
         }
 
         protected override IEnumerable<object> GetAllInstances(Type service)
         {
-            return container.GetAllInstances(service);
+            return Container.GetAllInstances(service);
         }
 
         protected override void BuildUp(object instance)
         {
-            container.BuildUp(instance);
+            Container.BuildUp(instance);
         }
 
         protected override void OnStartup(object sender, System.Windows.StartupEventArgs e)
@@ -71,7 +71,7 @@
 
         public T Create<T>(string name = null)
         {
-            return container.GetInstance<T>(name);
+            return Container.GetInstance<T>(name);
         }
     }
 

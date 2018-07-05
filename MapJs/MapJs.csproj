@@ -73,6 +73,7 @@
     <TypeScriptCompile Include="src\map\typing\common.d.ts" />
     <TypeScriptCompile Include="src\map\typing\baidu.d.ts" />
     <TypeScriptCompile Include="src\map\typing\mapbase.d.ts" />
+    <TypeScriptCompile Include="src\test.ts" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Ignore.cs" />

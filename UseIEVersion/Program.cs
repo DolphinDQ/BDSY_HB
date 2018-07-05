@@ -17,7 +17,15 @@ namespace UseIEVersion
             if (!int.TryParse(args[1], out var version)) return;
             try
             {
-                using (var i = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\WOW6432Node\Microsoft\Internet Explorer\Main\FeatureControl\FEATURE_BROWSER_EMULATION", true))
+                if (!Environment.Is64BitOperatingSystem)
+                {
+                    using (var i = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\WOW6432Node\Microsoft\Internet Explorer\Main\FeatureControl\FEATURE_BROWSER_EMULATION", true))
+                    {
+                        i.SetValue(app, version, RegistryValueKind.DWord);
+                        i.Flush();
+                    }
+                }
+                using (var i = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\Microsoft\Internet Explorer\Main\FeatureControl\FEATURE_BROWSER_EMULATION", true))
                 {
                     i.SetValue(app, version, RegistryValueKind.DWord);
                     i.Flush();

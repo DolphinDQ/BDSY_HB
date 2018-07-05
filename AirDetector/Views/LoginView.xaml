@@ -8,6 +8,6 @@
              Width="400" Height="300"
              d:DesignHeight="450" d:DesignWidth="800">
     <Grid >
-        
+        <Border Style="{StaticResource G_Border}" Margin="93,77,101,68"></Border>
     </Grid>
 </UserControl>

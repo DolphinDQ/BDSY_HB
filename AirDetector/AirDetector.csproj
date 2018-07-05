@@ -16,7 +16,7 @@
     <HockeyAppResourceId>62a7026e610a4bb989f4bce56d884a23</HockeyAppResourceId>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
+    <PlatformTarget>x86</PlatformTarget>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
@@ -33,6 +33,9 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>logo.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -59,6 +62,9 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="..\AirMonitor\Controls\IconHelper.cs">
+      <Link>Controls\IconHelper.cs</Link>
+    </Compile>
     <Compile Include="..\AirMonitor\Controls\PopupHelper.cs">
       <Link>Controls\PopupHelper.cs</Link>
     </Compile>
@@ -402,7 +408,7 @@
       <Version>1.0.0</Version>
     </PackageReference>
     <PackageReference Include="PropertyChanged.Fody">
-      <Version>2.5.7</Version>
+      <Version>2.5.8</Version>
     </PackageReference>
   </ItemGroup>
   <ItemGroup>
@@ -417,32 +423,19 @@
     </Resource>
   </ItemGroup>
   <ItemGroup>
-    <TypeScriptCompile Include="..\AirMonitor\Map\map.ts">
-      <Link>Map\map.ts</Link>
-    </TypeScriptCompile>
-    <TypeScriptCompile Include="..\AirMonitor\Map\typing\index.d.ts">
-      <Link>Map\typing\index.d.ts</Link>
-    </TypeScriptCompile>
-    <TypeScriptCompile Include="..\AirMonitor\Map\typing\map.d.ts">
-      <Link>Map\typing\map.d.ts</Link>
-    </TypeScriptCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="..\AirMonitor\Map\jquery.min.js">
-      <Link>Map\jquery.min.js</Link>
+    <Content Include="..\MapJs\dist\bundle.js">
+      <Link>Map\bundle.js</Link>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="..\AirMonitor\Map\map.html">
+    <Content Include="..\MapJs\dist\map.html">
       <Link>Map\map.html</Link>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="..\AirMonitor\Map\map.js">
-      <Link>Map\map.js</Link>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    <Content Include="..\MapJs\dist\marker.png">
+      <Link>Map\marker.png</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="..\AirMonitor\Map\map.old.html">
-      <Link>Map\map.old.html</Link>
-    </Content>
+    <Resource Include="logo.ico" />
     <Resource Include="..\AirMonitor\Resources\Images\user.jpg">
       <Link>Resources\Images\user.jpg</Link>
     </Resource>
@@ -451,10 +444,6 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Resource Include="FodyWeavers.xml" />
-    <Resource Include="..\AirMonitor\Map\marker.png">
-      <Link>Map\marker.png</Link>
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Resource>
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
