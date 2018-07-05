@@ -11,6 +11,9 @@ namespace AirMonitor.Config
     /// </summary>
     public class FtpSetting
     {
+
+        public bool RememberPassword { get; set; }
+
         public string Host { get; set; }
 
         public int Port { get; set; }

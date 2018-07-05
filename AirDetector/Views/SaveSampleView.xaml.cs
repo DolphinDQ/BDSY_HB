@@ -1,5 +1,4 @@
-﻿using AirMonitor.Controls;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -17,11 +16,11 @@ using System.Windows.Shapes;
 namespace AirMonitor.Views
 {
     /// <summary>
-    /// LoginView.xaml 的交互逻辑
+    /// SaveSampleView.xaml 的交互逻辑
     /// </summary>
-    public partial class LoginView : UserControl
+    public partial class SaveSampleView : UserControl
     {
-        public LoginView()
+        public SaveSampleView()
         {
             InitializeComponent();
         }

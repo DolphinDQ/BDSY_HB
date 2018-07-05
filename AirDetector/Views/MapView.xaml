@@ -4,9 +4,53 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:AirMonitor.Views"
+             xmlns:ctrl="clr-namespace:AirMonitor.Controls"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
-    <Grid>
-        <WebBrowser Name="Map" Tag="{Binding MapContainer,Mode=OneWayToSource}"/>
-    </Grid>
+    <DockPanel>
+        <DockPanel DockPanel.Dock="Top" >
+            <Label DockPanel.Dock="Left" Style="{StaticResource Lbl_Title}" Content="{StaticResource T_Visualization}" ctrl:IconHelper.Icon="{StaticResource appbar_location_checkin}" />
+            <StackPanel HorizontalAlignment="Right" Orientation="Horizontal" VerticalAlignment="Bottom" Margin="5">
+                <ComboBox Margin="5 0" ItemsSource="{Binding Option.settings.Pollutant}" DisplayMemberPath="DisplayName" SelectedItem="{Binding Option.pollutant}"/>
+                <Button Name="RefreshBolck" DockPanel.Dock="Top" Content="{StaticResource T_RefreshBlock}"/>
+            </StackPanel>
+        </DockPanel>
+        <Border DockPanel.Dock="Left" >
+            <DockPanel>
+
+                <ListView Margin="5" Width="40" ItemsSource="{Binding Option.pollutant.Levels}" >
+                    <ListView.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <UniformGrid Columns="1"/>
+                        </ItemsPanelTemplate>
+                    </ListView.ItemsPanel>
+                    <ListBox.ItemContainerStyle>
+                        <Style TargetType="ListViewItem">
+                            <Setter Property="Template">
+                                <Setter.Value>
+                                    <ControlTemplate>
+                                        <Border BorderBrush="LightGray" BorderThickness="0 0 0 1">
+                                            <Border.Background>
+                                                <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0" Opacity="{Binding Option.settings.Opacity}">
+                                                    <GradientStop Color="{Binding MinColor}" Offset="0"/>
+                                                    <GradientStop Color="{Binding MaxColor}" Offset="1"/>
+                                                </LinearGradientBrush>
+                                            </Border.Background>
+                                            <Grid>
+                                                <Label Foreground="Black" VerticalAlignment="Top" Content="{Binding MinValue,Converter={StaticResource Round}}"/>
+                                                <Label Foreground="White" VerticalAlignment="Bottom" Content="{Binding MaxValue,Converter={StaticResource Round}}"/>
+                                            </Grid>
+                                        </Border>
+                                    </ControlTemplate>
+                                </Setter.Value>
+                            </Setter>
+                        </Style>
+                    </ListBox.ItemContainerStyle>
+                </ListView>
+            </DockPanel>
+        </Border>
+        <Border Margin="0 5 5 5">
+            <WebBrowser Name="Map" Tag="{Binding MapContainer,Mode=OneWayToSource}"/>
+        </Border>
+    </DockPanel>
 </UserControl>

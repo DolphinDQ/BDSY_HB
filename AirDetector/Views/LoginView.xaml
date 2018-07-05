@@ -4,10 +4,38 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:AirMonitor.Views"
+             xmlns:cal="http://www.caliburnproject.org"
+             xmlns:ctrl="clr-namespace:AirMonitor.Controls"
              mc:Ignorable="d" 
-             Width="400" Height="300"
-             d:DesignHeight="450" d:DesignWidth="800">
-    <Grid >
-        <Border Style="{StaticResource G_Border}" Margin="93,77,101,68"></Border>
-    </Grid>
+             Width="400" Height="200" d:DesignWidth="800">
+    <Border Padding="20">
+        <StackPanel Orientation="Horizontal"  HorizontalAlignment="Center" >
+            <Border Style="{StaticResource G_Border}" Width="120" Height="120" >
+                <Image Source="{StaticResource Img_User}" ></Image>
+            </Border>
+            <StackPanel Width="200" Margin="5" VerticalAlignment="Center" >
+                <StackPanel.Resources>
+                    <Style TargetType="TextBox" BasedOn="{StaticResource MetroTextBox}">
+                        <Setter Property="Margin" Value="0 5"/>
+                    </Style>
+                </StackPanel.Resources>
+                <Label>用户名</Label>
+                <TextBox Name="UserName" Text="{Binding Setting.Account}">
+                    
+                </TextBox>
+                <Label>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock>密码</TextBlock>
+                        <CheckBox Margin="80 0" IsChecked="{Binding Setting.RememberPassword}">记住密码</CheckBox>
+                    </StackPanel>
+                </Label>
+                <DockPanel>
+                    <Grid  DockPanel.Dock="Right">
+                        <Button Name="Login" Margin="-3 0 0 0" Width="60" >登录</Button>
+                    </Grid>
+                    <PasswordBox Name="Password" ctrl:PasswordBoxHelper.Password="{Binding Setting.Password,Mode=TwoWay}" />
+                </DockPanel>
+            </StackPanel>
+        </StackPanel>
+    </Border>
 </UserControl>

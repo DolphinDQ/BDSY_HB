@@ -14,6 +14,7 @@ namespace AirMonitor.EventArgs
     /// </summary>
     public class EvtAirSample
     {
+        public string UavName { get; set; } = "default";
         public double co { get; set; }
         public double pm10 { get; set; }
         public double temp { get; set; }

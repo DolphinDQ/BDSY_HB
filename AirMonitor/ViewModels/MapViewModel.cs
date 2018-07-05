@@ -366,7 +366,7 @@ namespace AirMonitor.ViewModels
             MapProvider.GridRefresh();
         }
 
-        private string GetUavName(EvtAirSample sample) => "default";
+        private string GetUavName(EvtAirSample sample = null) => sample?.UavName ?? new EvtAirSample().UavName;
 
         public void RefreshMap()
         {
@@ -407,7 +407,7 @@ namespace AirMonitor.ViewModels
                 Map3DFullPanel = null;
             }
         }
-
+        
         public void UavLocation()
         {
             if (MapLoad)
@@ -487,9 +487,6 @@ namespace AirMonitor.ViewModels
                 s.Refresh();
             }
         }
-
-
-
 
     }
 }

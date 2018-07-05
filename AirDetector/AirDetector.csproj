@@ -65,6 +65,9 @@
     <Compile Include="..\AirMonitor\Controls\IconHelper.cs">
       <Link>Controls\IconHelper.cs</Link>
     </Compile>
+    <Compile Include="..\AirMonitor\Controls\PasswordBoxHelper.cs">
+      <Link>Controls\PasswordBoxHelper.cs</Link>
+    </Compile>
     <Compile Include="..\AirMonitor\Controls\PopupHelper.cs">
       <Link>Controls\PopupHelper.cs</Link>
     </Compile>
@@ -109,14 +112,23 @@
     <Compile Include="ShellViewModel.cs" />
     <Compile Include="ViewModels\LoginViewModel.cs" />
     <Compile Include="ViewModels\MapViewModel.cs" />
+    <Compile Include="ViewModels\SaveSampleViewModel.cs" />
     <Compile Include="Views\LoginView.xaml.cs">
       <DependentUpon>LoginView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\MapView.xaml.cs">
       <DependentUpon>MapView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\SaveSampleView.xaml.cs">
+      <DependentUpon>SaveSampleView.xaml</DependentUpon>
+    </Compile>
     <Page Include="..\AirMonitor\Controls\Map3D.xaml">
       <Link>Controls\Map3D.xaml</Link>
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="..\AirMonitor\Resources\Icons.xaml">
+      <Link>Resources\Icons.xaml</Link>
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -356,6 +368,10 @@
     <Page Include="Views\MapView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\SaveSampleView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
   </ItemGroup>
   <ItemGroup>

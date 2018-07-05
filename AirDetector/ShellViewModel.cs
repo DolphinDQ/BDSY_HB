@@ -91,9 +91,8 @@ namespace AirMonitor
 
         public string LoginUser { get; set; }
 
-        protected override async void OnViewLoaded(object view)
+        protected override async void OnViewAttached(object view, object context)
         {
-            base.OnViewLoaded(view);
             HockeyClient.Current.Configure("75bbb694b0fd4d9891a87f46ac28d88e");
 #if DEBUG
             ((HockeyClient)HockeyClient.Current).OnHockeySDKInternalException += (sender, args) =>
@@ -102,7 +101,22 @@ namespace AirMonitor
             };
 #endif
             await HockeyClient.Current.SendCrashesAsync(true);
-            await OnLogin();
+            await ShowLoginDialog();
+            base.OnViewAttached(view, context);
+        }
+
+        private async Task ShowLoginDialog()
+        {
+            var dir = new Dictionary<string, object>();
+            dir.Add("ResizeMode", 0);
+            if (m_window.ShowDialog(m_factory.Create<LoginViewModel>(), null, dir) == true)
+            {
+                await OnLogin();
+            }
+            else
+            {
+                Application.Current.Shutdown();
+            }
         }
 
         private async Task OnLogin()
@@ -119,21 +133,12 @@ namespace AirMonitor
             catch (FtpCommandException e) when (e.CompletionCode == "530")
             {
                 MessageBox.Show(m_res.GetText("T_IncorrentLogin"));
+                await ShowLoginDialog();
             }
             catch (Exception e)
             {
                 this.Warn("connect ftp error :{0}", e.Message);
                 this.Error(e);
-            }
-            var dir = new Dictionary<string, object>();
-            dir.Add("ResizeMode", 0);
-            if (m_window.ShowDialog(m_factory.Create<LoginViewModel>(), null, dir) == true)
-            {
-                await OnLogin();
-            }
-            else
-            {
-                Application.Current.Shutdown();
             }
         }
 
@@ -167,38 +172,35 @@ namespace AirMonitor
 
         public void SaveSamples()
         {
-            SiderDisplay(m_factory.Create<MapViewModel>());
             m_eventAggregator.PublishOnBackgroundThread(new EvtSampleSaving() { Type = SaveType.SaveSamplesRequest });
         }
 
         public void LoadSamples()
         {
-            SiderDisplay(null);
             m_eventAggregator.PublishOnBackgroundThread(new EvtSampleSaving() { Type = SaveType.LoadSamplesRequest });
         }
 
         public void Handle(EvtSampleSaving message)
         {
-            //if (message.Type == SaveType.SaveSamples &&
-            //    (message.Save == null || message.Save.Samples == null || !message.Save.Samples.Any()))
-            //{
-            //    return;//如果保存数据为空则不处理。
-            //}
-            //CloseSetting();
-            //switch (message.Type)
-            //{
-            //    case SaveType.SaveSamples:
-            //    case SaveType.LoadSamples:
-            //        var model = m_factory.Create<SaveSampleViewModel>();
-            //        model.Evt = message;
-            //        Setting = model;
-            //        SettingTitle = m_res.GetText(message.Type);
-            //        EnableSetting = true;
-            //        break;
-            //    default:
-            //        EnableSetting = false;
-            //        break;
-            //}
+            if (message.Type == SaveType.SaveSamples &&
+                (message.Save == null || message.Save.Samples == null || !message.Save.Samples.Any()))
+            {
+                return;//如果保存数据为空则不处理。
+            }
+            CloseSetting();
+            switch (message.Type)
+            {
+                case SaveType.SaveSamples:
+                case SaveType.LoadSamples:
+                    var model = m_factory.Create<SaveSampleViewModel>();
+                    model.Evt = message;
+                    SiderDisplay(model);
+                    SiderTitle = m_res.GetText(message.Type);
+                    break;
+                default:
+                    SiderDisplay(null);
+                    break;
+            }
         }
 
         public void Handle(EvtMapSavePoints message)

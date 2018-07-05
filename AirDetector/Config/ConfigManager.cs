@@ -74,6 +74,7 @@ namespace AirMonitor.Config
             {
                 Host = "b.vvlogic.com",
                 Port = 8021,
+                Account = "ftpguest",
             };
         }
 

@@ -135,6 +135,7 @@
     </Compile>
     <Compile Include="Controls\Map3DBound.cs" />
     <Compile Include="Controls\Map3DPoint.cs" />
+    <Compile Include="Controls\PasswordBoxHelper.cs" />
     <Compile Include="Controls\PopupHelper.cs" />
     <Compile Include="Controls\Trackball3D.cs" />
     <Compile Include="Controls\Trackball3DContext.cs" />
