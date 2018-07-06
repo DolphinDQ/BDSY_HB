@@ -14,7 +14,7 @@
                 <MeshGeometry3D x:Key="UavGeometry" Positions="-1 10 -1,-1 10 1,1 10 1, 1 10 -1" TriangleIndices="0 1 2,0 2 3" TextureCoordinates="0 0 ,0 1 ,1 1, 1 0"/>
                 <DiffuseMaterial x:Key="UavMaterial">
                     <DiffuseMaterial.Brush>
-                        <ImageBrush ImageSource="/AirHunter;component/Resources/Images/uav.png"/>
+                        <ImageBrush ImageSource="{StaticResource Img_Uav}"/>
                     </DiffuseMaterial.Brush>
                 </DiffuseMaterial>
                 <MeshGeometry3D x:Key="BlockGeometry"
@@ -59,7 +59,7 @@
                                                 <MaterialGroup>
                                                     <DiffuseMaterial>
                                                         <DiffuseMaterial.Brush>
-                                                            <ImageBrush x:Name="MapImage" Opacity="{Binding ElementName=Root,Path=MapOpacity}" ImageSource="/AirHunter;component/Resources/Images/map.png"/>
+                                                            <ImageBrush x:Name="MapImage" Opacity="{Binding ElementName=Root,Path=MapOpacity}" ImageSource="{StaticResource Img_Map}"/>
                                                         </DiffuseMaterial.Brush>
                                                     </DiffuseMaterial>
                                                 </MaterialGroup >

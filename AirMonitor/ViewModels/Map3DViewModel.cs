@@ -69,6 +69,7 @@ namespace AirMonitor.ViewModels
 
         public MapBound Bound { get; private set; }
 
+
         public void OnBoundChanged()
         {
             if (Bound != null)
@@ -99,7 +100,8 @@ namespace AirMonitor.ViewModels
             if (view != null)
             {
                 Bound = view.MapProvider.Subscribe<EvtMapBoundChanged>(MapEvents.boundChanged, true)?.bound;
-                var samples = MapView.Samples.ToArray();
+                var samples = MapView.Samples?.ToArray();
+                if (samples == null) return;
                 OnUIThread(() =>
                 {
                     foreach (var item in samples)

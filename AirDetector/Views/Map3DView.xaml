@@ -1,0 +1,34 @@
+﻿<UserControl x:Class="AirMonitor.Views.Map3DView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:AirMonitor.Views"
+             xmlns:ctrl="clr-namespace:AirMonitor.Controls"
+             mc:Ignorable="d" 
+             xmlns:cal="http://www.caliburnproject.org"
+             xmlns:controls="http://metro.mahapps.com/winfx/xaml/controls"
+             d:DesignHeight="450" d:DesignWidth="800">
+    <Grid>
+        <ctrl:Map3D
+            MapContainer="{Binding MapView.MapContainer}"  
+            MapBound="{Binding MapBound}" 
+            UavCollection="{Binding UavList}"  
+            Angle="{Binding Angle}"
+            BlockCollection="{Binding BlockList}"
+            MapOpacity="{Binding MapOpacity}"
+            WallHeight="{Binding WallHeight}"
+            />
+        <StackPanel Orientation="Horizontal" VerticalAlignment="Bottom" HorizontalAlignment="Left">
+            <StackPanel.Resources>
+                <Style TargetType="Button" BasedOn="{StaticResource Btn_Cirle}">
+                </Style>
+            </StackPanel.Resources>
+            <Button Name="LayerUp"  ctrl:IconHelper.Icon="{StaticResource appbar_layer_up}" />
+            <Button Name="LayerDown"  ctrl:IconHelper.Icon="{StaticResource appbar_layer_down}" />
+            <!--<Button Name="ChangeBackgroud" Visibility="Collapsed" ctrl:IconHelper.Icon="{StaticResource appbar_layer_arrange_sendbackward}" />-->
+            <Button Name="TurnLeft" ctrl:IconHelper.Icon="{StaticResource appbar_transform_rotate_counterclockwise}" />
+            <Button Name="TurnRight" ctrl:IconHelper.Icon="{StaticResource appbar_transform_rotate_clockwise}"/>
+        </StackPanel>
+    </Grid>
+</UserControl>

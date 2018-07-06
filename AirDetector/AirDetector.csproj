@@ -104,6 +104,19 @@
     <Compile Include="..\AirMonitor\Converter\WarningConverter.cs">
       <Link>Converter\WarningConverter.cs</Link>
     </Compile>
+    <Compile Include="..\AirMonitor\ViewModels\AnalysisMode.cs">
+      <Link>ViewModels\AnalysisMode.cs</Link>
+    </Compile>
+    <Compile Include="..\AirMonitor\ViewModels\AnalysisStaticViewModel.cs">
+      <Link>ViewModels\AnalysisStaticViewModel.cs</Link>
+    </Compile>
+    <Compile Include="..\AirMonitor\ViewModels\Map3DViewModel.cs">
+      <Link>ViewModels\Map3DViewModel.cs</Link>
+    </Compile>
+    <Compile Include="..\AirMonitor\Views\AnalysisStaticView.xaml.cs">
+      <Link>Views\AnalysisStaticView.xaml.cs</Link>
+      <DependentUpon>AnalysisStaticView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="AppBootstrapper.cs" />
     <Compile Include="IShell.cs" />
     <Compile Include="ShellView.xaml.cs">
@@ -115,6 +128,9 @@
     <Compile Include="ViewModels\SaveSampleViewModel.cs" />
     <Compile Include="Views\LoginView.xaml.cs">
       <DependentUpon>LoginView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Map3DView.xaml.cs">
+      <DependentUpon>Map3DView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\MapView.xaml.cs">
       <DependentUpon>MapView.xaml</DependentUpon>
@@ -357,11 +373,20 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Page Include="..\AirMonitor\Views\AnalysisStaticView.xaml">
+      <Link>Views\AnalysisStaticView.xaml</Link>
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="ShellView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\LoginView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\Map3DView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -434,11 +459,11 @@
     <Resource Include="..\AirMonitor\Resources\Images\map.png">
       <Link>Resources\Images\map.png</Link>
     </Resource>
+  </ItemGroup>
+  <ItemGroup>
     <Resource Include="..\AirMonitor\Resources\Images\uav.png">
       <Link>Resources\Images\uav.png</Link>
     </Resource>
-  </ItemGroup>
-  <ItemGroup>
     <Content Include="..\MapJs\dist\bundle.js">
       <Link>Map\bundle.js</Link>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>

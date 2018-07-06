@@ -58,6 +58,13 @@ namespace AirMonitor.ViewModels
         /// 地图提供者。
         /// </summary>
         public IMapProvider MapProvider { get; }
+
+        public IEnumerable<Tuple<string, string>> MapStyleList { get; set; }
+
+        public Tuple<string, string> MapStyle { get; set; }
+
+        #region 浮动窗口
+
         /// <summary>
         /// 属性框。
         /// </summary>
@@ -68,10 +75,6 @@ namespace AirMonitor.ViewModels
         public bool Show3DView { get; set; }
 
         public bool Map3DFullScreen { get; set; }
-
-        public IEnumerable<Tuple<string, string>> MapStyleList { get; set; }
-
-        public Tuple<string, string> MapStyle { get; set; }
 
         private void SetPropertyPanel(object obj)
         {
@@ -86,7 +89,59 @@ namespace AirMonitor.ViewModels
             PropertyPanel = obj;
         }
 
+        /// <summary>
+        /// 刷新覆盖在地图上的控件
+        /// </summary>
+        private void RefreshOverlayPanel()
+        {
+            if (Show3DView)
+            {
+                if (Map3DFullPanel is Screen s1)
+                {
+                    s1.Refresh();
+                }
+                else if (Map3DPanel is Screen s2)
+                {
+                    s2.Refresh();
+                }
+            }
+            if (PropertyPanel is Screen s)
+            {
+                s.Refresh();
+            }
+        }
+
         public object Map3DPanel { get; set; }
+
+        public void OnShow3DViewChanged() => Show3D(Show3DView);
+
+        public void Show3D(bool display)
+        {
+            if (Map3DPanel is Screen s)
+            {
+                s.TryClose();
+            }
+            if (display)
+            {
+                var view = m_factory.Create<Map3DViewModel>();
+                view.MapView = this;
+                if (Map3DFullScreen)
+                {
+                    Map3DFullPanel = view;
+                }
+                else
+                {
+                    Map3DPanel = view;
+                }
+            }
+            else
+            {
+                Map3DPanel = null;
+                Map3DFullPanel = null;
+            }
+        }
+
+        #endregion
 
         public MapViewModel(
             IEventAggregator eventAggregator,
@@ -380,34 +435,6 @@ namespace AirMonitor.ViewModels
             //Show3D(true);
         }
 
-        public void OnShow3DViewChanged() => Show3D(Show3DView);
-
-        public void Show3D(bool display)
-        {
-            if (Map3DPanel is Screen s)
-            {
-                s.TryClose();
-            }
-            if (display)
-            {
-                var view = m_factory.Create<Map3DViewModel>();
-                view.MapView = this;
-                if (Map3DFullScreen)
-                {
-                    Map3DFullPanel = view;
-                }
-                else
-                {
-                    Map3DPanel = view;
-                }
-            }
-            else
-            {
-                Map3DPanel = null;
-                Map3DFullPanel = null;
-            }
-        }
-        
         public void UavLocation()
         {
             if (MapLoad)
@@ -471,22 +498,8 @@ namespace AirMonitor.ViewModels
             MapProvider.GridClear();
             MapProvider.GridRefresh();
             MapProvider.UavPath(GetUavName(null));
-            if (Show3DView)
-            {
-                if (Map3DFullPanel is Screen s1)
-                {
-                    s1.Refresh();
-                }
-                else if (Map3DPanel is Screen s2)
-                {
-                    s2.Refresh();
-                }
-            }
-            if (PropertyPanel is Screen s)
-            {
-                s.Refresh();
-            }
+            RefreshOverlayPanel();
         }
-
+     
     }
 }

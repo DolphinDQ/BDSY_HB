@@ -39,7 +39,8 @@
             Container.PerRequest<MapViewModel>();
             Container.PerRequest<LoginViewModel>();
             Container.Singleton<SaveSampleViewModel>();
-            
+            Container.PerRequest<AnalysisStaticViewModel>(); 
+            Container.PerRequest<Map3DViewModel>(); 
         }
 
         protected override void OnUnhandledException(object sender, DispatcherUnhandledExceptionEventArgs e)

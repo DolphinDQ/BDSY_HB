@@ -5,6 +5,8 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:AirMonitor.Views"
              xmlns:ctrl="clr-namespace:AirMonitor.Controls"
+             xmlns:control="http://metro.mahapps.com/winfx/xaml/controls"
+             xmlns:cal="http://www.caliburnproject.org"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
     <DockPanel>
@@ -17,7 +19,6 @@
         </DockPanel>
         <Border DockPanel.Dock="Left" >
             <DockPanel>
-
                 <ListView Margin="5" Width="40" ItemsSource="{Binding Option.pollutant.Levels}" >
                     <ListView.ItemsPanel>
                         <ItemsPanelTemplate>
@@ -50,7 +51,54 @@
             </DockPanel>
         </Border>
         <Border Margin="0 5 5 5">
-            <WebBrowser Name="Map" Tag="{Binding MapContainer,Mode=OneWayToSource}"/>
+            <Grid>
+                <WebBrowser Name="Map" Tag="{Binding MapContainer,Mode=OneWayToSource}"/>
+                <Popup ctrl:PopupHelper.AttachWindow="{Binding RelativeSource={RelativeSource Mode=FindAncestor,  AncestorType={x:Type Window}}}"
+                       Placement="Top" Width="{Binding ElementName=Map,Path=ActualWidth}" 
+                       Height="{Binding ElementName=Map,Path=ActualHeight}"  
+                       VerticalOffset="{Binding ElementName=Map,Path=ActualHeight}" 
+                       IsOpen="True" 
+                       AllowsTransparency="True" >
+                    <Grid>
+                        <Border Background="{StaticResource WhiteBrush}" VerticalAlignment="Top"  HorizontalAlignment="Left">
+                            <Grid>
+                                <control:TransitioningContentControl  
+                                    Visibility="{Binding Map3DPanel,Converter={StaticResource AnyVisiable}}" 
+                                    Width="{Binding ElementName=Map,Path=ActualWidth,Converter={StaticResource Multiple}, ConverterParameter=0.4}" 
+                                    Height="{Binding ElementName=Map,Path=ActualHeight,Converter={StaticResource Multiple}, ConverterParameter=0.5}"  
+                                    cal:View.Model="{Binding Map3DPanel}"/>
+                                <control:TransitioningContentControl  
+                                    Width="{Binding ElementName=Map,Path=ActualWidth}" 
+                                    Height="{Binding ElementName=Map,Path=ActualHeight}"  
+                                    Visibility="{Binding Map3DFullPanel,Converter={StaticResource AnyVisiable}}" 
+                                    cal:View.Model="{Binding Map3DFullPanel}"/>
+                                <StackPanel Orientation="Horizontal" VerticalAlignment="Top" HorizontalAlignment="Left">
+                                    <ToggleButton IsChecked="{Binding Show3DView}"
+                                              Style="{StaticResource Btn_Cirle}" 
+                                              ctrl:IconHelper.Icon="{StaticResource appbar_axis_three}"  />
+                                    <!--<ToggleButton IsChecked="{Binding Map3DFullScreen}"
+                                              Visibility="{Binding Show3DView,Converter={StaticResource IsVisible}}" 
+                                              Style="{DynamicResource Btn_Cirle}" 
+                                              ctrl:IconHelper.Icon="{StaticResource appbar_arrow_expand}"/>-->
+
+                                </StackPanel>
+                            </Grid>
+                        </Border>
+                    </Grid>
+                </Popup>
+                <Popup ctrl:PopupHelper.AttachWindow="{Binding RelativeSource={RelativeSource Mode=FindAncestor,  AncestorType={x:Type Window}}}"
+                       Placement="Bottom" Width="{Binding ElementName=Map,Path=ActualWidth}" 
+                       Height="{Binding ElementName=Map,Path=ActualHeight,Converter={StaticResource Multiple},ConverterParameter=.5}"  
+                       VerticalOffset="{Binding ElementName=Map,Path=ActualHeight,Converter={StaticResource Multiple},ConverterParameter=-.5}" 
+                       IsOpen="True" 
+                       AllowsTransparency="True" >
+                    <Grid>
+                        <Border Background="{DynamicResource WhiteBrush}" VerticalAlignment="Bottom"  Visibility="{Binding PropertyPanel,Converter={StaticResource AnyVisiable}}"  >
+                            <control:TransitioningContentControl cal:View.Model="{Binding PropertyPanel}"/>
+                        </Border>
+                    </Grid>
+                </Popup>
+            </Grid>
         </Border>
     </DockPanel>
 </UserControl>
