@@ -12,7 +12,7 @@
             <Label DockPanel.Dock="Left" Style="{StaticResource Lbl_Title}" Content="{StaticResource T_Visualization}" ctrl:IconHelper.Icon="{StaticResource appbar_location_checkin}" />
             <StackPanel HorizontalAlignment="Right" Orientation="Horizontal" VerticalAlignment="Bottom" Margin="5">
                 <ComboBox Margin="5 0" ItemsSource="{Binding Option.settings.Pollutant}" DisplayMemberPath="DisplayName" SelectedItem="{Binding Option.pollutant}"/>
-                <Button Name="RefreshBolck" DockPanel.Dock="Top" Content="{StaticResource T_RefreshBlock}"/>
+                <Button Name="RefreshBlock" DockPanel.Dock="Top" Content="{StaticResource T_RefreshBlock}"/>
             </StackPanel>
         </DockPanel>
         <Border DockPanel.Dock="Left" >

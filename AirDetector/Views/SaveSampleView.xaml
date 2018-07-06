@@ -45,7 +45,7 @@
     <StackPanel Margin="2">
         <DockPanel>
             <Label Content="{StaticResource T_SaveLocation}"  Style="{StaticResource LblSettingTitle}" ></Label>
-            <ComboBox ItemsSource="{Binding SaveLocationList}" SelectedValue="{Binding SaveLocation}" DisplayMemberPath="Item1" SelectedValuePath="Item2"/>
+            <ComboBox ItemsSource="{Binding SaveLocationList}" IsEnabled="{Binding IsSaveMode,Converter={StaticResource Not}}" SelectedValue="{Binding SaveLocation}" DisplayMemberPath="Item1" SelectedValuePath="Item2"/>
         </DockPanel>
         <StackPanel Visibility="{Binding ShowFileList,Converter={StaticResource IsVisible}}">
             <DockPanel >

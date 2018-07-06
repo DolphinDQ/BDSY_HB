@@ -38,7 +38,8 @@
             Container.RegisterInstance(typeof(IFactory), null, this);
             Container.PerRequest<MapViewModel>();
             Container.PerRequest<LoginViewModel>();
-
+            Container.Singleton<SaveSampleViewModel>();
+            
         }
 
         protected override void OnUnhandledException(object sender, DispatcherUnhandledExceptionEventArgs e)

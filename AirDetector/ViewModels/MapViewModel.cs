@@ -87,7 +87,7 @@ namespace AirMonitor.ViewModels
                     break;
                 case SamplingStatus.ClearAll:
                     Save = null;
-                    RefreshBlock();
+                    RefreshMap();
                     break;
                 case SamplingStatus.StartSim:
                     break;
@@ -106,6 +106,9 @@ namespace AirMonitor.ViewModels
                 case SaveType.SaveSamplesRequest:
                     OnSaveSample();
                     break;
+                case SaveType.LoadSamplesRequest:
+                    m_eventAggregator.PublishOnBackgroundThread(new EvtSampleSaving() { Type = SaveType.LoadSamples });
+                    break;
                 case SaveType.LoadSamplesCompleted:
                     OnLoadSample(message.Save);
                     break;
@@ -123,7 +126,8 @@ namespace AirMonitor.ViewModels
                 MapProvider.GridInit(Option);
                 MapProvider.GridClear();
                 MapProvider.GridRefresh();
-                MapProvider.UavPath(GetUavName(null));
+                MapProvider.UavPath(GetUavName());
+                MapProvider.UavFocus(GetUavName());
             }
             catch (Exception e)
             {
@@ -149,13 +153,13 @@ namespace AirMonitor.ViewModels
                     default:
                         return;
                 }
-                Save.Standard = Save.Standard ?? DefaultStandard;
-                RefreshMap();
             }
             else
             {
                 Save = save;
             }
+            Save.Standard = Save.Standard ?? DefaultStandard;
+            RefreshMap();
         }
 
         private void OnSaveSample()
