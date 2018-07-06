@@ -29,10 +29,9 @@
     <MapFileExtensions>true</MapFileExtensions>
     <InstallUrl>http://b.vvlogic.com:8098/AirHunter/</InstallUrl>
     <CreateWebPageOnPublish>true</CreateWebPageOnPublish>
-    <WebPage>publish.htm</WebPage>
-    <OpenBrowserOnPublish>false</OpenBrowserOnPublish>
+    <WebPage>index.htm</WebPage>
     <ApplicationRevision>45</ApplicationRevision>
-    <ApplicationVersion>0.2.33.50</ApplicationVersion>
+    <ApplicationVersion>1.2.33.50</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <CreateDesktopShortcut>true</CreateDesktopShortcut>
     <PublishWizardCompleted>true</PublishWizardCompleted>

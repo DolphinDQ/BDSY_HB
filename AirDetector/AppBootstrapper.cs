@@ -3,6 +3,7 @@
     using System;
     using System.Collections.Generic;
     using System.Diagnostics;
+    using System.Windows.Input;
     using System.Windows.Threading;
     using AirMonitor.Camera;
     using AirMonitor.Chart;
@@ -25,6 +26,35 @@
 
         protected override void Configure()
         {
+
+            var defaultCreateTrigger = Parser.CreateTrigger;
+
+            Parser.CreateTrigger = (target, triggerText) =>
+            {
+                if (triggerText == null)
+                {
+                    return defaultCreateTrigger(target, null);
+                }
+
+                var triggerDetail = triggerText
+                    .Replace("[", string.Empty)
+                    .Replace("]", string.Empty);
+
+                var splits = triggerDetail.Split((char[])null, StringSplitOptions.RemoveEmptyEntries);
+
+                switch (splits[0])
+                {
+                    case "Key":
+                        var key = (Key)Enum.Parse(typeof(Key), splits[1], true);
+                        return new KeyTrigger { Key = key };
+
+                    //case "Gesture":
+                    //    var mkg = (MultiKeyGesture)(new MultiKeyGestureConverter()).ConvertFrom(splits[1]);
+                    //    return new KeyTrigger { Modifiers = mkg.KeySequences[0].Modifiers, Key = mkg.KeySequences[0].Keys[0] };
+                }
+
+                return defaultCreateTrigger(target, triggerText);
+            };
             Container = new SimpleContainer();
             Container.Singleton<IWindowManager, WindowManager>();
             Container.Singleton<IEventAggregator, EventAggregator>();

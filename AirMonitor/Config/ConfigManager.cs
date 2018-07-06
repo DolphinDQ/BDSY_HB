@@ -100,7 +100,7 @@ namespace AirMonitor.Config
         {
             return new AirStandardSetting()
             {
-                CorrectAltitude = 150,
+                CorrectAltitude = 160,
                 MaxAltitude = 200,
                 AltitudeUnit = "m",
                 Opacity = 0.8,
@@ -108,13 +108,13 @@ namespace AirMonitor.Config
                 Pollutant = new[] {
                     new AirPollutant(){ Name=nameof( EvtAirSample.temp),DisplayName= m_res.GetText("T_Temperature") , Unit="℃" ,Levels=CreateLevel(new []{0d,27,30,37,45,70},          new [] {"#00ff00","#66ff00","#ccff00","#ffca00","#ff6a00","#ff0000"})},
                     new AirPollutant(){ Name=nameof( EvtAirSample.humi),DisplayName= m_res.GetText("T_Humidity") , Unit="%"     ,Levels=CreateLevel(new []{0d,20,40,60,80,100},         new [] {"#00ff00","#66ff00","#ccff00","#ffca00","#ff6a00","#ff0000"})},
-                    new AirPollutant(){ Name=nameof( EvtAirSample.voc), DisplayName= m_res.GetText("T_VOC") , Unit= "ppb"       ,Levels=CreateLevel(new []{0d,200,400,600,800,1000},    new [] {"#00ff00","#66ff00","#ccff00","#ffca00","#ff6a00","#ff0000"})},
-                    new AirPollutant(){ Name=nameof( EvtAirSample.co),  DisplayName= m_res.GetText("T_CO") , Unit= "mg/m3"      ,Levels=CreateLevel(new []{0d,4.8,8,16,24,36},          new [] {"#00ff00","#66ff00","#ccff00","#ffca00","#ff6a00","#ff0000"})},
-                    new AirPollutant(){ Name=nameof( EvtAirSample.so2), DisplayName= m_res.GetText("T_SO2") , Unit= "ug/m3"     ,Levels=CreateLevel(new []{0d,72,150,200,300,500},      new [] {"#00ff00","#66ff00","#ccff00","#ffca00","#ff6a00","#ff0000"})},
-                    new AirPollutant(){ Name=nameof( EvtAirSample.no2), DisplayName= m_res.GetText("T_NO2") , Unit= "ug/m3"     ,Levels=CreateLevel(new []{0d,60,100,150,250,400},      new [] {"#00ff00","#66ff00","#ccff00","#ffca00","#ff6a00","#ff0000"})},
-                    new AirPollutant(){ Name=nameof( EvtAirSample.o3),  DisplayName= m_res.GetText("T_O3") , Unit= "ug/m3"      ,Levels=CreateLevel(new []{0d,192,300,400,500,700},     new [] {"#00ff00","#66ff00","#ccff00","#ffca00","#ff6a00","#ff0000"})},
-                    new AirPollutant(){ Name=nameof( EvtAirSample.pm25),DisplayName= m_res.GetText("T_PM2_5") , Unit= "ug/m3"   ,Levels=CreateLevel(new []{0d,44,80,150,200,300},       new [] {"#00ff00","#66ff00","#ccff00","#ffca00","#ff6a00","#ff0000"})},
-                    new AirPollutant(){ Name=nameof( EvtAirSample.pm10),DisplayName= m_res.GetText("T_PM10") , Unit="ug/m3"     ,Levels=CreateLevel(new []{0d ,71,150,200,300,500},     new [] { "#00ff00", "#66ff00", "#ccff00", "#ffca00", "#ff6a00", "#ff0000" } )}
+                    new AirPollutant(){ Name=nameof( EvtAirSample.voc), DisplayName= m_res.GetText("T_VOC") , Unit= "ppb"       ,Levels=CreateLevel(new []{0d,800,1600,3000,5000,8000}, new [] {"#00ff00","#66ff00","#ccff00","#ffca00","#ff6a00","#ff0000"})},
+                    new AirPollutant(){ Name=nameof( EvtAirSample.co),  DisplayName= m_res.GetText("T_CO") , Unit= "mg/m3"      ,Levels=CreateLevel(new []{0d,4,8,35,60,90},            new [] {"#00ff00","#66ff00","#ccff00","#ffca00","#ff6a00","#ff0000"})},
+                    new AirPollutant(){ Name=nameof( EvtAirSample.so2), DisplayName= m_res.GetText("T_SO2") , Unit= "ug/m3"     ,Levels=CreateLevel(new []{0d,60,120,250,400,700},      new [] {"#00ff00","#66ff00","#ccff00","#ffca00","#ff6a00","#ff0000"})},
+                    new AirPollutant(){ Name=nameof( EvtAirSample.no2), DisplayName= m_res.GetText("T_NO2") , Unit= "ug/m3"     ,Levels=CreateLevel(new []{0d,50,100,200,300,500},      new [] {"#00ff00","#66ff00","#ccff00","#ffca00","#ff6a00","#ff0000"})},
+                    new AirPollutant(){ Name=nameof( EvtAirSample.o3),  DisplayName= m_res.GetText("T_O3") , Unit= "ug/m3"      ,Levels=CreateLevel(new []{0d,160,200,300,400,800},     new [] {"#00ff00","#66ff00","#ccff00","#ffca00","#ff6a00","#ff0000"})},
+                    new AirPollutant(){ Name=nameof( EvtAirSample.pm25),DisplayName= m_res.GetText("T_PM2_5") , Unit= "ug/m3"   ,Levels=CreateLevel(new []{0d,36,75,115,150,250},       new [] {"#00ff00","#66ff00","#ccff00","#ffca00","#ff6a00","#ff0000"})},
+                    new AirPollutant(){ Name=nameof( EvtAirSample.pm10),DisplayName= m_res.GetText("T_PM10") , Unit="ug/m3"     ,Levels=CreateLevel(new []{0d ,59,150,250,350,420},     new [] { "#00ff00", "#66ff00", "#ccff00", "#ffca00", "#ff6a00", "#ff0000" } )}
             },
             };
         }

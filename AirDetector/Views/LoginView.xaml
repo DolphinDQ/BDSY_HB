@@ -6,11 +6,11 @@
              xmlns:local="clr-namespace:AirMonitor.Views"
              xmlns:cal="http://www.caliburnproject.org"
              xmlns:ctrl="clr-namespace:AirMonitor.Controls"
-             mc:Ignorable="d" 
+             mc:Ignorable="d"
              Width="400" Height="200" d:DesignWidth="800">
     <Border Padding="20">
         <StackPanel Orientation="Horizontal"  HorizontalAlignment="Center" >
-            <Border Style="{StaticResource G_Border}" Width="120" Height="120" >
+            <Border Width="120" Height="120" >
                 <Image Source="{StaticResource Img_User}" ></Image>
             </Border>
             <StackPanel Width="200" Margin="5" VerticalAlignment="Center" >
@@ -20,20 +20,18 @@
                     </Style>
                 </StackPanel.Resources>
                 <Label>用户名</Label>
-                <TextBox Name="UserName" Text="{Binding Setting.Account}">
-                    
-                </TextBox>
+                <TextBox Name="UserName" Text="{Binding Setting.Account}"   cal:Message.Attach="[Key Enter]=[Login]"/>
                 <Label>
                     <StackPanel Orientation="Horizontal">
                         <TextBlock>密码</TextBlock>
-                        <CheckBox Margin="80 0" IsChecked="{Binding Setting.RememberPassword}">记住密码</CheckBox>
+                        <CheckBox Margin="80 0" IsChecked="{Binding Setting.RememberPassword}" cal:Message.Attach="[Key Enter]=[Login]">记住密码</CheckBox>
                     </StackPanel>
                 </Label>
                 <DockPanel>
-                    <Grid  DockPanel.Dock="Right">
-                        <Button Name="Login" Margin="-3 0 0 0" Width="60" >登录</Button>
+                    <Grid  DockPanel.Dock="Right" >
+                        <Button Name="Login" Margin="-3 0 0 0" Width="60" Focusable="False" >登录</Button>
                     </Grid>
-                    <PasswordBox Name="Password" ctrl:PasswordBoxHelper.Password="{Binding Setting.Password,Mode=TwoWay}" />
+                    <PasswordBox Name="Password" cal:Message.Attach="[Key Enter]=[Login]" ctrl:PasswordBoxHelper.Password="{Binding Setting.Password,Mode=TwoWay}" />
                 </DockPanel>
             </StackPanel>
         </StackPanel>

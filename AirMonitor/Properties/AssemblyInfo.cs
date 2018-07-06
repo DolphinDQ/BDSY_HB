@@ -58,5 +58,5 @@ using System.Windows;
 
 public static class AppVersion
 {
-    public const string VERSION = "0.2.33.50";
+    public const string VERSION = "1.2.33.50";
 }
