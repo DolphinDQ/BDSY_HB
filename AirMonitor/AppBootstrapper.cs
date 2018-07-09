@@ -52,11 +52,12 @@ namespace AirMonitor
             Container.Singleton<IResourceManager, ResourceProvider>();
             Container.Singleton<ILog, Logger>();
             Container.Singleton<ISaveManager, SaveManager>();
-            Container.Singleton<IDataManager, MqttDataManager>();
+            Container.Singleton<IDataPushManager, MqttDataPushManager>();
             Container.Singleton<IConfigManager, ConfigManager>();
             Container.Singleton<IChartManager, ChartManager>();
             Container.Singleton<ICameraManager, BVCUCameraManager>();
             Container.Singleton<IBackupManager, BackupManager>();
+            Container.Singleton<IDataQueryManager, LeanCloudManager>();
             Container.PerRequest<IShell, ShellViewModel>();
             Container.PerRequest<IMapProvider, MapProvider>();
             Container.RegisterInstance(typeof(IFactory), null, this);
@@ -75,7 +76,7 @@ namespace AirMonitor
             Container.PerRequest<PollutantViewModel>();
             Container.PerRequest<UavStatusDisplayViewModel>();
             Container.PerRequest<SiderViewModel>();
-            
+
         }
 
         protected override void OnUnhandledException(object sender, DispatcherUnhandledExceptionEventArgs e)

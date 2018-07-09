@@ -85,8 +85,6 @@ if (!Array.prototype.selectMany) {
     }
 }
 
-
-
  const enum MapEvents {
     load = "load",
     pointConvert = "pointConvert",
@@ -127,6 +125,5 @@ const enum MapBlockSelectAction {
     //强制反选
     focusUnselect,
 }
-
 // (window as {MapBlockSelectAction?}).MapBlockSelectAction=MapBlockSelectAction;
 

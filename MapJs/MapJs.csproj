@@ -51,6 +51,7 @@
   </PropertyGroup>
   <ItemGroup>
     <None Include="package.json" />
+    <None Include="readme.md" />
     <None Include="src\test.json" />
     <None Include="tsconfig.json" />
   </ItemGroup>

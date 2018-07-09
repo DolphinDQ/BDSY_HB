@@ -119,7 +119,7 @@ namespace AirMonitor.Config
             };
         }
 
-        //MinValue = 0 , MaxValue = 70,   
+        // MinValue = 0 , MaxValue = 70,   
         // MinValue = 0 , MaxValue = 100,  
         // MinValue = 0 , MaxValue = 1000 ,
         // MinValue = 4.8 , MaxValue = 36, 

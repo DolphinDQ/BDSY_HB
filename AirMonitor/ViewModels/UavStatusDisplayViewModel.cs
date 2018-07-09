@@ -14,7 +14,7 @@ namespace AirMonitor.ViewModels
         IHandle<EvtCameraGetDevices>,
         IHandle<EvtAirSample>
     {
-        public UavStatusDisplayViewModel(IDataManager data,
+        public UavStatusDisplayViewModel(IDataPushManager data,
             IEventAggregator eventAggregator,
             IFactory factory,
             IWindowManager windowManager,
@@ -40,7 +40,7 @@ namespace AirMonitor.ViewModels
 
         public CameraSetting CameraSetting { get; private set; }
         public AirStandardSetting PollutantSetting { get; private set; }
-        public IDataManager DataManager { get; }
+        public IDataPushManager DataManager { get; }
         public ICameraManager CameraManager { get; }
 
         private IFactory m_factory;

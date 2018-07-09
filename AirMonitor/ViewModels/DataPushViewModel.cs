@@ -86,7 +86,7 @@ namespace AirMonitor.ViewModels
         private IFactory m_factory;
         private IWindowManager m_windowManager;
 
-        public IDataManager DataManager { get; }
+        public IDataPushManager DataManager { get; }
         public ICameraManager CameraManager { get; }
         public EvtAirSample NewestData { get; set; }
 
@@ -128,7 +128,7 @@ namespace AirMonitor.ViewModels
             IConfigManager configManager,
             IFactory factory,
             ICameraManager cameraManager,
-            IDataManager data,
+            IDataPushManager data,
             IResourceManager res)
         {
             eventAggregator.Subscribe(this);

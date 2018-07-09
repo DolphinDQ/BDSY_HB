@@ -1,0 +1,271 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+    <style type="text/css">
+        body, html, #container {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            margin: 0;
+            font-family: "微软雅黑";
+        }
+    </style>
+    <script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=TCgR2Y0IGMmPR4qteh4McpXzMyYpFrEx"></script>
+    <title>地图展示</title>
+</head>
+<body>
+    <div id="container"></div>
+</body>
+</html>
+<script type="text/javascript">
+    // 百度地图API功能
+    var map = new BMap.Map("container");    // 创建Map实例
+    map.centerAndZoom(new BMap.Point(113.140761, 23.033974), 17);  // 初始化地图,设置中心点坐标和地图级别
+    //添加地图类型控件
+    map.addControl(new BMap.MapTypeControl({
+        mapTypes: [
+            BMAP_NORMAL_MAP,
+            BMAP_HYBRID_MAP
+        ]
+    }));
+    map.addControl(new BMap.ScaleControl());
+    map.addControl(new BMap.NavigationControl());
+    map.addControl(new BMap.OverviewMapControl());
+    //map.addControl(new BMap.GeolocationControl());
+    map.enableScrollWheelZoom(true);     //开启鼠标滚轮缩放
+    var uavList = [];
+    var blockGrid = {};
+    function gridInit(opt) {
+        //初始化网格
+        if (!opt) opt = {};
+        if (!opt.sideLength) opt.sideLength = 100;//默认边长100米，地图比例尺约1米约等于0.00001经纬度
+        if (!opt.blockList) opt.blockList = [];//网格列表。
+        if (!opt.colorBegin) opt.colorBegin = "FF0000";
+        if (!opt.colorEnd) opt.colorEnd = "00FF00";
+        if (!opt.opacity) opt.opacity = 0.5;
+        if (!opt.dataName) opt.dataName = "";
+        if (!opt.maxValue) opt.maxValue = 100;
+        if (!opt.minValue) opt.minValue = 0;
+        blockGrid.options = opt;
+        gridClear();
+    }
+
+    function getColor(value, opt) {
+        var percent = (value - opt.minValue) / (opt.maxValue - opt.minValue);
+        percent = percent > 1 ? 1 : percent;
+        percent = percent < 0 ? 0 : percent;
+
+        var br = parseInt(opt.colorBegin.substring(0, 2), 16);
+        var bg = parseInt(opt.colorBegin.substring(2, 4), 16);
+        var bb = parseInt(opt.colorBegin.substring(4, 6), 16);
+
+        var er = parseInt(opt.colorEnd.substring(0, 2), 16);
+        var eg = parseInt(opt.colorEnd.substring(2, 4), 16);
+        var eb = parseInt(opt.colorEnd.substring(4, 6), 16);
+
+        return "#" + getColorValue(percent, br, er) +
+            getColorValue(percent, bg, eg) +
+            getColorValue(percent, bb, eb);
+    }
+    function getColorValue(percent, begin, end) {
+        var flag = end > begin ? 1 : -1;
+        var result = parseInt(Math.abs(end - begin) * percent * flag + begin).toString(16);
+        return result.length < 2 ? "0" + result : result;
+    }
+
+    function gridRefresh() {
+        var points = [];
+        for (var i = 0; i < uavList.length; i++) {
+            points = points.concat(uavList[i].pathPoint);
+        }
+        //uavList.forEach(uav => points = points.concat(uav.marker.pathPoint));
+        var opt = blockGrid.options;
+        //gridClear();
+        points.forEach(function (point) { //填充点数据到格子里
+            if (!opt.firstPoint) opt.firstPoint = point;
+            var block = blockGrid.blocks.find(block => isInBlock(block.center, opt.sideLength, point));
+            if (!block) {
+                block = createBlock(point, opt);
+                blockGrid.blocks.push(block);
+                map.addOverlay(block.polygon);
+            } else {
+                block.points.push(point);
+            }
+        });
+        blockGrid.blocks.forEach(block => {
+            var sum = 0;
+            block.points.forEach(point => {
+                sum += point.data[opt.dataName]
+            })
+            block.polygon.setFillColor(getColor(sum / block.points.length, opt));
+        });
+    }
+
+    function gridClear() {
+        if (blockGrid.blocks) {
+            blockGrid.blocks.forEach(o => {
+                map.removeOverlay(o.polygon);
+                delete o.polygon;
+            });
+        }
+        delete blockGrid.blocks;
+        blockGrid.blocks = [];
+    }
+
+    function createBlock(point, opt) {
+
+        var center = opt.firstPoint;
+        var sideLength = opt.sideLength * 0.00001;
+        var opacity = opt.opacity;
+        var offset = sideLength / 2;//计算偏移经纬度。
+        var lng = center.lng + sideLength * Math.round((point.lng - center.lng) / sideLength);
+        var lat = center.lat + sideLength * Math.round((point.lat - center.lat) / sideLength)
+        var center = new BMap.Point(lng, lat);
+        return {
+            center,
+            polygon: new BMap.Polygon(
+                [
+                    new BMap.Point(lng + offset, lat + offset),
+                    new BMap.Point(lng - offset, lat + offset),
+                    new BMap.Point(lng - offset, lat - offset),
+                    new BMap.Point(lng + offset, lat - offset),
+                ],
+                {
+                    fillOpacity: opacity,
+                    strokeWeight: 1,
+                    strokeOpacity: 0.5,
+                    strokeColor: "white"
+                }
+            ),
+            points: [point]
+        };
+    }
+
+    function isInBlock(center, sideLength, point) {
+        //块中心点，块边长，当前点是否在块里面。
+        var offset = sideLength / 2 * 0.00001;//计算偏移经纬度。
+        return point.lng > (center.lng - offset) &&
+            point.lng < (center.lng + offset) &&
+            point.lat > (center.lat - offset) &&
+            point.lat < (center.lat + offset);
+    }
+
+    function uavAdd(name, lng, lat, data) {
+        uav(name, null, () => {
+            var point = new BMap.Point(lng, lat);
+            point.data = data;
+            var icon = new BMap.Icon("marker.png", new BMap.Size(30, 20));
+            var uav = { name: name, marker: new BMap.Marker(point, { icon: icon }), pathPoint: [point] };
+            uavList.push(uav);
+            map.addOverlay(uav.marker);
+        });
+    }
+    function uav(name, exist, notExist) {
+        var uav = uavList.find(o => o.name == name);
+        if (uav) {
+            if (exist) {
+                exist(uav);
+            } else {
+                console.log("uav named :%s already existed", name)
+            }
+        } else {
+            if (notExist) {
+                notExist();
+            } else {
+                console.log("uav named :%s not found", name)
+            }
+        }
+    }
+    function uavMove(name, lng, lag, data) {
+        uav(name, o => {
+            var point = new BMap.Point(lng, lag);
+            point.data = data;
+            o.pathPoint.push(point);
+            o.marker.setPosition(point);
+        });
+    }
+    function uavShowPath(name) {
+        uav(name, o => {
+            o.pathPoint.forEach((point, index) => {
+                if (!point.marker) {
+                    point.marker = new BMap.Circle(point, 1, {
+                        strokeWeight: 1,
+                        strokeColor: "red",
+                        strokeOpacity: 1
+                    });
+                    map.addOverlay(point.marker);
+                    if (index > 0) {
+                        var previousPoint = o.pathPoint[index - 1];
+                        point.line = new BMap.Polyline([previousPoint, point],
+                            {
+                                enableClicking: false,
+                                strokeWeight: 1,
+                                strokeColor: "red",
+                                strokeOpacity: 0.5
+                            });
+                        map.addOverlay(point.line);
+                    }
+                }
+            });
+        });
+    }
+    function uavHidePath(name) {
+        uav(name, o => {
+            if (o.pathPoint) {
+                o.pathPoint.forEach(m => {
+                    map.removeOverlay(m.marker);
+                    map.removeOverlay(m.line);
+                    delete m.marker;
+                    delete m.line;
+                })
+            }
+        });
+    }
+
+    function uavRemove(name) {
+        var i = -1;
+        uavList.forEach((o, index) => {
+            if (o.name == name) {
+                map.removeOverlay(o.marker);
+                uavHidePath(name);
+                i = index;
+                delete o.marker;
+            }
+        });
+        if (i != -1) {
+            uavList.splice(i, 1);
+        }
+    }
+
+    function test() {
+        var name = "uav1";
+        var point = {
+            lng: 113.140074,
+            lat: 23.033494,
+            direct: 1,
+        }
+        gridInit({ dataName: "val" })
+
+        var opt = blockGrid.options;
+        uavAdd(name, point.lng, point.lat, { val: 0 });
+        var speed = 20;
+        window.handle = setInterval(p => {
+            gridRefresh();
+            p.lng += 0.00001 * speed * Math.random() * (Math.random() > 0.5 ? 1 : -1);
+            p.lat += 0.00001 * speed * Math.random() * (Math.random() > 0.9 ? 1 : -1) * 0.5;
+            uavMove(name, p.lng, p.lat, { val: Math.random() * (opt.maxValue - opt.minValue) + opt.minValue });
+            uavShowPath(name);
+        }, 50, point);
+    }
+
+    function stop() {
+        if (window.handle) {
+            clearInterval(window.handle);
+            uavRemove("uav1");
+            gridClear();
+            map.clearOverlays();
+        }
+    }
+</script>

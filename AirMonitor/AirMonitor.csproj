@@ -158,8 +158,9 @@
     <Compile Include="Converter\RoundConverter.cs" />
     <Compile Include="Config\SaveManager.cs" />
     <Compile Include="Core\Utils.cs" />
+    <Compile Include="Data\LeanCloudManager.cs" />
     <Compile Include="EventArgs\EvtAirSample.cs" />
-    <Compile Include="Data\MqttDataManager.cs" />
+    <Compile Include="Data\MqttDataPushManager.cs" />
     <Compile Include="EventArgs\EvtCameraGetDevices.cs" />
     <Compile Include="EventArgs\EvtCameraError.cs" />
     <Compile Include="EventArgs\EvtCameraConnect.cs" />
@@ -182,7 +183,8 @@
     <Compile Include="Interfaces\IBackupManager.cs" />
     <Compile Include="Interfaces\ICameraManager.cs" />
     <Compile Include="Interfaces\IChartManager.cs" />
-    <Compile Include="Interfaces\IDataManager.cs" />
+    <Compile Include="Interfaces\IDataPushManager.cs" />
+    <Compile Include="Interfaces\IDataQueryManager.cs" />
     <Compile Include="Interfaces\IFactory.cs" />
     <Compile Include="Interfaces\IMapProvider.cs" />
     <Compile Include="Interfaces\IResourceManager.cs" />
@@ -379,6 +381,7 @@
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
     <None Include="readme.md" />
+    <None Include="发布说明.md" />
     <Resource Include="Resources\Entypo.ttf" />
   </ItemGroup>
   <ItemGroup>
@@ -484,6 +487,9 @@
     <PackageReference Include="HockeySDK.WPF">
       <Version>4.1.6</Version>
     </PackageReference>
+    <PackageReference Include="LeanCloud.LiveQuery">
+      <Version>2017.12.13.3</Version>
+    </PackageReference>
     <PackageReference Include="MahApps.Metro">
       <Version>1.6.5</Version>
     </PackageReference>
@@ -491,7 +497,7 @@
       <Version>0.6.1</Version>
     </PackageReference>
     <PackageReference Include="MQTTnet">
-      <Version>2.7.5</Version>
+      <Version>2.8.1</Version>
     </PackageReference>
     <PackageReference Include="Newtonsoft.Json">
       <Version>11.0.2</Version>

@@ -53,7 +53,6 @@ export class BlockContextImp implements BlockContext {
     }
 }
 
-
 export abstract class MapBase implements IMapProvider, IEventAggregator {
 
     abstract mapCenter(point: Point): Point;

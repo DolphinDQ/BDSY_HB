@@ -1,4 +1,5 @@
 import map from './map/baidu'
+//import map from './map/amap'
 
 
 (function () {

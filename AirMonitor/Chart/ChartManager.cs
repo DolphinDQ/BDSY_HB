@@ -12,16 +12,19 @@ using AirMonitor.EventArgs;
 using System.Threading.Tasks;
 using System.Collections;
 using System.Collections.Generic;
+using System.Windows.Media;
 
 namespace AirMonitor.Chart
 {
     class ChartManager : IChartManager
     {
         private IEventAggregator m_eventAggregator;
+        private IResourceManager m_resource;
         private ConcurrentDictionary<int, object> m_selectDelay = new ConcurrentDictionary<int, object>();
-        public ChartManager(IEventAggregator eventAggregator)
+        public ChartManager(IEventAggregator eventAggregator, IResourceManager resource)
         {
             m_eventAggregator = eventAggregator;
+            m_resource = resource;
         }
 
         public object CreateLiner(ObservableCollection<EvtAirSample> data, string xKey, string yKey)
@@ -67,8 +70,6 @@ namespace AirMonitor.Chart
             return plot;
         }
 
-
-
         private static TimeSpan Span { get; set; } = TimeSpan.FromSeconds(60);
 
         public object CreateLiner(ObservableCollection<Tuple<DateTime, double>> data, LinerOptions options = null)
@@ -113,9 +114,21 @@ namespace AirMonitor.Chart
             return plot;
         }
 
+        private OxyColor GetOxyColor(string key)
+        {
+            var obj = m_resource.Resource(key);
+            if (obj is Color color)
+            {
+                return OxyColor.FromArgb(color.A, color.R, color.R, color.B);
+            }
+            return OxyColors.White;
+        }
+
         public object CreateScatter(ObservableCollection<ScatterData> data, ScatterOptions options = null)
         {
             var plot = new PlotModel { IsLegendVisible = false, Padding = new OxyThickness(5) };
+            plot.SelectionColor = GetOxyColor("AccentColor");
+            plot.TextColor = GetOxyColor("BlackColor");
             var series = new ScatterSeries { MarkerType = MarkerType.Circle };
             series.Points.AddRange(data.Select(o => new ScatterPoint(o.X, o.Y, o.Size, o.Value, o.Tag)));
             plot.Series.Add(series);

@@ -31,6 +31,7 @@
     <ApplicationRevision>2</ApplicationRevision>
     <ApplicationVersion>1.0.1.4</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
+    <CreateDesktopShortcut>true</CreateDesktopShortcut>
     <PublishWizardCompleted>true</PublishWizardCompleted>
     <BootstrapperEnabled>true</BootstrapperEnabled>
   </PropertyGroup>
@@ -456,6 +457,12 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
+    <None Include="..\AirMonitor\readme.md">
+      <Link>readme.md</Link>
+    </None>
+    <None Include="..\AirMonitor\发布说明.md">
+      <Link>发布说明.md</Link>
+    </None>
     <None Include="AirDetector_TemporaryKey.pfx" />
     <None Include="build.ps1" />
     <None Include="Properties\app.manifest" />
@@ -481,7 +488,7 @@
       <Version>1.6.5</Version>
     </PackageReference>
     <PackageReference Include="MQTTnet">
-      <Version>2.7.5</Version>
+      <Version>2.8.1</Version>
     </PackageReference>
     <PackageReference Include="Newtonsoft.Json">
       <Version>11.0.2</Version>
@@ -609,16 +616,6 @@
       <FileType>Assembly</FileType>
     </PublishFile>
     <PublishFile Include="Microsoft.HockeyApp.Kit">
-      <Visible>False</Visible>
-      <Group>
-      </Group>
-      <TargetPath>
-      </TargetPath>
-      <PublishState>Include</PublishState>
-      <IncludeHash>True</IncludeHash>
-      <FileType>Assembly</FileType>
-    </PublishFile>
-    <PublishFile Include="MQTTnet">
       <Visible>False</Visible>
       <Group>
       </Group>
