@@ -22,8 +22,8 @@ namespace AirMonitor.Data
         public void Init()
         {
             AVClient.Initialize(APPID, APPKEY);
-            AVQuery<AVObject> query = new AVQuery<AVObject>("aqia");
-            var obj = query.FirstOrDefaultAsync();
+            //AVQuery<AVObject> query = new AVQuery<AVObject>("aqia");
+            //var obj =  query.Where(o=>o.CreatedAt>);
         }
 
 
