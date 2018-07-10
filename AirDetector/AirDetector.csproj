@@ -29,7 +29,7 @@
     <CreateWebPageOnPublish>true</CreateWebPageOnPublish>
     <WebPage>index.html</WebPage>
     <ApplicationRevision>2</ApplicationRevision>
-    <ApplicationVersion>1.0.1.4</ApplicationVersion>
+    <ApplicationVersion>1.0.1.5</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <CreateDesktopShortcut>true</CreateDesktopShortcut>
     <PublishWizardCompleted>true</PublishWizardCompleted>
@@ -357,9 +357,6 @@
     <Compile Include="..\AirMonitor\Interfaces\IConfigManager.cs">
       <Link>Interfaces\IConfigManager.cs</Link>
     </Compile>
-    <Compile Include="..\AirMonitor\Interfaces\IDataManager.cs">
-      <Link>Interfaces\IDataManager.cs</Link>
-    </Compile>
     <Compile Include="..\AirMonitor\Interfaces\IFactory.cs">
       <Link>Interfaces\IFactory.cs</Link>
     </Compile>
@@ -616,6 +613,16 @@
       <FileType>Assembly</FileType>
     </PublishFile>
     <PublishFile Include="Microsoft.HockeyApp.Kit">
+      <Visible>False</Visible>
+      <Group>
+      </Group>
+      <TargetPath>
+      </TargetPath>
+      <PublishState>Include</PublishState>
+      <IncludeHash>True</IncludeHash>
+      <FileType>Assembly</FileType>
+    </PublishFile>
+    <PublishFile Include="MQTTnet">
       <Visible>False</Visible>
       <Group>
       </Group>

@@ -1,5 +1,6 @@
 ﻿using AirMonitor.EventArgs;
 using AirMonitor.Interfaces;
+using Caliburn.Micro;
 using FluentFTP;
 using Newtonsoft.Json;
 using System;
@@ -16,14 +17,15 @@ namespace AirMonitor.Config
     /// <summary>
     /// 存档管理器。
     /// </summary>
-    public class SaveManager : ISaveManager
+    public class SaveManager : ISaveManager,
+        IHandle<EvtSetting>
     {
         //public FtpSetting Setting { get; }
         //private IFtpClient FtpRead { get; }
         //private string PersonalDir { get; }
         //private string SharedDir { get; }
 
-        private FtpProvider Provider { get; }
+        private FtpProvider Provider { get; set; }
 
         private IConfigManager m_configManager;
 
@@ -224,5 +226,15 @@ namespace AirMonitor.Config
             await Provider.Ftp.DeleteFileAsync(path);
         }
 
+        public void Handle(EvtSetting message)
+        {
+            if (message.SettingObject is FtpSetting setting)
+            {
+                if (message.Command == SettingCommands.Changed)
+                {
+                    Provider = new FtpProvider(setting);
+                }
+            }
+        }
     }
 }

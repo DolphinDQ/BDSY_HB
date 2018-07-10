@@ -17,7 +17,7 @@
     <control:MetroWindow.RightWindowCommands>
         <control:WindowCommands>
             <Button cal:Message.Attach="ClearAllSample"  Content="{StaticResource T_ClearSamples}"></Button>
-            <Button cal:Message.Attach="SaveSamples" Content="{StaticResource T_SaveSamples}"></Button>
+            <!--<Button cal:Message.Attach="SaveSamples" Content="{StaticResource T_SaveSamples}"></Button>-->
             <Button cal:Message.Attach="LoadSamples" Content="{StaticResource T_LoadSamples}"></Button>
         </control:WindowCommands>
     </control:MetroWindow.RightWindowCommands>

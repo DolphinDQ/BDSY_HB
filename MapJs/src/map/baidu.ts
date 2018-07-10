@@ -521,7 +521,7 @@ class BaiduMapProvider extends MapBase {
                 //createItem(MapMenuItems.compare, o => this.onShowReport()),
                 createItem(MapMenuItems.refresh, o => this.onRefresh()),
                 false,
-                createItem(MapMenuItems.savePoints, o => this.onSaveSelectedBlocks()),
+                //createItem(MapMenuItems.savePoints, o => this.onSaveSelectedBlocks()),
                 createItem(MapMenuItems.reports, o => this.onShowSelectedBlockReport()),
                 createItem(MapMenuItems.horizontal, o => this.onShowHorizontalAspect()),
                 createItem(MapMenuItems.vertical, o => this.onShowVerticalAspect()),
