@@ -1,8 +1,10 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
     <TargetFramework>netcoreapp2.0</TargetFramework>
-    <Version>1.0.1</Version>
+    <Version>1.0.2</Version>
+    <AssemblyName>run</AssemblyName>
+    <RunPostBuildEvent></RunPostBuildEvent>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -29,5 +31,9 @@
   <ItemGroup>
     <None Include="nuget.config" />
   </ItemGroup>
+
+  <Target Name="PreBuild" BeforeTargets="PreBuildEvent">
+    <Exec Command="cd $(ProjectDir)&#xD;&#xA;powershell $(ProjectDir)publish.ps1" />
+  </Target>
 
 </Project>
