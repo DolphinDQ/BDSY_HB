@@ -19,7 +19,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AirDetector", "AirDetector\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MapJs", "MapJs\MapJs.csproj", "{1984C3CA-D8A1-4FEE-93C2-33849C8DBC09}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AirStandard.Core", "AirStandard.Core\AirStandard.Core.csproj", "{87FC2250-978E-474E-925B-2F2EF81C2F2C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AirStandard.Core", "AirStandard.Core\AirStandard.Core.csproj", "{87FC2250-978E-474E-925B-2F2EF81C2F2C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
