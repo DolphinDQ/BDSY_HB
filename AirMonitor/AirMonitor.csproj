@@ -31,7 +31,7 @@
     <CreateWebPageOnPublish>true</CreateWebPageOnPublish>
     <WebPage>index.htm</WebPage>
     <ApplicationRevision>45</ApplicationRevision>
-    <ApplicationVersion>1.2.33.50</ApplicationVersion>
+    <ApplicationVersion>1.2.33.51</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <CreateDesktopShortcut>true</CreateDesktopShortcut>
     <PublishWizardCompleted>true</PublishWizardCompleted>
@@ -462,7 +462,7 @@
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
     <None Include="readme.md" />
-    <None Include="发布说明.md" />
+    <None Include="publish.md" />
     <Resource Include="Resources\Entypo.ttf" />
   </ItemGroup>
   <ItemGroup>
@@ -550,6 +550,10 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\AirStandard.Model\AirStandard.Model.csproj">
+      <Project>{6de10925-69ec-4457-883e-fa5d2a05d1f9}</Project>
+      <Name>AirStandard.Model</Name>
+    </ProjectReference>
     <ProjectReference Include="..\BVCU\BVCU.csproj">
       <Project>{e9bb641b-4271-48fe-ac5f-3b7ce90f72e8}</Project>
       <Name>BVCU</Name>

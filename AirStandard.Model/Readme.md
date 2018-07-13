@@ -1,0 +1,1 @@
+﻿https://docs.microsoft.com/zh-cn/dotnet/standard/net-standard#net-platforms-support

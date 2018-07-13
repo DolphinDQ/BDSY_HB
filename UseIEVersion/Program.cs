@@ -12,27 +12,33 @@ namespace UseIEVersion
     {
         static void Main(string[] args)
         {
+            var path = Environment.Is64BitOperatingSystem ?
+                        @"SOFTWARE\WOW6432Node\Microsoft\Internet Explorer\Main\FeatureControl\FEATURE_BROWSER_EMULATION" :
+                        @"SOFTWARE\Microsoft\Internet Explorer\Main\FeatureControl\FEATURE_BROWSER_EMULATION";
             if (args.Length < 2) return;
             var app = args[0];
             if (!int.TryParse(args[1], out var version)) return;
             try
             {
-                if (!Environment.Is64BitOperatingSystem)
-                {
-                    using (var i = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\WOW6432Node\Microsoft\Internet Explorer\Main\FeatureControl\FEATURE_BROWSER_EMULATION", true))
-                    {
-                        i.SetValue(app, version, RegistryValueKind.DWord);
-                        i.Flush();
-                    }
-                }
-                using (var i = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\Microsoft\Internet Explorer\Main\FeatureControl\FEATURE_BROWSER_EMULATION", true))
+                using (var i = Registry.LocalMachine.OpenSubKey(path, true))
                 {
                     i.SetValue(app, version, RegistryValueKind.DWord);
                     i.Flush();
                 }
             }
-            catch (Exception)
+            catch (System.Security.SecurityException)
             {
+                Console.WriteLine("用管理员权限打开...");
+                Process.Start(new ProcessStartInfo("useie")
+                {
+                    Arguments = string.Join(" ", args),
+                    Verb = "runas",
+                });
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("位置异常");
+                Console.Write(e);
                 return;
             }
         }

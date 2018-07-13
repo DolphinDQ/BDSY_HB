@@ -2,13 +2,14 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp2.0</TargetFramework>
-    <Version>1.0.2</Version>
-    <AssemblyName>run</AssemblyName>
+    <Version>1.0.12</Version>
+    <AssemblyName>airstandard.core</AssemblyName>
     <RunPostBuildEvent></RunPostBuildEvent>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <PlatformTarget>x86</PlatformTarget>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
 
   <ItemGroup>
@@ -20,6 +21,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="LeanCloud.Engine" Version="2018.7.10.1" />
     <PackageReference Include="Microsoft.AspNetCore.All" Version="2.0.8" />
     <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
   </ItemGroup>
@@ -29,10 +31,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Include="nuget.config" />
+    <ProjectReference Include="..\AirStandard.Model\AirStandard.Model.csproj" />
   </ItemGroup>
 
-  <Target Name="PreBuild" BeforeTargets="PreBuildEvent">
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
     <Exec Command="cd $(ProjectDir)&#xD;&#xA;powershell $(ProjectDir)publish.ps1" />
   </Target>
 

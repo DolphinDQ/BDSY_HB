@@ -1,11 +1,12 @@
 
-#<LastPublishVersion>1.0.2</LastPublishVersion>
+#<LastPublishVersion>1.0.12</LastPublishVersion>
 
-function getRegex{ [regex][System.String]::Format("<{0}>(.*)</{0}>",$args); }
-function getConfig{
-  $reg=getRegex($args.Get(1));
-  $reg.Matches($args.Get(0)).Groups[1].Value;
+#��ȡ�����ļ��е������
+function getConfig($config,$name){
+  $reg=[regex][System.String]::Format("<{0}>(.*)</{0}>",$name)
+  return $reg.Matches($config).Groups[1].Value
 }
+#ɨ��ָ��Ŀ¼����Ŀ¼�µ������ļ�д�뵽ftp���ͽű���
 function putFile($baseDir, $dir,$targetPath,$script){
 #   echo "base dir:" $baseDir
 #   echo "dir:" $dir
@@ -48,7 +49,6 @@ $ftp=([string]$ftp).Replace("ftp://","")
 $ftp=([string]$ftp).Replace("/","")
 $ftp=([string]$ftp).Replace(":"," ")
 
-
 dotnet publish -c $buildConfig -f $framework -r $runtime 
 
 $script="ftpscript";
@@ -62,11 +62,11 @@ $baseDir=".\bin\"+$buildConfig+"\"+$framework+"\"+$runtime+"\publish\"
 putFile $baseDir "" $ftpPath $script 
 "bye" | out-file -append $script
 "quit" | out-file -append $script
-$log="./ftp.log"
+#$log="./ftp.log"
 
-ftp -s:$script -i | Out-File -Append $log
-get-content $log
+ftp -s:$script #-i | Out-File -Append $log
+#get-content $log
 del $script
-del $log
+#del $log
 
 
