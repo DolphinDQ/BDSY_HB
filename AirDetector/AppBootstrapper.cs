@@ -9,6 +9,7 @@
     using AirMonitor.Chart;
     using AirMonitor.Config;
     using AirMonitor.Core;
+    using AirMonitor.Data;
     using AirMonitor.Interfaces;
     using AirMonitor.Map;
     using AirMonitor.ViewModels;
@@ -63,6 +64,7 @@
             Container.Singleton<ISaveManager, SaveManager>();
             Container.Singleton<IConfigManager, ConfigManager>();
             Container.Singleton<IChartManager, ChartManager>();
+            Container.Singleton<IDataQueryManager, QueryManager>();
             Container.PerRequest<IShell, ShellViewModel>();
             Container.PerRequest<IMapProvider, MapProvider>();
             Container.RegisterInstance(typeof(IFactory), null, this);

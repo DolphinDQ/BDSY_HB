@@ -59,6 +59,9 @@ namespace AirMonitor.Map
                     case MapEvents.uavChanged:
                         On<EvtMapUavChanged>(json);
                         break;
+                    case MapEvents.reportDisplay:
+                        On<EvtMapReportDisplay>(json);
+                        break;
                     default:
                         break;
                 }

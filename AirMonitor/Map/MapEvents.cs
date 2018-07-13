@@ -19,5 +19,6 @@ namespace AirMonitor.Map
         boundChanged,
         blockChanged,
         uavChanged,
+        reportDisplay,
     }
 }

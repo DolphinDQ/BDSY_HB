@@ -326,6 +326,7 @@ class BaiduMapProvider extends MapBase {
                 if (win.targetBorder) {
                     this.map.removeOverlay(win.targetBorder);
                 }
+                this.on(MapEvents.reportDisplay, { isShow: false });
             });
         }
         var p1 = bound.getNorthEast();
@@ -355,6 +356,7 @@ class BaiduMapProvider extends MapBase {
         blockGrid.infoWindow.setContent(content);
         this.map.openInfoWindow(blockGrid.infoWindow, bound.getNorthEast())
         this.map.addOverlay(blockGrid.infoWindow.targetBorder);
+        this.on(MapEvents.reportDisplay, { isShow: true, time: time });
     }
     private onSaveSelectedBlocks() {
         if (this.tempSelectedData && this.tempSelectedData.length) {
@@ -469,6 +471,7 @@ class BaiduMapProvider extends MapBase {
         this.subscribe(MapEvents.savePoints, true);
         this.subscribe(MapEvents.selectAnalysisArea, true);
         this.subscribe(MapEvents.verticalAspect, true);
+        this.subscribe(MapEvents.reportDisplay, true);
         this.on(MapEvents.load);
         var h = setInterval(() => {
             var i = $("a[title='到百度地图查看此区域']");

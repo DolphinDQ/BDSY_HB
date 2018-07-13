@@ -85,7 +85,7 @@ if (!Array.prototype.selectMany) {
     }
 }
 
- const enum MapEvents {
+const enum MapEvents {
     load = "load",
     pointConvert = "pointConvert",
     horizontalAspect = "horizontalAspect",
@@ -97,6 +97,7 @@ if (!Array.prototype.selectMany) {
     boundChanged = "boundChanged",
     blockChanged = "blockChanged",
     uavChanged = "uavChanged",
+    reportDisplay = "reportDisplay",
 }
 // (window as {MapEvents?}).MapEvents=MapEvents;
 

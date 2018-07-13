@@ -105,6 +105,7 @@ namespace AirMonitor.Config
                 AltitudeUnit = "m",
                 Opacity = 0.8,
                 SideLength = 15,
+                Server = "http://b.vvlogic.com:8097/",
                 Pollutant = new[] {
                     new AirPollutant(){ Name=nameof( EvtAirSample.temp),DisplayName= m_res.GetText("T_Temperature") , Unit="℃" ,Levels=CreateLevel(new []{0d,27,30,37,45,70},          new [] {"#00ff00","#66ff00","#ccff00","#ffca00","#ff6a00","#ff0000"})},
                     new AirPollutant(){ Name=nameof( EvtAirSample.humi),DisplayName= m_res.GetText("T_Humidity") , Unit="%"     ,Levels=CreateLevel(new []{0d,20,40,60,80,100},         new [] {"#00ff00","#66ff00","#ccff00","#ffca00","#ff6a00","#ff0000"})},

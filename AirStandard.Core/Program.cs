@@ -20,10 +20,14 @@ namespace AirStandard.Core
         public static IWebHost BuildWebHost(string[] args)
         {
             var configuration = new ConfigurationBuilder().AddCommandLine(args).Build();
-            return WebHost.CreateDefaultBuilder(args)
+            var host = WebHost.CreateDefaultBuilder(args)
                 .UseConfiguration(configuration)
-                .UseStartup<Startup>()
-                .Build();
+                .UseStartup<Startup>();
+            if (args == null || !args.Any(o => o == "--urls"))
+            {
+                host.UseUrls("http://*:8097");
+            }
+            return host.Build();
         }
     }
 }

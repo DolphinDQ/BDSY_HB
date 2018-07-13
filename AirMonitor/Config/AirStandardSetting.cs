@@ -32,5 +32,10 @@ namespace AirMonitor.Config
         /// 边长。地图上显示探测范围（方块边长）。
         /// </summary>
         public double SideLength { get; set; }
+        /// <summary>
+        /// 获取标准服务器
+        /// </summary>
+        public string Server { get; set; }
+
     }
 }

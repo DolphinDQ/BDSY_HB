@@ -4,6 +4,7 @@ using AirMonitor.Interfaces;
 using AirMonitor.ViewModels;
 using Caliburn.Micro;
 using Microsoft.HockeyApp;
+using System;
 using System.Diagnostics;
 using System.Linq;
 using System.Windows;
@@ -19,6 +20,7 @@ namespace AirMonitor
         private IResourceManager m_res;
         private ISaveManager m_saveManager;
         private IEventAggregator m_eventAggregator;
+        private IDataQueryManager m_queryManager;
 
         public ShellViewModel(
             IFactory factory,
@@ -37,6 +39,7 @@ namespace AirMonitor
             LogManager.GetLog = o => factory.Create<Caliburn.Micro.ILog>();
             dataManager.Init();
             queryManager.Init();
+            m_queryManager = queryManager;
             //backupManager.Init();
             DisplayName = m_res.GetText("T_AppName") + " - " + AppVersion.VERSION;
         }

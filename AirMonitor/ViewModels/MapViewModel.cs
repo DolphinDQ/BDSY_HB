@@ -11,6 +11,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using AirMonitor.Config;
+using AirStandard.Model;
 
 namespace AirMonitor.ViewModels
 {
@@ -25,7 +26,8 @@ namespace AirMonitor.ViewModels
         IHandle<EvtMapSelectAnalysisArea>,
         IHandle<EvtMapClearAnalysisArea>,
         IHandle<EvtSampleSaving>,
-        IHandle<EvtMapClearAspect>
+        IHandle<EvtMapClearAspect>,
+        IHandle<EvtMapReportDisplay>
     {
         private IEventAggregator m_eventAggregator;
         private IResourceManager m_res;
@@ -58,6 +60,8 @@ namespace AirMonitor.ViewModels
         /// 地图提供者。
         /// </summary>
         public IMapProvider MapProvider { get; }
+
+        private IDataQueryManager m_queryManager;
 
         public IEnumerable<Tuple<string, string>> MapStyleList { get; set; }
 
@@ -113,6 +117,23 @@ namespace AirMonitor.ViewModels
 
         public object Map3DPanel { get; set; }
 
+        public IEnumerable<StandardSample> StandardSamples { get; set; }
+
+        public StandardSample StandardSample { get; set; }
+
+        public void OnStandardSamplesChanged()
+        {
+            if (StandardSamples != null)
+            {
+                StandardSample = StandardSamples.FirstOrDefault();
+            }
+            else
+            {
+                StandardSample = null;
+            }
+        }
+
+
         public void OnShow3DViewChanged() => Show3D(Show3DView);
 
         public void Show3D(bool display)
@@ -148,10 +169,12 @@ namespace AirMonitor.ViewModels
             IMapProvider mapProvider,
             ISaveManager saveManager,
             IConfigManager configManager,
+            IDataQueryManager queryManager,
             IFactory factory,
             IResourceManager res)
         {
             MapProvider = mapProvider;
+            m_queryManager = queryManager;
             m_eventAggregator = eventAggregator;
             m_res = res;
             m_factory = factory;
@@ -173,6 +196,7 @@ namespace AirMonitor.ViewModels
                 Tuple.Create("自定义","custom"),
             };
             MapStyle = MapStyleList.First();
+
         }
 
         public override void TryClose(bool? dialogResult = null)
@@ -343,6 +367,38 @@ namespace AirMonitor.ViewModels
             }
         }
 
+        public void Handle(EvtMapReportDisplay message)
+        {
+            if (DateTime.TryParse(message.Time?.Replace("/", "T"), out var time))
+            {
+                SetSample(time);
+            }
+            else
+            {
+                SetSample(null);
+            }
+        }
+
+        private async void SetSample(DateTime? time = null)
+        {
+            try
+            {
+                if (time != null)
+                {
+                    var s = await m_queryManager.GetSamples(time.Value);
+                    StandardSamples = s.Where(o => o.Station != "天气预报");
+                }
+                else
+                {
+                    StandardSamples = null;
+                }
+            }
+            catch (Exception e)
+            {
+                this.Error(e);
+            }
+        }
+
         private void OnShowAnalysisPanel(MapBlock[] blocks, AnalysisMode mode)
         {
             if (!(PropertyPanel is AnalysisStaticViewModel view))
@@ -500,6 +556,6 @@ namespace AirMonitor.ViewModels
             MapProvider.UavPath(GetUavName(null));
             RefreshOverlayPanel();
         }
-     
+
     }
 }

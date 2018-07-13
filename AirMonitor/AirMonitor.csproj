@@ -31,7 +31,7 @@
     <CreateWebPageOnPublish>true</CreateWebPageOnPublish>
     <WebPage>index.htm</WebPage>
     <ApplicationRevision>45</ApplicationRevision>
-    <ApplicationVersion>1.2.33.51</ApplicationVersion>
+    <ApplicationVersion>1.2.33.53</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <CreateDesktopShortcut>true</CreateDesktopShortcut>
     <PublishWizardCompleted>true</PublishWizardCompleted>
@@ -238,7 +238,7 @@
     <Compile Include="Converter\RoundConverter.cs" />
     <Compile Include="Config\SaveManager.cs" />
     <Compile Include="Core\Utils.cs" />
-    <Compile Include="Data\LeanCloudManager.cs" />
+    <Compile Include="Data\QueryManager.cs" />
     <Compile Include="EventArgs\EvtAirSample.cs" />
     <Compile Include="Data\MqttDataPushManager.cs" />
     <Compile Include="EventArgs\EvtCameraGetDevices.cs" />
@@ -251,6 +251,7 @@
     <Compile Include="EventArgs\EvtMapClearAspect.cs" />
     <Compile Include="EventArgs\EvtMapHorizontalAspect.cs" />
     <Compile Include="EventArgs\EvtMapPointConverted.cs" />
+    <Compile Include="EventArgs\EvtMapReportDisplay.cs" />
     <Compile Include="EventArgs\EvtMapSavePoints.cs" />
     <Compile Include="EventArgs\EvtMapSelectAnalysisArea.cs" />
     <Compile Include="EventArgs\EvtMapUavChanged.cs" />

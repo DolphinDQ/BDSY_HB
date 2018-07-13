@@ -31,6 +31,7 @@ namespace AirMonitor
             IConfigManager config,
             IWindowManager window,
             ISaveManager saveManager,
+            IDataQueryManager dataQuery,
             IEventAggregator eventAggregator,
             IResourceManager res)
         {
@@ -43,7 +44,7 @@ namespace AirMonitor
             eventAggregator.Subscribe(this);
             LogManager.GetLog = o => factory.Create<Caliburn.Micro.ILog>();
             DisplayName = m_res.GetText("T_ViewerName") + " - " + AppVersion.VERSION;
-
+            dataQuery.Init();
             //MainContent = m_factory.Create<MapViewModel>();
         }
         public object MainContent { get; set; }

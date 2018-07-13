@@ -1,5 +1,5 @@
 
-#<LastPublishVersion>1.0.12</LastPublishVersion>
+#<LastPublishVersion>1.0.14</LastPublishVersion>
 
 #��ȡ�����ļ��е������
 function getConfig($config,$name){

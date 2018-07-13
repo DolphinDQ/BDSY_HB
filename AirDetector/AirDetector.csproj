@@ -29,7 +29,7 @@
     <CreateWebPageOnPublish>true</CreateWebPageOnPublish>
     <WebPage>index.html</WebPage>
     <ApplicationRevision>2</ApplicationRevision>
-    <ApplicationVersion>1.0.1.9</ApplicationVersion>
+    <ApplicationVersion>1.0.1.11</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <CreateDesktopShortcut>true</CreateDesktopShortcut>
     <PublishWizardCompleted>true</PublishWizardCompleted>
@@ -141,6 +141,15 @@
     </Compile>
     <Compile Include="..\AirMonitor\Converter\WarningConverter.cs">
       <Link>Converter\WarningConverter.cs</Link>
+    </Compile>
+    <Compile Include="..\AirMonitor\Data\QueryManager.cs">
+      <Link>Data\QueryManager.cs</Link>
+    </Compile>
+    <Compile Include="..\AirMonitor\EventArgs\EvtMapReportDisplay.cs">
+      <Link>EventArgs\EvtMapReportDisplay.cs</Link>
+    </Compile>
+    <Compile Include="..\AirMonitor\Interfaces\IDataQueryManager.cs">
+      <Link>Interfaces\IDataQueryManager.cs</Link>
     </Compile>
     <Compile Include="..\AirMonitor\ViewModels\AnalysisMode.cs">
       <Link>ViewModels\AnalysisMode.cs</Link>
@@ -672,6 +681,16 @@
       <IncludeHash>True</IncludeHash>
       <FileType>Assembly</FileType>
     </PublishFile>
+    <PublishFile Include="System.Runtime.InteropServices.RuntimeInformation">
+      <Visible>False</Visible>
+      <Group>
+      </Group>
+      <TargetPath>
+      </TargetPath>
+      <PublishState>Include</PublishState>
+      <IncludeHash>True</IncludeHash>
+      <FileType>Assembly</FileType>
+    </PublishFile>
     <PublishFile Include="System.Windows.Interactivity">
       <Visible>False</Visible>
       <Group>
@@ -682,6 +701,12 @@
       <IncludeHash>True</IncludeHash>
       <FileType>Assembly</FileType>
     </PublishFile>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\AirStandard.Model\AirStandard.Model.csproj">
+      <Project>{6de10925-69ec-4457-883e-fa5d2a05d1f9}</Project>
+      <Name>AirStandard.Model</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

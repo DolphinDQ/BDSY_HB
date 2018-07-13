@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using AirMonitor.EventArgs;
 using AirMonitor.Config;
 using System.Windows;
+using AirStandard.Model;
 
 namespace AirMonitor.ViewModels
 {
@@ -18,8 +19,11 @@ namespace AirMonitor.ViewModels
         IHandle<EvtMapVerticalAspect>,
         IHandle<EvtMapHorizontalAspect>,
         IHandle<EvtMapClearAspect>,
-        IHandle<EvtSampling>
+        IHandle<EvtSampling>,
+        IHandle<EvtMapReportDisplay>
     {
+        private IDataQueryManager m_queryManager;
+
         private IMapProvider MapProvider { get; }
         /// <summary>
         /// 默认配置。
@@ -36,9 +40,11 @@ namespace AirMonitor.ViewModels
         public MapViewModel(IMapProvider map,
             IConfigManager config,
             ISaveManager saveManager,
+            IDataQueryManager queryManager,
             IFactory factory,
             IEventAggregator eventAggregator)
         {
+            m_queryManager = queryManager;
             MapProvider = map;
             DefaultStandard = config.GetConfig<AirStandardSetting>();
             Option = new MapGridOptions();
@@ -225,6 +231,22 @@ namespace AirMonitor.ViewModels
             PropertyPanel = obj;
         }
 
+        public IEnumerable<StandardSample> StandardSamples { get; set; }
+
+        public StandardSample StandardSample { get; set; }
+
+        public void OnStandardSamplesChanged()
+        {
+            if (StandardSamples != null)
+            {
+                StandardSample = StandardSamples.FirstOrDefault();
+            }
+            else
+            {
+                StandardSample = null;
+            }
+        }
+
         /// <summary>
         /// 刷新覆盖在地图上的控件
         /// </summary>
@@ -262,6 +284,38 @@ namespace AirMonitor.ViewModels
 
         public void Handle(EvtMapVerticalAspect message)
             => OnShowAnalysisPanel(message.blocks, AnalysisMode.Vertical);
+
+        public void Handle(EvtMapReportDisplay message)
+        {
+            if (DateTime.TryParse(message.Time?.Replace("/", "T"), out var time))
+            {
+                SetSample(time);
+            }
+            else
+            {
+                SetSample(null);
+            }
+        }
+
+        private async void SetSample(DateTime? time = null)
+        {
+            try
+            {
+                if (time != null)
+                {
+                    var s = await m_queryManager.GetSamples(time.Value);
+                    StandardSamples = s.Where(o => o.Station != "天气预报");
+                }
+                else
+                {
+                    StandardSamples = null;
+                }
+            }
+            catch (Exception e)
+            {
+                this.Error(e);
+            }
+        }
 
         private void OnShowAnalysisPanel(MapBlock[] blocks, AnalysisMode mode)
         {

@@ -156,6 +156,55 @@
                                 </StackPanel>
                             </Grid>
                         </Border>
+                        <Border Background="{StaticResource WhiteBrush}" HorizontalAlignment="Right" VerticalAlignment="Top" 
+                                CornerRadius="4 0 0 4" 
+                                Padding="3"
+                                Margin="0 50 0 0"
+                                BorderBrush="{StaticResource ThemeColorBrush}"
+                                Visibility="{Binding StandardSamples,Converter={StaticResource AnyVisiable}}"
+                                >
+                            <StackPanel Width="160">
+                                <StackPanel.Resources>
+                                    <Style TargetType="Label" BasedOn="{StaticResource MetroLabel}">
+                                        <Setter Property="Width" Value="50"/>
+                                    </Style>
+                                    <Style x:Key="LblValue" TargetType="Label" BasedOn="{StaticResource MetroLabel}">
+                                    </Style>
+                                </StackPanel.Resources>
+                                <DockPanel>
+                                    <Label Content="{StaticResource T_Station}"></Label>
+                                    <ComboBox ItemsSource="{Binding StandardSamples}" SelectedItem="{Binding StandardSample}" DisplayMemberPath="Station"></ComboBox>
+                                </DockPanel>
+                                <DockPanel>
+                                    <Label Content="{StaticResource T_Time}"></Label>
+                                    <Label Style="{StaticResource LblValue}" Content="{Binding StandardSample.time}"></Label>
+                                </DockPanel>
+                                <DockPanel>
+                                    <Label Content="{StaticResource T_CO}"></Label>
+                                    <Label Style="{StaticResource LblValue}" Content="{Binding StandardSample.co}"></Label>
+                                </DockPanel>
+                                <DockPanel>
+                                    <Label Content="{StaticResource T_SO2}"></Label>
+                                    <Label Style="{StaticResource LblValue}" Content="{Binding StandardSample.so2}"></Label>
+                                </DockPanel>
+                                <DockPanel>
+                                    <Label Content="{StaticResource T_NO2}"></Label>
+                                    <Label Style="{StaticResource LblValue}" Content="{Binding StandardSample.no2}"></Label>
+                                </DockPanel>
+                                <DockPanel>
+                                    <Label Content="{StaticResource T_O3}"></Label>
+                                    <Label Style="{StaticResource LblValue}" Content="{Binding StandardSample.o3}"></Label>
+                                </DockPanel>
+                                <DockPanel>
+                                    <Label Content="{StaticResource T_PM2_5}"></Label>
+                                    <Label Style="{StaticResource LblValue}" Content="{Binding StandardSample.pm25}"></Label>
+                                </DockPanel>
+                                <DockPanel>
+                                    <Label Content="{StaticResource T_PM10}"></Label>
+                                    <Label Style="{StaticResource LblValue}" Content="{Binding StandardSample.pm10}"></Label>
+                                </DockPanel>
+                            </StackPanel>
+                        </Border>
                     </Grid>
                 </Popup>
             </Grid>

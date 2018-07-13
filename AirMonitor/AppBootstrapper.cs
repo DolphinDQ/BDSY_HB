@@ -57,7 +57,7 @@ namespace AirMonitor
             Container.Singleton<IChartManager, ChartManager>();
             Container.Singleton<ICameraManager, BVCUCameraManager>();
             Container.Singleton<IBackupManager, BackupManager>();
-            Container.Singleton<IDataQueryManager, LeanCloudManager>();
+            Container.Singleton<IDataQueryManager, QueryManager>();
             Container.PerRequest<IShell, ShellViewModel>();
             Container.PerRequest<IMapProvider, MapProvider>();
             Container.RegisterInstance(typeof(IFactory), null, this);

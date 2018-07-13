@@ -78,7 +78,7 @@ namespace AirStandard.Core.Data
             else
             {
                 var query = new AVQuery<AVObject>("aqia");
-                var obj = await query.Where(o => o.CreatedAt < CurrentHour(date).AddHours(2) && o.CreatedAt > CurrentHour(date).AddHours(1)).FirstOrDefaultAsync();
+                var obj = await query.Where(o => o.CreatedAt < CurrentHour(date).AddHours(1) && o.CreatedAt > CurrentHour(date).AddHours(0)).FirstOrDefaultAsync();
                 data = new[] {
                     CreateSample(obj,"st0","天气预报"),
                     CreateSample(obj,"st1","湾梁"),
