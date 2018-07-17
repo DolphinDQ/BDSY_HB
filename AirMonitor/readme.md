@@ -1,6 +1,6 @@
-﻿#项目说明 2018.7.9
+﻿# 项目说明 2018.7.9
 ===
-##项目简介
+## 项目简介
 --------
 1. 本项目使用MVVM框架搭建。（框架组件为：[Caliburn.Micro](https://caliburnmicro.com/documentation)）
 2. ViewModel的NotifyPropertyChange接口使用了[Fody](https://github.com/Fody/PropertyChanged)
@@ -9,7 +9,7 @@
 5. 地图脚本开发使用了TypeScript语法，请见为MapJs项目。
 6. 实时视频接入是直接调用第三方SDK，详情请见BVCU项目。
 
-##目录结构
+## 目录结构
 --------
 项目的目录说明如下:
 >Config:主要是配置文件管理，以及配置文件的数据模型。
@@ -25,14 +25,14 @@
 >Camera:摄像头相关封装。
 >Chart:图形报表封装。[文档](http://oxyplot.org/)
 
-##Config
+## Config
 --------
 1. 单例工厂模型实现IConfigManager。
 2. ConfigManager实现了配置文件默认值生成，配置文件的调取与写入。
 3. 配置文件写入成功后会发出EvtSetting.Command==SettingCommands.Changed事件。
 4. 各个配置文件模型xxxSetting类。
 
-##Core
+## Core
 --------
 1. BackupManager是自动备份模块，实现的是将采样实时备份到ftp上，会导致项目对ftp的依赖程度变强，并且ftp负担变大，目前没有启用。
 2. Logger程序日志输出模块，日志使用[system.diagnostics](https://msdn.microsoft.com/zh-cn/library/gg145030.aspx)日志追踪框架，
@@ -40,17 +40,17 @@
 3. ResourcesManager实现了xaml的资源调用，主要是文字资源和图片资源的整合。
 4. Utils是常用工具的封装。
 
-##Camera
+## Camera
 --------
 1. BVCUCameraManager单例模型，目前只封装了打开视频的相关业务流程。
 2. 其他的是对象模型。
 
-##Chart
+## Chart
 --------
 1. 单例工厂模型实现IChartManager。
 2. ChartManager对接了 OxyPlot组件，以及其基本配置。
 
-##Config
+## Config
 --------
 1. 系统配置模块，主要管理系统想配置文件
 2. 实现配置文件读写等功能。
