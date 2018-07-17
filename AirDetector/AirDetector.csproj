@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
@@ -118,6 +118,9 @@
     <Compile Include="..\AirMonitor\Converter\ConverterBase.cs">
       <Link>Converter\ConverterBase.cs</Link>
     </Compile>
+    <Compile Include="..\AirMonitor\Converter\FileTypeToIconConverter.cs">
+      <Link>Converter\FileTypeToIconConverter.cs</Link>
+    </Compile>
     <Compile Include="..\AirMonitor\Converter\IsConnectConvert.cs">
       <Link>Converter\IsConnectConvert.cs</Link>
     </Compile>
@@ -141,6 +144,9 @@
     </Compile>
     <Compile Include="..\AirMonitor\Converter\WarningConverter.cs">
       <Link>Converter\WarningConverter.cs</Link>
+    </Compile>
+    <Compile Include="..\AirMonitor\Core\Disposable.cs">
+      <Link>Core\Disposable.cs</Link>
     </Compile>
     <Compile Include="..\AirMonitor\Data\QueryManager.cs">
       <Link>Data\QueryManager.cs</Link>

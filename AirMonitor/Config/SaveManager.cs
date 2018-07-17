@@ -131,30 +131,19 @@ namespace AirMonitor.Config
             return result == DialogResult.OK ? dlg.FileName : null;
         }
 
-        private string GetTempPath(string filename, CloudRoot root, string basedir)
+        private string GetTempPath(string filename, string basedir)
         {
             return TempDir + Guid.NewGuid();
         }
 
-        private string GetRemotePath(string filename, CloudRoot root, string basedir)
+        private string GetRemotePath(string filename, string basedir)
         {
-            string path = null;
-            switch (root)
-            {
-                case CloudRoot.Shared:
-                    path = $"{ Provider.ShardedRoot}";
-                    break;
-                case CloudRoot.Personal:
-                    path = $"{ Provider.PersonalRoot}";
-                    break;
-                default:
-                    return null;
-            }
+            string path = $"{ Provider.Root}";
             var b = string.IsNullOrEmpty(basedir) ? "" : $"/{basedir}";
             return path == null ? filename : $"{path}{b}/{filename}";
         }
 
-        public async Task SaveToCloud(string filename, AirSamplesSave data, CloudRoot root, string basedir = null)
+        public async Task SaveToCloud(string filename, AirSamplesSave data, string basedir = null)
         {
             //var path = GetTempPath(filename, root, basedir);
             if (data == null) return;
@@ -172,7 +161,7 @@ namespace AirMonitor.Config
                     }
                 });
                 var by = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(data));
-                if (await Provider.Ftp.UploadAsync(by, GetRemotePath(filename, root, basedir), FtpExists.Overwrite, true, CancellationToken.None, new Progress<double>(action)))
+                if (await Provider.Ftp.UploadAsync(by, GetRemotePath(filename, basedir), FtpExists.Overwrite, true, CancellationToken.None, new Progress<double>(action)))
                 {
                     await Task.Run(() =>
                     {
@@ -182,9 +171,9 @@ namespace AirMonitor.Config
             }
         }
 
-        public async Task<AirSamplesSave> LoadFromCloud(string filename, CloudRoot root, string basedir = null)
+        public async Task<AirSamplesSave> LoadFromCloud(string filename, string basedir = null)
         {
-            var path = GetTempPath(filename, root, basedir);
+            var path = GetTempPath(filename, basedir);
             using (var nux = new AutoResetEvent(true))
             {
                 var action = new Action<double>(o =>
@@ -194,7 +183,7 @@ namespace AirMonitor.Config
                         nux.Set();
                     }
                 });
-                if (await Provider.Ftp.DownloadFileAsync(path, GetRemotePath(filename, root, basedir), true, progress: new Progress<double>(action)))
+                if (await Provider.Ftp.DownloadFileAsync(path, GetRemotePath(filename, basedir), true, progress: new Progress<double>(action)))
                 {
                     return await Task.Run(() =>
                     {
@@ -206,9 +195,9 @@ namespace AirMonitor.Config
             return null;
         }
 
-        public async Task<CloudListItem[]> GetCloudListing(CloudRoot root, string basedir = null)
+        public async Task<CloudListItem[]> GetCloudListing(string basedir = null)
         {
-            var path = (root == CloudRoot.Personal ? Provider.PersonalRoot : Provider.ShardedRoot);
+            var path = Provider.Root;
             if (basedir != null)
             {
                 path += (path == null ? "" : "/") + basedir;
@@ -220,9 +209,9 @@ namespace AirMonitor.Config
                     .ToArray());
         }
 
-        public async Task DeleteCloud(string filename, CloudRoot root, string basedir = null)
+        public async Task DeleteCloud(string filename, string basedir = null)
         {
-            var path = GetRemotePath(filename, root, basedir);
+            var path = GetRemotePath(filename, basedir);
             await Provider.Ftp.DeleteFileAsync(path);
         }
 
@@ -236,5 +225,6 @@ namespace AirMonitor.Config
                 }
             }
         }
+
     }
 }

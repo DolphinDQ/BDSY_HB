@@ -1,4 +1,5 @@
 ﻿using AirMonitor.Config;
+using AirMonitor.Core;
 using AirMonitor.EventArgs;
 using AirMonitor.Interfaces;
 using Caliburn.Micro;
@@ -15,8 +16,7 @@ namespace AirMonitor.ViewModels
     public enum SaveLocation
     {
         Local,
-        Personal,
-        Shared,
+        Remote,
     }
 
     public class SaveSampleViewModel : Screen
@@ -76,7 +76,6 @@ namespace AirMonitor.ViewModels
 
         public bool IsLoading { get; set; }
 
-        public string SearchText { get; set; }
 
         /// <summary>
         /// 显示标准参数。
@@ -92,11 +91,13 @@ namespace AirMonitor.ViewModels
         public bool ShowFileList { get; set; }
 
 
-        private IEnumerable<string> SourceFileList { get; set; }
+        //private IEnumerable<string> SourceFileList { get; set; }
 
-        public IEnumerable<string> SourceDirList { get; set; }
+        //public IEnumerable<string> SourceDirList { get; set; }
 
-        public IEnumerable<string> FileList { get; set; }
+        //public IEnumerable<string> FileList { get; set; }
+
+        public IEnumerable<CloudListItem> FileList { get; set; }
 
         public List<Tuple<string, SaveLocation>> SaveLocationList { get; }
 
@@ -106,13 +107,10 @@ namespace AirMonitor.ViewModels
 
         public string BaseDir => string.Join("/", BaseDirList);
 
-        public string SelectedDir { get; set; }
+
 
         #region OnPropertyChanged
-        public void OnSearchTextChnaged()
-        {
-            Search();
-        }
+
 
         public void OnSaveLocationChanged()
         {
@@ -135,14 +133,6 @@ namespace AirMonitor.ViewModels
             }
         }
 
-        public void OnSelectedDirChanged()
-        {
-            if (SelectedDir == null) return;
-            BaseDirList.Add(SelectedDir);
-            NotifyOfPropertyChange(nameof(BaseDir));
-            ReloadList();
-            SelectedDir = null;
-        }
 
         #endregion
 
@@ -166,37 +156,30 @@ namespace AirMonitor.ViewModels
 
         private async void ReloadList()
         {
-            switch (SaveLocation)
+            using (new Disposable(() => IsLoading = false))
             {
-                case SaveLocation.Local:
-                    SourceFileList = null;
-                    SourceDirList = null;
-                    ShowFileList = false;
-                    break;
-                case SaveLocation.Personal:
-                    var list = await m_saveManager.GetCloudListing(CloudRoot.Personal, BaseDir);
-                    SourceDirList = list.Where(o => o.Type == CloudFileType.Directory).Select(o => o.Name);
-                    SourceFileList = list.Where(o => o.Type == CloudFileType.File).Select(o => o.Name);
-                    ShowFileList = true;
-                    break;
-                case SaveLocation.Shared:
-                    list = await m_saveManager.GetCloudListing(CloudRoot.Shared, BaseDir);
-                    SourceDirList = list.Where(o => o.Type == CloudFileType.Directory).Select(o => o.Name);
-                    SourceFileList = list.Where(o => o.Type == CloudFileType.File).Select(o => o.Name);
-                    ShowFileList = true;
-                    break;
-                default:
-                    break;
+                IsLoading = true;
+                switch (SaveLocation)
+                {
+                    case SaveLocation.Local:
+                        ShowFileList = false;
+                        break;
+                    case SaveLocation.Remote:
+                        FileList = await m_saveManager.GetCloudListing(BaseDir);
+                        ShowFileList = true;
+                        break;
+                    default:
+                        break;
+                }
+                if (!IsSaveMode)
+                {
+                    Evt.Name = null;
+                }
+                else
+                {
+                    ShowStandard = false;
+                }
             }
-            if (!IsSaveMode)
-            {
-                Evt.Name = null;
-            }
-            else
-            {
-                ShowStandard = false;
-            }
-            Search();
         }
 
         public async void DeleteSample(string item)
@@ -204,18 +187,12 @@ namespace AirMonitor.ViewModels
             var ret = MessageBox.Show("您确定要删除" + m_resourceManager.GetText(SaveLocation) + "文件:" + item, "注意", MessageBoxButton.YesNo);
             if (ret == MessageBoxResult.Yes)
             {
-                switch (SaveLocation)
+                using (new Disposable(() => IsLoading = false))
                 {
-                    case SaveLocation.Personal:
-                        await m_saveManager.DeleteCloud(item, CloudRoot.Personal, BaseDir);
-                        ReloadList();
-                        break;
-                    case SaveLocation.Shared:
-                        await m_saveManager.DeleteCloud(item, CloudRoot.Shared, BaseDir);
-                        ReloadList();
-                        break;
+                    IsLoading = true;
+                    await m_saveManager.DeleteCloud(item, BaseDir);
+                    ReloadList();
                 }
-
             }
         }
 
@@ -246,13 +223,29 @@ namespace AirMonitor.ViewModels
             IsSaveMode = false;
         }
 
-        public Task LoadFile(string file) => Confirm(new[] { file });
-
-        public async Task Confirm(IEnumerable<object> filenames = null)
+        public async Task LoadFile(CloudListItem item)
         {
-            try
+            switch (item.Type)
+            {
+                case CloudFileType.File:
+                    await Confirm(new[] { item });
+                    break;
+                case CloudFileType.Directory:
+                    BaseDirList.Add(item.Name);
+                    NotifyOfPropertyChange(nameof(BaseDir));
+                    ReloadList();
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        public async Task Confirm(IEnumerable<CloudListItem> filenames = null)
+        {
+            using (new Disposable(() => IsLoading = false))
             {
                 IsLoading = true;
+
                 if (IsSaveMode)
                 {
                     switch (SaveLocation)
@@ -260,11 +253,8 @@ namespace AirMonitor.ViewModels
                         case SaveLocation.Local:
                             await OnSaveToLocal();
                             break;
-                        case SaveLocation.Personal:
+                        case SaveLocation.Remote:
                             await OnSaveToPersonal();
-                            break;
-                        case SaveLocation.Shared:
-                            await OnSaveToShared();
                             break;
                         default:
                             break;
@@ -277,36 +267,22 @@ namespace AirMonitor.ViewModels
                         case SaveLocation.Local:
                             await OnLoadFromLocal();
                             break;
-                        case SaveLocation.Personal:
-                            await LoadFromCloud(filenames.Cast<string>(), CloudRoot.Personal);
-                            break;
-                        case SaveLocation.Shared:
-                            await LoadFromCloud(filenames.Cast<string>(), CloudRoot.Shared);
+                        case SaveLocation.Remote:
+                            await LoadFromCloud(filenames.Select(o => o.Name));
                             break;
                         default:
                             break;
                     }
                 }
             }
-            catch (Exception e)
-            {
-                this.Warn("save/load item error:{0}", e);
-                this.Error(e);
-                throw;
-            }
-            finally
-            {
-                IsLoading = false;
-            }
-
         }
 
-        private async Task LoadFromCloud(IEnumerable<string> filenames, CloudRoot root)
+        private async Task LoadFromCloud(IEnumerable<string> filenames)
         {
             if (filenames == null) return;
             foreach (var item in filenames)
             {
-                var file = await m_saveManager.LoadFromCloud(item, root, BaseDir);
+                var file = await m_saveManager.LoadFromCloud(item, BaseDir);
                 if (file != null) m_eventAggregator.PublishOnBackgroundThread(new EvtSampleSaving() { Type = SaveType.LoadSamplesCompleted, Save = file });
             }
         }
@@ -321,11 +297,8 @@ namespace AirMonitor.ViewModels
             IEnumerable<string> fileList = null;
             switch (SaveLocation)
             {
-                case SaveLocation.Personal:
-                    fileList = (await m_saveManager.GetCloudListing(CloudRoot.Personal, BaseDir)).Select(o => o.Name);
-                    break;
-                case SaveLocation.Shared:
-                    fileList = (await m_saveManager.GetCloudListing(CloudRoot.Shared, BaseDir)).Select(o => o.Name);
+                case SaveLocation.Remote:
+                    fileList = (await m_saveManager.GetCloudListing(BaseDir)).Select(o => o.Name);
                     break;
                 default:
                     fileList = Enumerable.Empty<string>();
@@ -342,23 +315,7 @@ namespace AirMonitor.ViewModels
             return true;
         }
 
-        private async Task OnSaveToShared()
-        {
-            try
-            {
-                if (await CheckFileName())
-                {
-                    await m_saveManager.SaveToCloud(Evt.Name, Evt.Save, CloudRoot.Shared, BaseDir);
-                    m_eventAggregator.PublishOnBackgroundThread(new EvtSampleSaving() { Type = SaveType.SaveSamplesCompleted, Name = Evt.Name, Save = Evt.Save });
-                }
-            }
-            catch (Exception e)
-            {
-                MessageBox.Show("保存失败!" + e.Message);
-                throw;
-            }
 
-        }
 
         private async Task OnSaveToPersonal()
         {
@@ -366,7 +323,7 @@ namespace AirMonitor.ViewModels
             {
                 if (await CheckFileName())
                 {
-                    await m_saveManager.SaveToCloud(Evt.Name, Evt.Save, CloudRoot.Personal, BaseDir);
+                    await m_saveManager.SaveToCloud(Evt.Name, Evt.Save, BaseDir);
                     m_eventAggregator.PublishOnBackgroundThread(new EvtSampleSaving() { Type = SaveType.SaveSamplesCompleted, Name = Evt.Name, Save = Evt.Save });
                 }
             }
@@ -402,28 +359,32 @@ namespace AirMonitor.ViewModels
             return Task.FromResult(0);
         }
 
-        public void Search()
-        {
-            var text = SearchText;
-            if (string.IsNullOrWhiteSpace(text))
-            {
-                FileList = SourceFileList;
-            }
-            else
-            {
-                if (SourceFileList != null)
-                {
-                    var sp = text.Split(' ');
-                    FileList = SourceFileList.Where(o => !o.Contains(text));
-                    foreach (var item in sp)
-                    {
-                        if (item == null || item == "") continue;
-                        FileList = FileList.Where(o => !o.Contains(item));
-                    }
-                    var ar = FileList.ToArray();
-                    FileList = SourceFileList.Where(o => !ar.Contains(o));
-                }
-            }
-        }
+        //public void Search()
+        //{
+        //    using (new Disposable(() => IsLoading = true))
+        //    {
+        //        IsLoading = false;
+        //        var text = SearchText;
+        //        if (string.IsNullOrWhiteSpace(text))
+        //        {
+        //            FileList = SourceFileList;
+        //        }
+        //        else
+        //        {
+        //            if (SourceFileList != null)
+        //            {
+        //                var sp = text.Split(' ');
+        //                FileList = SourceFileList.Where(o => !o.Contains(text));
+        //                foreach (var item in sp)
+        //                {
+        //                    if (item == null || item == "") continue;
+        //                    FileList = FileList.Where(o => !o.Contains(item));
+        //                }
+        //                var ar = FileList.ToArray();
+        //                FileList = SourceFileList.Where(o => !ar.Contains(o));
+        //            }
+        //        }
+        //    }
+        //}
     }
 }

@@ -17,6 +17,7 @@
                     <converter:IsHiddenConverter x:Key="IsHidden"/>
                     <converter:IsConnectConvert x:Key="IsConnect"/>
                     <converter:NotConverter x:Key="Not"/>
+                    <converter:FileTypeToIconConverter x:Key="FileTypeToIcon" />
                 </ResourceDictionary>
                 <!-- MahApps.Metro resource dictionaries. Make sure that all file names are Case Sensitive! -->
                 <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Controls.xaml" />

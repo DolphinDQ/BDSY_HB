@@ -51,55 +51,32 @@
             <DockPanel >
                 <Label Content="{StaticResource T_SaveDir}"  Style="{StaticResource LblSettingTitle}" ></Label>
                 <Button Name="Back" DockPanel.Dock="Right" Margin="6 0 0 0"  Content="{StaticResource T_Back}"/>
-                <!--<control:DropDownButton DockPanel.Dock="Right" ItemsSource="{Binding SourceDirList}"  Visibility="{Binding SourceDirList,Converter={StaticResource AnyVisiable}}">
-                    <control:DropDownButton.Style>
-                        <Style TargetType="control:DropDownButton">
-                            <Setter Property="Background" Value="{DynamicResource WhiteBrush}" />
-                            <Setter Property="BorderBrush" Value="{DynamicResource BlackBrush}" />
-                        </Style>
-                    </control:DropDownButton.Style>
-                    <control:DropDownButton.ItemContainerStyle>
-                        <Style TargetType="MenuItem"  >
-                            <Setter Property="Header" Value="{Binding}"/>
-                            <Setter Property="Margin" Value="0" />
-                            <Setter Property="Padding" Value="0 3 0 0"/>
-                            <Setter Property="MinHeight" Value="25" />
-                            <Setter Property="BorderThickness" Value="0"/>
-                            <Setter Property="VerticalContentAlignment" Value="Center"/>
-                            <Setter Property="HorizontalContentAlignment" Value="Center"/>
-                            <Setter Property="Background" Value="{DynamicResource WhiteBrush}" />
-                            <Setter Property="Foreground" Value="{DynamicResource TextBrush}" />
-                            <Setter Property="cal:Action.TargetWithoutContext" Value="{Binding Path=DataContext, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type control:DropDownButton}}}"/>
-                            <Setter Property="cal:Message.Attach" Value="[Event Click]=[Action SelectedDir($this)]"/>
-                        </Style>
-                    </control:DropDownButton.ItemContainerStyle>
-                </control:DropDownButton>-->
-                <Grid Width="25"  DockPanel.Dock="Right" Visibility="{Binding SourceDirList,Converter={StaticResource AnyVisiable}}">
-                    <ComboBox ItemsSource="{Binding SourceDirList}" Margin="-147,0,0,0" SelectedItem="{Binding SelectedDir}" />
-                </Grid>
-                <TextBox  Text="{Binding BaseDir,StringFormat='{}/{0}'}" IsReadOnly="True"/>
-            </DockPanel>
-            <DockPanel >
-                <Label Style="{StaticResource LblSettingTitle}" Content="{StaticResource T_Search}" VerticalContentAlignment="Center"/>
-                <Button Margin="6 0 0 0"  Name="Search" CommandParameter="{Binding ElementName=T,Path=Text}" DockPanel.Dock="Right" Content="{StaticResource T_Search}"/>
-                <TextBox Name="T" Text="{Binding SearchText}" />
+                <TextBox  Text="{Binding BaseDir,StringFormat='{}/{0}',Mode=OneWay}" IsReadOnly="True"/>
             </DockPanel>
             <ListBox 
                     Name="Filelist"
                     Margin="3,3,3,3"
                     Height="300" 
-                    BorderBrush="{Binding ElementName=T,Path=BorderBrush}" 
+                    BorderBrush="{Binding ElementName=Back,Path=BorderBrush}" 
                     BorderThickness="1" 
                     SelectionMode="Extended"
                     ItemsSource="{Binding FileList}"
                     cal:Message.Attach="[Event MouseDoubleClick]=[Action LoadFile($this)]">
+
                 <ListBox.ItemTemplate>
                     <ItemContainerTemplate>
                         <ItemsControl>
-                            <DockPanel>
+                            <Grid>
                                 <!--<Button BorderBrush="Transparent" Background="Transparent" DockPanel.Dock="Right" cal:Message.Attach="DeleteSample($this)">删除</Button>-->
-                                <Label Content="{Binding}"></Label>
-                            </DockPanel>
+                                <StackPanel HorizontalAlignment="Left" Orientation="Horizontal">
+                                    <Rectangle Width="23" Height="18" Margin="5">
+                                        <Rectangle.Fill>
+                                            <VisualBrush Visual="{Binding Type,Converter={StaticResource FileTypeToIcon}}"></VisualBrush>
+                                        </Rectangle.Fill>
+                                    </Rectangle>
+                                    <Label Content="{Binding Name}" VerticalAlignment="Center"></Label>
+                                </StackPanel>
+                            </Grid>
                         </ItemsControl>
                     </ItemContainerTemplate>
                 </ListBox.ItemTemplate>
@@ -110,63 +87,14 @@
             <!--<CheckBox Name="Other" DockPanel.Dock="Right"  Margin="3 0">其他</CheckBox>-->
             <TextBox Text="{Binding Evt.Name}" ></TextBox>
         </DockPanel>
-        <!--<Border Visibility="{Binding ElementName=Other,Path=IsChecked, Converter={StaticResource IsVisible}}">
-            <StackPanel>
-                <DockPanel>
-                    <Label Style="{StaticResource  LblSettingTitle}" Content="{StaticResource T_AltitudeUnit}"></Label>
-                    <Label Style="{StaticResource  LblSettingUnit}"></Label>
-                    <TextBox Text="{Binding Settings.AltitudeUnit}"></TextBox>
-                </DockPanel>
-                <DockPanel>
-                    <Label Style="{StaticResource  LblSettingTitle}" Content="{StaticResource T_MaxAltitude}"></Label>
-                    <Label Style="{StaticResource  LblSettingUnit}" Content="{Binding Settings.AltitudeUnit}"></Label>
-                    <control:NumericUpDown Value="{Binding Settings.MaxAltitude,Converter={StaticResource Round}}"></control:NumericUpDown>
-                </DockPanel>
-                <DockPanel>
-                    <Label Style="{StaticResource  LblSettingTitle}" Content="{StaticResource T_CorrectAltitude}"></Label>
-                    <Label Style="{StaticResource  LblSettingUnit}" Content="{Binding Settings.AltitudeUnit}"></Label>
-                    <control:NumericUpDown Value="{Binding Settings.CorrectAltitude,Converter={StaticResource Round}}"></control:NumericUpDown>
-                </DockPanel>
-                <DockPanel>
-                    <Label Style="{StaticResource  LblSettingTitle}" Content="{StaticResource T_Pollutant}"></Label>
-                    <Label Style="{StaticResource  LblSettingUnit}"></Label>
-                    <ComboBox ItemsSource="{Binding Pollutants}" SelectedItem="{Binding Current}" DisplayMemberPath="DisplayName"></ComboBox>
-                </DockPanel>
-                <DockPanel>
-                    <Label Style="{StaticResource  LblSettingTitle}" Content="{StaticResource T_Unit}"></Label>
-                    <Label Style="{StaticResource  LblSettingUnit}"></Label>
-                    <TextBox Text="{Binding Current.Unit}"></TextBox>
-                </DockPanel>
-                <DockPanel>
-                    <Label Style="{StaticResource  LblSettingTitle}" Content="{StaticResource T_PollutantLevel}"></Label>
-                    <Label Style="{StaticResource LblSettingUnit}" Padding="0" FontStyle="Normal"></Label>
-                    <ComboBox ItemsSource="{Binding Current.Levels}" SelectedItem="{Binding CurrentLevel}" DisplayMemberPath="Name"></ComboBox>
-                </DockPanel>
-                <DockPanel>
-                    <Label Style="{StaticResource  LblSettingTitle}" Content="{StaticResource T_MinValue}"></Label>
-                    <Label Style="{StaticResource  LblSettingUnit}" >
-                        <Border Style="{StaticResource ColorBlock}"  Background="{Binding CurrentLevel.MinColor}" cal:Message.Attach="[Event MouseUp]=[Action SetMinColor]"/>
-                    </Label>
-                    <control:NumericUpDown Value="{Binding CurrentLevel.MinValue}"></control:NumericUpDown>
-                </DockPanel>
-                <DockPanel>
-                    <Label Style="{StaticResource  LblSettingTitle}" Content="{StaticResource T_MaxValue}"></Label>
-                    <Label Style="{StaticResource  LblSettingUnit}" >
-                        <Border Style="{StaticResource ColorBlock}" Background="{Binding CurrentLevel.MaxColor}"  cal:Message.Attach="[Event MouseUp]=[Action SetMaxColor]"/>
-                    </Label>
-                    <control:NumericUpDown Value="{Binding CurrentLevel.MaxValue}"></control:NumericUpDown>
-                </DockPanel>
-            </StackPanel>
-        </Border>-->
-        <Button Width="120" 
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" >
+            <control:ProgressRing Height="15" Width="15" IsActive="{Binding IsLoading}" />
+            <Button Width="120" 
                 IsEnabled="{Binding IsLoading, Converter={StaticResource Not} }"
                 Tag="{Binding ElementName=Filelist,Path=SelectedItems}"
-                cal:Message.Attach="Confirm($this.Tag)"
-                HorizontalAlignment="Right" Margin="5">
-            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                <control:ProgressRing Height="15" Width="15" Visibility="{Binding IsLoading,Converter={StaticResource IsVisible}}" />
+                cal:Message.Attach="Confirm($this.Tag)" Margin="5">
                 <TextBlock FontSize="15" Text="{StaticResource  T_Confirm}"></TextBlock>
-            </StackPanel>
-        </Button>
+            </Button>
+        </StackPanel>
     </StackPanel>
 </UserControl>

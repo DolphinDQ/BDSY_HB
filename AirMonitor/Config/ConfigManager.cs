@@ -76,8 +76,7 @@ namespace AirMonitor.Config
                 Password = "123456",
                 Host = "b.vvlogic.com",
                 Port = 8021,
-                Root = "airhunter",
-                SharedRoot = "shared",
+                Root = "/",
             };
         }
 

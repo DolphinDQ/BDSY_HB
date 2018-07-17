@@ -222,6 +222,7 @@
     <Compile Include="Converter\AirLevelToGradientConverter.cs" />
     <Compile Include="Converter\AnyVisiableConverter.cs" />
     <Compile Include="Converter\ConverterBase.cs" />
+    <Compile Include="Converter\FileTypeToIconConverter.cs" />
     <Compile Include="Converter\IsConnectConvert.cs" />
     <Compile Include="Converter\IsHiddenConverter.cs" />
     <Compile Include="Converter\IsNullConverter.cs" />
@@ -232,6 +233,7 @@
     <Compile Include="Converter\WarningConverter.cs" />
     <Compile Include="Chart\ChartManager.cs" />
     <Compile Include="Core\BackupManager.cs" />
+    <Compile Include="Core\Disposable.cs" />
     <Compile Include="Core\Logger.cs" />
     <Compile Include="Core\LoggerListener.cs" />
     <Compile Include="Core\ResourcesManager.cs" />

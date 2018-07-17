@@ -14,13 +14,12 @@ namespace AirMonitor.Config
         {
             var client = new FtpClient(setting.Host, setting.Port, setting.Account, setting.Password);
             client.Encoding = Encoding.UTF8;
-            client.DataConnectionEncryption = false;
-            client.SslProtocols = System.Security.Authentication.SslProtocols.Tls12;
-            client.EncryptionMode = FtpEncryptionMode.Explicit;
-            client.ValidateCertificate += Ftp_ValidateCertificate;
+            //client.DataConnectionEncryption = false;
+            //client.SslProtocols = System.Security.Authentication.SslProtocols.Tls12;
+            //client.EncryptionMode = FtpEncryptionMode.Explicit;
+            //client.ValidateCertificate += Ftp_ValidateCertificate;
             Ftp = client;
-            PersonalRoot = setting.Root;
-            ShardedRoot = setting.SharedRoot;
+            Root = setting.Root;
         }
 
         private void Ftp_ValidateCertificate(FtpClient control, FtpSslValidationEventArgs e)
@@ -29,7 +28,6 @@ namespace AirMonitor.Config
         }
 
         public IFtpClient Ftp { get; }
-        public string PersonalRoot { get; }
-        public string ShardedRoot { get; }
+        public string Root { get; }
     }
 }

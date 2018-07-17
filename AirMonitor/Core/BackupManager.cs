@@ -106,7 +106,7 @@ namespace AirMonitor.Core
 
         private async Task OnSaveToCloud(string path)
         {
-            await m_saveManager.SaveToCloud(path, m_saveManager.Load(path), CloudRoot.Personal);
+            await m_saveManager.SaveToCloud(path, m_saveManager.Load(path));
         }
 
         public async void Handle(EvtSampling message)
