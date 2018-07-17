@@ -21,7 +21,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MapJs", "MapJs\MapJs.csproj
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AirStandard.Core", "AirStandard.Core\AirStandard.Core.csproj", "{87FC2250-978E-474E-925B-2F2EF81C2F2C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AirStandard.Model", "AirStandard.Model\AirStandard.Model.csproj", "{6DE10925-69EC-4457-883E-FA5D2A05D1F9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AirStandard.Model", "AirStandard.Model\AirStandard.Model.csproj", "{6DE10925-69EC-4457-883E-FA5D2A05D1F9}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
