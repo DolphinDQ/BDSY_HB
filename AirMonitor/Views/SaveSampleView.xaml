@@ -67,7 +67,7 @@
                     <ItemContainerTemplate>
                         <ItemsControl>
                             <Grid>
-                                <!--<Button BorderBrush="Transparent" Background="Transparent" DockPanel.Dock="Right" cal:Message.Attach="DeleteSample($this)">删除</Button>-->
+                                <!--<Button BorderBrush="Transparent" Background="Transparent" HorizontalAlignment="Right" cal:Message.Attach="DeleteSample($this)">删除</Button>-->
                                 <StackPanel HorizontalAlignment="Left" Orientation="Horizontal">
                                     <Rectangle Width="23" Height="18" Margin="5">
                                         <Rectangle.Fill>

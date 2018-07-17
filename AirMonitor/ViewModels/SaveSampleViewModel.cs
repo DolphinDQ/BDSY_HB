@@ -182,15 +182,15 @@ namespace AirMonitor.ViewModels
             }
         }
 
-        public async void DeleteSample(string item)
+        public async void DeleteSample(CloudListItem item)
         {
-            var ret = MessageBox.Show("您确定要删除" + m_resourceManager.GetText(SaveLocation) + "文件:" + item, "注意", MessageBoxButton.YesNo);
+            var ret = MessageBox.Show("您确定要删除" + m_resourceManager.GetText(SaveLocation) + "文件:" + item.Name, "注意", MessageBoxButton.YesNo);
             if (ret == MessageBoxResult.Yes)
             {
                 using (new Disposable(() => IsLoading = false))
                 {
                     IsLoading = true;
-                    await m_saveManager.DeleteCloud(item, BaseDir);
+                    await m_saveManager.DeleteCloud(item.Name, BaseDir);
                     ReloadList();
                 }
             }

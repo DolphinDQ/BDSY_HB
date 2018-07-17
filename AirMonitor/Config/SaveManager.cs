@@ -28,13 +28,16 @@ namespace AirMonitor.Config
         private FtpProvider Provider { get; set; }
 
         private IConfigManager m_configManager;
+        private IEventAggregator m_eventAggregator;
 
         private string TempDir { get; } = "temp\\";
 
-        public SaveManager(IConfigManager configManager)
+        public SaveManager(IConfigManager configManager,IEventAggregator eventAggregator)
         {
             Provider = new FtpProvider(configManager.GetConfig<FtpSetting>());
             m_configManager = configManager;//
+            m_eventAggregator = eventAggregator;
+            m_eventAggregator.Subscribe(this);
             if (Directory.Exists(TempDir))
             {
                 Directory.Delete(TempDir, true);
