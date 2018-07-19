@@ -20,8 +20,8 @@
  2. AirMonitor和AirDetector登录的用户既是FTP管理用户。
  3. 如果需要添加别的客户端共享文件夹，即在ftp服务器中建立一个指定客户专用的文件夹，添加该文件夹的访问用户即可。
  > 基础步骤：
- >> 使用airadmin登录[ftp](ftp://192.168.1.180);
- >> 新建新客户文件夹（祖庙街道项目）如：zumiao;
- >> 用ssh登录ftp服务器，添加用户：user1 密码：123456，操作命令为 ：
- >> ``useradd user1 -d /home/ftp/air/zumiao/ -s /sbin/nologin ``
- >> ``passwd user1 123456``
+ >> +使用airadmin登录[ftp](ftp://192.168.1.180);
+ >> +新建新客户文件夹（祖庙街道项目）如：zumiao;
+ >> +用ssh登录ftp服务器，添加用户：user1 密码：123456，操作命令为 ：
+ >> +``useradd user1 -d /home/ftp/air/zumiao/ -s /sbin/nologin ``
+ >> +``passwd user1 123456``

@@ -47,6 +47,8 @@ namespace AirMonitor.ViewModels
         private IWindowManager m_windowManager;
         private IEventAggregator m_eventAggregator;
         private IConfigManager m_configManager;
+        private VideoViewModel m_videoView;
+
         public bool IsCameraOnline { get; set; }
         public EvtAirSample Current { get; set; }
         public void Handle(EvtCameraGetDevices message)
@@ -74,12 +76,19 @@ namespace AirMonitor.ViewModels
 
         public void OpenVideoDialog()
         {
-            var view = m_factory.Create<VideoViewModel>();
-            var dir = new Dictionary<string, object>();
-            //dir.Add("WindowState", 2);
-            //dir.Add("Width", 1280);
-            //dir.Add("Heght", 720);
-            m_windowManager.ShowWindow(view, null, dir);
+            if (m_videoView?.IsActive==true)
+            {
+                m_videoView.Refresh();
+            }
+            else
+            {
+                m_videoView = m_factory.Create<VideoViewModel>();
+                var dir = new Dictionary<string, object>();
+                //dir.Add("WindowState", 2);
+                dir.Add("Width", 1280);
+                dir.Add("Heght", 720);
+                m_windowManager.ShowWindow(m_videoView, null, dir);
+            }
         }
         public void VideoServiceSetting()
         {

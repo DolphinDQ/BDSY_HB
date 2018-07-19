@@ -1,5 +1,4 @@
 ﻿# 项目说明 2018.7.9
-===
 ## 项目简介
 --------
 1. 本项目使用MVVM框架搭建。（框架组件为：[Caliburn.Micro](https://caliburnmicro.com/documentation)）
