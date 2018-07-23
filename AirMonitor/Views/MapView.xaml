@@ -12,11 +12,11 @@
 
     <DockPanel >
         <DockPanel.Resources>
-            <Style TargetType="Border" BasedOn="{StaticResource G_Border}">
+            <!--<Style TargetType="Border" BasedOn="{StaticResource G_Border}">
                 <Setter Property="Margin" Value="1"/>
-            </Style>
+            </Style>-->
         </DockPanel.Resources>
-        <Border DockPanel.Dock="Top">
+        <Border DockPanel.Dock="Top" >
             <DockPanel>
                 <Label DockPanel.Dock="Left" Style="{StaticResource Lbl_Title}" Content="{StaticResource T_Visualization}" ctrl:IconHelper.Icon="{StaticResource appbar_location_checkin}" >
                 </Label>
@@ -51,7 +51,7 @@
                     <Label Content="{StaticResource T_Opacity}"></Label>
                     <control:NumericUpDown Value="{Binding MapGridOptions.settings.Opacity}" Maximum="1" Minimum="0" Interval="0.1"/>
                     <ToggleButton Visibility="Collapsed" Content="{StaticResource T_AnalysisSamples}" IsChecked="{Binding EnableAnalysis}"></ToggleButton>
-
+                    <Button Name="RefreshBlock"  Content="{StaticResource T_RefreshBlock}" Margin="2 0" />
                 </StackPanel>
             </DockPanel>
         </Border>
@@ -143,7 +143,6 @@
                                     Visibility="{Binding Map3DFullPanel,Converter={StaticResource AnyVisiable}}" 
                                     cal:View.Model="{Binding Map3DFullPanel}"/>
                                 <StackPanel Orientation="Horizontal" VerticalAlignment="Top" HorizontalAlignment="Left">
-                                    <Button Name="RefreshBlock" cal:Message.Attach="[Event Click]=[Action RefreshBlock]" Content="{StaticResource T_RefreshBlock}" Style="{DynamicResource Btn_Cirle}" ctrl:IconHelper.Icon="{StaticResource appbar_refresh}"  />
                                     <!--<Button Name="ClearSamples" cal:Message.Attach="[Event Click]=[Action ClearSamples]" Content="{StaticResource T_ClearMap}"  Style="{DynamicResource Btn_Cirle}" ctrl:IconHelper.Icon="{StaticResource appbar_clean}"  />-->
                                     <ToggleButton IsChecked="{Binding Show3DView}"
                                               Style="{StaticResource Btn_Cirle}" 

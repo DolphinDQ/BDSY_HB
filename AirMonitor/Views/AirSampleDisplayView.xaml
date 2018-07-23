@@ -17,7 +17,7 @@
             </StackPanel>
             <Label Style="{StaticResource Lbl_Title}" Content="{StaticResource T_RealtimeAirSamples}" ctrl:IconHelper.Icon="{StaticResource appbar_tree_leaf}"/>
         </DockPanel>
-        <Border Style="{StaticResource G_Border}" Margin="5 5 8 5">
+        <Border Style="{StaticResource G_Border}" BorderThickness="0" Margin="5 5 8 5">
             <ListView Background="Transparent" Focusable="False" BorderThickness="0" ItemTemplateSelector="{x:Null}" ItemsSource="{Binding PollutantViewList}">
                 <ListBox.ItemContainerStyle>
                     <Style TargetType="{x:Type ListBoxItem}">
