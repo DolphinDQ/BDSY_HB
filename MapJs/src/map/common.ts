@@ -86,7 +86,9 @@ if (!Array.prototype.selectMany) {
 }
 
 const enum MapEvents {
+    /**地图加载事件 */
     load = "load",
+    /** */
     pointConvert = "pointConvert",
     horizontalAspect = "horizontalAspect",
     verticalAspect = "verticalAspect",
@@ -106,7 +108,6 @@ const enum MapMenuItems {
     uavPath = "无人机路径",
     uavLocation = "无人机定位",
     uavFollow = "无人机跟随",
-
     compare = "对比数据",
     reports = "统计报表",
     savePoints = "保存",

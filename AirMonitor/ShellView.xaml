@@ -3,8 +3,8 @@
         xmlns:cal="http://www.caliburnproject.org"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        MinWidth="1366"  MinHeight="768"
-        Width="1366" Height="768"
+        MinWidth="1280"  MinHeight="720"
+        Width="1280" Height="720"
         ShowIconOnTitleBar="False"
         GlowBrush="{DynamicResource AccentColorBrush}">
     <control:MetroWindow.RightWindowCommands>
