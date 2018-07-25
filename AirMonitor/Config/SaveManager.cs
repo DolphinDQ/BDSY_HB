@@ -98,10 +98,7 @@ namespace AirMonitor.Config
         public void Save(string path, AirSamplesSave data)
         {
             if (data == null) return;
-            if (data.Standard == null)
-            {
-                data.Standard = m_configManager.GetConfig<AirStandardSetting>();
-            }
+            data.Standard = m_configManager.GetConfig<AirStandardSetting>();
             var json = JsonConvert.SerializeObject(data);
             File.WriteAllText(path, json);
         }

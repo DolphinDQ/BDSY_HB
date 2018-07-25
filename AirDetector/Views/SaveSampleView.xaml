@@ -90,9 +90,9 @@
         <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" >
             <control:ProgressRing Height="15" Width="15" IsActive="{Binding IsLoading}" />
             <Button Width="120" 
-                IsEnabled="{Binding IsLoading, Converter={StaticResource Not} }"
+                IsEnabled="{Binding IsLoading, Converter={StaticResource Not}}"
                 Tag="{Binding ElementName=Filelist,Path=SelectedItems}"
-                cal:Message.Attach="Confirm($this.Tag)" Margin="5">
+                cal:Message.Attach="Confirm($source.Tag)" Margin="5">
                 <TextBlock FontSize="15" Text="{StaticResource  T_Confirm}"></TextBlock>
             </Button>
         </StackPanel>

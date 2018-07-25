@@ -156,7 +156,6 @@ namespace AirMonitor.ViewModels
                         ReloadList();
                         break;
                 }
-
             }
         }
 
@@ -208,7 +207,6 @@ namespace AirMonitor.ViewModels
             }
 
         }
-
         public async Task Confirm(IEnumerable<CloudListItem> filenames = null)
         {
             try

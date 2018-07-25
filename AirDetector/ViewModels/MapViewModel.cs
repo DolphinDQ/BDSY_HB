@@ -63,14 +63,8 @@ namespace AirMonitor.ViewModels
         }
 
 
-        public void OnMapContainerChanged()
-        {
-            if (MapContainer != null)
-            {
-                MapLoad = false;
-                MapProvider.LoadMap(MapContainer);
-            }
-        }
+        public void OnMapContainerChanged() => RefreshMap();
+    
 
         public void Handle(EvtMapLoad message)
         {
@@ -81,12 +75,15 @@ namespace AirMonitor.ViewModels
 
         private void OnLoadHistory()
         {
+            Show3D(false);
+            SetPropertyPanel(null);
+            SetSample(null);
             if (Save != null && Save.Samples != null && Save.Samples.Any())
             {
-                SetPropertyPanel(null);
                 var first = Save.Samples.First();
                 var name = GetUavName();
                 MapProvider.UavAdd(new MapUav { name = name, data = Save.Samples, lat = first.ActualLat, lng = first.ActualLng });
+                Option.settings = Save.Standard;
                 MapProvider.GridInit(Option);
                 MapProvider.UavFocus(name);
                 MapProvider.GridRefresh();
@@ -134,12 +131,20 @@ namespace AirMonitor.ViewModels
 
         private string GetUavName(EvtAirSample sample = null) => sample?.UavName ?? new EvtAirSample().UavName;
 
-        public void RefreshMap() => OnMapContainerChanged();
+        public void RefreshMap()
+        {
+            if (MapContainer != null)
+            {
+                MapLoad = false;
+                MapProvider.LoadMap(MapContainer);
+            }
+        }
 
         public void RefreshBlock()
         {
             try
             {
+                Option.settings = Save.Standard;
                 MapProvider.GridInit(Option);
                 MapProvider.GridClear();
                 MapProvider.GridRefresh();
@@ -165,7 +170,6 @@ namespace AirMonitor.ViewModels
                         break;
                     case MessageBoxResult.No:
                         Save.Samples = Save.Samples.Concat(save.Samples).ToArray();
-                        Save.Standard = save.Standard ?? Save.Standard;
                         break;
                     default:
                         return;
@@ -195,8 +199,6 @@ namespace AirMonitor.ViewModels
         bool IMapView.MapLoad => MapLoad;
 
         IMapProvider IMapView.MapProvider => MapProvider;
-
-        List<EvtAirSample> IMapView.Samples => Save?.Samples?.ToList();
 
         bool IMapView.Sampling => false;
 

@@ -29,7 +29,7 @@
     <CreateWebPageOnPublish>true</CreateWebPageOnPublish>
     <WebPage>index.html</WebPage>
     <ApplicationRevision>2</ApplicationRevision>
-    <ApplicationVersion>1.0.2.14</ApplicationVersion>
+    <ApplicationVersion>1.0.2.15</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <CreateDesktopShortcut>true</CreateDesktopShortcut>
     <PublishWizardCompleted>true</PublishWizardCompleted>
@@ -160,12 +160,6 @@
     <Compile Include="..\AirMonitor\ViewModels\AnalysisMode.cs">
       <Link>ViewModels\AnalysisMode.cs</Link>
     </Compile>
-    <Compile Include="..\AirMonitor\ViewModels\AnalysisStaticViewModel.cs">
-      <Link>ViewModels\AnalysisStaticViewModel.cs</Link>
-    </Compile>
-    <Compile Include="..\AirMonitor\ViewModels\Map3DViewModel.cs">
-      <Link>ViewModels\Map3DViewModel.cs</Link>
-    </Compile>
     <Compile Include="..\AirMonitor\Views\AnalysisStaticView.xaml.cs">
       <Link>Views\AnalysisStaticView.xaml.cs</Link>
       <DependentUpon>AnalysisStaticView.xaml</DependentUpon>
@@ -177,7 +171,9 @@
       <DependentUpon>ShellView.xaml</DependentUpon>
     </Compile>
     <Compile Include="ShellViewModel.cs" />
+    <Compile Include="ViewModels\AnalysisStaticViewModel.cs" />
     <Compile Include="ViewModels\LoginViewModel.cs" />
+    <Compile Include="ViewModels\Map3DViewModel.cs" />
     <Compile Include="ViewModels\MapViewModel.cs" />
     <Compile Include="ViewModels\SaveSampleViewModel.cs" />
     <Compile Include="Views\LoginView.xaml.cs">

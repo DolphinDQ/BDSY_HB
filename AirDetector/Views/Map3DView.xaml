@@ -24,8 +24,8 @@
                 <Style TargetType="Button" BasedOn="{StaticResource Btn_Cirle}">
                 </Style>
             </StackPanel.Resources>
-            <Button Name="LayerUp"  ctrl:IconHelper.Icon="{StaticResource appbar_layer_up}" />
-            <Button Name="LayerDown"  ctrl:IconHelper.Icon="{StaticResource appbar_layer_down}" />
+            <!--<Button Name="LayerUp"  ctrl:IconHelper.Icon="{StaticResource appbar_layer_up}" />-->
+            <!--<Button Name="LayerDown"  ctrl:IconHelper.Icon="{StaticResource appbar_layer_down}" />-->
             <!--<Button Name="ChangeBackgroud" Visibility="Collapsed" ctrl:IconHelper.Icon="{StaticResource appbar_layer_arrange_sendbackward}" />-->
             <Button Name="TurnLeft" ctrl:IconHelper.Icon="{StaticResource appbar_transform_rotate_counterclockwise}" />
             <Button Name="TurnRight" ctrl:IconHelper.Icon="{StaticResource appbar_transform_rotate_clockwise}"/>

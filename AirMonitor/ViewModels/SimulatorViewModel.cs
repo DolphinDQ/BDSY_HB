@@ -103,7 +103,7 @@ namespace AirMonitor.ViewModels
 
         public async Task OnRun()
         {
-            var data = m_saveManager.Load(Path).Samples.ToArray();
+            var data = m_saveManager.Load(Path).Samples.OrderBy(o=>o.RecordTime).ToArray();
             Stop();
             try
             {

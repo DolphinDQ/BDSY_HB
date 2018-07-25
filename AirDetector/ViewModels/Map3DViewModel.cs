@@ -22,7 +22,7 @@ namespace AirMonitor.ViewModels
         public Map3DViewModel(IConfigManager config, IEventAggregator eventAggregator)
         {
             m_config = config;
-            Setting = config.GetConfig<AirStandardSetting>();
+            //Setting = config.GetConfig<AirStandardSetting>();
             eventAggregator.Subscribe(this);
             m_eventAggregator = eventAggregator;
         }
@@ -55,7 +55,7 @@ namespace AirMonitor.ViewModels
 
         public IMapView MapView { get; set; }
 
-        public AirStandardSetting Setting { get; private set; }
+        public AirStandardSetting Setting => MapView?.Save?.Standard;
 
         public double MapOpacity { get; set; } = 1d;
 
@@ -76,13 +76,13 @@ namespace AirMonitor.ViewModels
                     {
                         Lat = Bound.ne.lat,
                         Lng = Bound.ne.lng,
-                        Height = Setting.MaxAltitude,
+                        Height = Setting?.MaxAltitude??0,
                     },
                     Min = new Map3DPoint()
                     {
                         Lat = Bound.sw.lat,
                         Lng = Bound.sw.lng,
-                        Height = Setting.CorrectAltitude
+                        Height = Setting?.CorrectAltitude??0
                     }
                 };
             }
@@ -180,19 +180,19 @@ namespace AirMonitor.ViewModels
 
         public void Handle(EvtSetting message)
         {
-            switch (message.Command)
-            {
-                case SettingCommands.Changed:
-                    if (message.SettingObject is AirStandardSetting setting)
-                    {
-                        Setting = setting;
-                        OnBoundChanged();
-                        Refresh();
-                    }
-                    break;
-                default:
-                    break;
-            }
+            //switch (message.Command)
+            //{
+            //    case SettingCommands.Changed:
+            //        if (message.SettingObject is AirStandardSetting setting)
+            //        {
+            //            Setting = setting;
+            //            OnBoundChanged();
+            //            Refresh();
+            //        }
+            //        break;
+            //    default:
+            //        break;
+            //}
         }
 
         public void TurnLeft()
@@ -219,22 +219,22 @@ namespace AirMonitor.ViewModels
             }
         }
 
-        public void LayerUp()
-        {
-            if (Setting.MaxAltitude > 20)
-            {
-                Setting.MaxAltitude -= 10;
-                m_config.SaveConfig(Setting);
-            }
-        }
+        //public void LayerUp()
+        //{
+        //    if (Setting.MaxAltitude > 20)
+        //    {
+        //        Setting.MaxAltitude -= 10;
+        //        m_config.SaveConfig(Setting);
+        //    }
+        //}
 
-        public void LayerDown()
-        {
-            if (Setting.MaxAltitude < 200)
-            {
-                Setting.MaxAltitude += 10;
-                m_config.SaveConfig(Setting);
-            }
-        }
+        //public void LayerDown()
+        //{
+        //    if (Setting.MaxAltitude < 200)
+        //    {
+        //        Setting.MaxAltitude += 10;
+        //        m_config.SaveConfig(Setting);
+        //    }
+        //}
     }
 }

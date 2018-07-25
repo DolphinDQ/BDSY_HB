@@ -15,7 +15,9 @@
     using AirMonitor.ViewModels;
     using Caliburn.Micro;
     using Microsoft.HockeyApp;
-
+    /// <summary>
+    /// 
+    /// </summary>
     public class AppBootstrapper : BootstrapperBase, IFactory
     {
         public static SimpleContainer Container { get; private set; }

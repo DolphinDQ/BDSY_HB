@@ -121,6 +121,11 @@ namespace AirMonitor.ViewModels
 
         public StandardSample StandardSample { get; set; }
 
+        public AirSamplesSave Save => new AirSamplesSave() {
+             Standard= MapGridOptions.settings,
+              Samples= Samples?.ToArray(),
+        };
+
         public void OnStandardSamplesChanged()
         {
             if (StandardSamples != null)
