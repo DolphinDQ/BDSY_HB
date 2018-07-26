@@ -43,6 +43,17 @@ namespace AirMonitor.ViewModels
 
         public EvtSampleSaving Evt { get; set; }
 
+        public CloudListItem File { get; set; }
+
+        public void OnFileChanged()
+        {
+            if (Evt!=null)
+            {
+                Evt.Name = File?.Name;
+                NotifyOfPropertyChange(nameof(Evt));
+            }
+        }
+
         [DependsOn(nameof(Save))]
         public AirStandardSetting Settings => Save?.Standard;
 

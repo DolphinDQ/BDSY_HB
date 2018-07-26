@@ -60,6 +60,7 @@
                     BorderBrush="{Binding ElementName=Back,Path=BorderBrush}" 
                     BorderThickness="1" 
                     SelectionMode="Extended"
+                    SelectedItem="{Binding File}"
                     ItemsSource="{Binding FileList}"
                     cal:Message.Attach="[Event MouseDoubleClick]=[Action LoadFile($this)]">
 
