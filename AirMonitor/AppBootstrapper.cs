@@ -17,7 +17,7 @@ namespace AirMonitor
     using Caliburn.Micro;
     using System.Linq;
 
-    public class AppBootstrapper : BootstrapperBase, IFactory
+    public class AppBootstrapper : BootstrapperBase, IFactory 
     {
         [DllImport("user32.dll")]
         private static extern bool SetForegroundWindow(IntPtr hWnd);
